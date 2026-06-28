@@ -167,18 +167,17 @@
     border-radius: 20px; 
     padding: 32px 24px; 
     box-shadow: var(--shadow); 
-    margin-top: 4vh; 
     text-align: center; 
   }
 
   .login-card h1 { 
-    font-size: 22px; 
+    font-size: 20px; 
     margin: 0 0 6px; 
   }
 
   .login-card p.sub { 
     color: var(--muted); 
-    font-size: 14px; 
+    font-size: 13.5px; 
     margin: 0 0 26px; 
   }
 
@@ -921,10 +920,52 @@
     <span class="siren">🚨</span>
   </div>
 
+  <div class="topbar">
+    <div class="brand">ฝาก<span>งาน</span></div>
+    <div class="header-actions">
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    </div>
+  </div>
+
+  <!-- ================= หน้าล็อกอิน (แต่ดัดแปลงให้เป็นหน้าจอสาธารณะด้วย) ================= -->
   <div id="loginScreen">
+    
+    <!-- 🔥 หลอดพลังคิวงาน (โชว์คนนอก) -->
+    <div id="loginCapacityContainer" class="capacity-box hidden"></div>
+
+    <!-- 🛡️ ศูนย์บัญชาการเอาตัวรอด (โชว์คนนอก) -->
+    <div id="loginSurvivalContainer" class="survival-hub hidden">
+      <h3 class="survival-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</h3>
+      <div id="loginSurvivalList"></div>
+      <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="showToast('เดี๋ยวรอตารางสอนของจริงมาใส่ตรงนี้นะ 📅')">📅 ดูตารางเรียนประจำสัปดาห์</button>
+    </div>
+
+    <!-- 📚 คลังสรุปสอบ (โชว์คนนอก โหลดฟรีไม่ต้องล็อกอิน) -->
+    <div id="loginVaultContainer" style="margin-bottom: 24px;">
+      <p class="section-label">📚 คลังแสงสรุปสอบ (โหลดฟรีไม่ต้องล็อกอิน)</p>
+      
+      <div class="vault-card">
+        <div class="vault-icon">📖</div>
+        <div class="vault-info">
+          <div class="vault-title">สรุปประวัติศาสตร์ (กลางภาค)</div>
+          <div class="vault-desc">สรุปย่อ 3 หน้า อ่าน 10 นาทีเข้าสอบได้เลย</div>
+        </div>
+        <button class="btn-download" onclick="showToast('โหลดเสร็จแล้ว! อ่านให้รอดนะ ✌️')">โหลด</button>
+      </div>
+      
+      <div class="vault-card">
+        <div class="vault-icon">📐</div>
+        <div class="vault-info">
+          <div class="vault-title">สูตรคณิตศาสตร์พื้นฐาน</div>
+          <div class="vault-desc">รวมสูตรที่ออกสอบบ่อยที่สุด พร้อมตัวอย่าง</div>
+        </div>
+        <button class="btn-download" onclick="showToast('โหลดเสร็จแล้ว! อ่านให้รอดนะ ✌️')">โหลด</button>
+      </div>
+    </div>
+
     <div class="login-card">
-      <h1>เลขที่เท่าไหร่ครับ/คะ?</h1>
-      <p class="sub">เลือกเลขที่ตัวเองแล้วใส่รหัส</p>
+      <h1>🔒 เข้าระบบเพื่อนในห้อง</h1>
+      <p class="sub">เพื่อสั่งงาน / แชท / หาตี้ / ขอเพลง</p>
       <div class="number-grid" id="numberGrid"></div>
       <div class="pw-row" id="pwRow">
         <label id="pwLabel">รหัสของเลขที่ ...</label>
@@ -933,24 +974,23 @@
       <button class="btn btn-primary" id="loginBtn" disabled>เข้าสู่ระบบ</button>
       <div class="error-msg" id="loginError">รหัสไม่ถูกต้อง ลองใหม่อีกครั้ง</div>
     </div>
+
   </div>
 
+  <!-- ================= หน้าแอปหลัก (ต้องล็อกอินถึงจะเห็น) ================= -->
   <div id="appScreen" class="hidden">
-    <div class="topbar">
-      <div class="brand">ฝาก<span>งาน</span></div>
-      <div class="header-actions">
-        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
-        <div class="who" id="whoLabel" onclick="logout()">เลขที่ —</div>
-      </div>
+    
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+      <div class="who" id="whoLabel" onclick="logout()">เลขที่ —</div>
     </div>
 
     <!-- 📱 TAB 1: งาน (Tasks) -->
     <div id="tab-tasks" class="screen active">
       
-      <!-- 🔥 หลอดพลังคิวงาน (ดึงข้อมูลจาก Firebase) -->
+      <!-- 🔥 หลอดพลังคิวงาน (โชว์คนใน) -->
       <div id="capacityContainer" class="capacity-box hidden"></div>
 
-      <!-- 🛡️ ศูนย์บัญชาการเอาตัวรอด (ดึงข้อมูลจาก Firebase) -->
+      <!-- 🛡️ ศูนย์บัญชาการเอาตัวรอด (โชว์คนใน) -->
       <div id="survivalContainer" class="survival-hub hidden">
         <h3 class="survival-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</h3>
         <div id="survivalList"></div>
@@ -1217,6 +1257,7 @@
     document.getElementById('pwInput').focus();
   }
 
+  // ลบข้อความแจ้งเตือนทันทีที่เริ่มพิมพ์
   document.getElementById('pwInput').addEventListener('input', () => {
     document.getElementById('loginError').classList.remove('show');
   });
@@ -1284,6 +1325,7 @@
     listenToMusic();
   }
 
+  // เรียกใช้ทันทีเพื่อให้ดึงกระดานข่าว, คิวงาน และศูนย์เอาตัวรอด มาโชว์หน้าแรก
   listenToSettings();
 
   (function restoreSession() {
@@ -1294,7 +1336,7 @@
     }
   })();
 
-  // ดึงการตั้งค่าทั้งหมดมาแสดงผล (รวมถึงคิวและศูนย์บัญชาการ)
+  // ดึงการตั้งค่าทั้งหมดมาแสดงผล (รวมถึงคิวและศูนย์บัญชาการ) โชว์ได้ทั้งหน้าล็อกอินและหน้าหลัก
   function listenToSettings() {
     db.collection('system_settings').doc('main').onSnapshot(snap => {
       if (snap.exists && snap.data()) {
@@ -1322,7 +1364,7 @@
           
           if (qCurr >= qMax) {
             capTitle = `🛑 คิวเต็มแล้ว! ปิดรับงานชั่วคราว`;
-            capClass += ' full'; // ใส่คลาสให้หลอดหยุดกระพริบ
+            capClass += ' full'; 
           } else if (qCurr >= qMax - 1) {
             capTitle = `🔥 คิวงานไทม์ (ใกล้เต็ม!)`;
           }
@@ -1339,18 +1381,31 @@
             html += `<div class="cap-text">⏳ คาดว่าจะเสร็จ: ${escapeHtml(qEta)}</div>`;
           }
           
-          document.getElementById('capacityContainer').className = capClass;
-          document.getElementById('capacityContainer').innerHTML = html;
-          document.getElementById('capacityContainer').classList.remove('hidden');
+          // อัปเดตหน้าล็อกอิน
+          const loginCap = document.getElementById('loginCapacityContainer');
+          if(loginCap) {
+            loginCap.className = capClass;
+            loginCap.innerHTML = html;
+            loginCap.classList.remove('hidden');
+          }
+
+          // อัปเดตหน้าแอปหลัก (Tab งาน)
+          const appCap = document.getElementById('capacityContainer');
+          if(appCap) {
+            appCap.className = capClass;
+            appCap.innerHTML = html;
+            appCap.classList.remove('hidden');
+          }
+
         } else {
-          document.getElementById('capacityContainer').classList.add('hidden');
+          if(document.getElementById('loginCapacityContainer')) document.getElementById('loginCapacityContainer').classList.add('hidden');
+          if(document.getElementById('capacityContainer')) document.getElementById('capacityContainer').classList.add('hidden');
         }
 
         // 3. ศูนย์บัญชาการเอาตัวรอด
         const sItems = d.survival_items || [];
         if (sItems.length > 0) {
-          const sList = document.getElementById('survivalList');
-          sList.innerHTML = sItems.map(item => {
+          let sHtml = sItems.map(item => {
             let cls = 'survival-item';
             let emoji = '🟢';
             
@@ -1360,9 +1415,23 @@
             return `<div class="${cls}">${emoji} ${escapeHtml(item.text)}</div>`;
           }).join('');
           
-          document.getElementById('survivalContainer').classList.remove('hidden');
+          // อัปเดตหน้าล็อกอิน
+          const loginSurvList = document.getElementById('loginSurvivalList');
+          if(loginSurvList) {
+            loginSurvList.innerHTML = sHtml;
+            document.getElementById('loginSurvivalContainer').classList.remove('hidden');
+          }
+
+          // อัปเดตหน้าแอปหลัก
+          const appSurvList = document.getElementById('survivalList');
+          if(appSurvList) {
+            appSurvList.innerHTML = sHtml;
+            document.getElementById('survivalContainer').classList.remove('hidden');
+          }
+
         } else {
-          document.getElementById('survivalContainer').classList.add('hidden');
+          if(document.getElementById('loginSurvivalContainer')) document.getElementById('loginSurvivalContainer').classList.add('hidden');
+          if(document.getElementById('survivalContainer')) document.getElementById('survivalContainer').classList.add('hidden');
         }
 
       }

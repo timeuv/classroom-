@@ -317,7 +317,7 @@
     transform: scale(1.1); 
   }
 
-  /* 🔥 ฟีเจอร์ใหม่: หลอดพลังคิวงาน */
+  /* 🔥 หลอดพลังคิวงาน (แสดงผลจากฐานข้อมูล) */
   .capacity-box { 
     background: var(--paper); 
     border: 2px solid #C0392B; 
@@ -326,6 +326,12 @@
     margin-bottom: 16px; 
     box-shadow: 0 4px 12px rgba(192,57,43,0.15); 
     animation: pulseBorder 2s infinite; 
+  }
+
+  .capacity-box.full {
+    border-color: #C0392B;
+    background: #FDECEC;
+    animation: none;
   }
 
   @keyframes pulseBorder { 
@@ -346,7 +352,7 @@
   .cap-bg { 
     width: 100%; 
     height: 8px; 
-    background: #FDECEC; 
+    background: #E5E0D6; 
     border-radius: 100px; 
     overflow: hidden; 
   }
@@ -354,8 +360,8 @@
   .cap-fill { 
     height: 100%; 
     background: #C0392B; 
-    width: 60%; 
     border-radius: 100px; 
+    transition: width 0.3s ease;
   }
 
   .cap-text { 
@@ -366,7 +372,7 @@
     font-weight: bold; 
   }
 
-  /* 🛡️ ฟีเจอร์ใหม่: ศูนย์บัญชาการเอาตัวรอด */
+  /* 🛡️ ศูนย์บัญชาการเอาตัวรอด (แสดงผลจากฐานข้อมูล) */
   .survival-hub { 
     background: var(--paper); 
     border: 1.5px solid var(--line); 
@@ -393,7 +399,7 @@
     border-radius: 8px; 
     margin-bottom: 6px; 
     font-weight: 600; 
-    border-left: 3px solid var(--accent); 
+    border-left: 3px solid var(--green); 
   }
 
   .survival-item.alert { 
@@ -402,7 +408,13 @@
     color: #C0392B; 
   }
 
-  /* 📚 ฟีเจอร์ใหม่: คลังแสงสรุปสอบ */
+  .survival-item.warn { 
+    border-left-color: #D48806; 
+    background: #FFF4E5; 
+    color: #D48806; 
+  }
+
+  /* 📚 คลังแสงสรุปสอบ */
   .vault-card { 
     background: var(--paper); 
     border: 1.5px solid var(--line); 
@@ -885,7 +897,6 @@
     display: none !important; 
   }
 
-  /* เพิ่มคลาสสำหรับกล่องแจ้งเตือน (กันบั๊ก) */
   .error-msg { 
     color: #C0392B; 
     font-size: 13px; 
@@ -936,38 +947,30 @@
     <!-- 📱 TAB 1: งาน (Tasks) -->
     <div id="tab-tasks" class="screen active">
       
-      <!-- 🔥 หลอดพลังคิวงาน (จำลอง) -->
-      <div class="capacity-box">
-        <div class="cap-header">
-          <span>🔥 คิวงานไทม์คืนนี้ (ใกล้เต็ม!)</span>
-          <span>3 / 5 คิว</span>
-        </div>
-        <div class="cap-bg">
-          <div class="cap-fill"></div>
-        </div>
-        <div class="cap-text">ว่างอีกแค่ 2 คิวเท่านั้น รีบจองก่อนปิดรับ!</div>
-      </div>
+      <!-- 🔥 หลอดพลังคิวงาน (ดึงข้อมูลจาก Firebase) -->
+      <div id="capacityContainer" class="capacity-box hidden"></div>
 
-      <!-- 🛡️ ศูนย์บัญชาการเอาตัวรอด (จำลอง) -->
-      <div class="survival-hub">
+      <!-- 🛡️ ศูนย์บัญชาการเอาตัวรอด (ดึงข้อมูลจาก Firebase) -->
+      <div id="survivalContainer" class="survival-hub hidden">
         <h3 class="survival-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</h3>
-        <div class="survival-item alert">🔴 พรุ่งนี้: ส่งสมุดคณิตศาสตร์ (ก่อน 8 โมง)</div>
-        <div class="survival-item">🟡 มะรืน: สอบเก็บคะแนนชีวะบทที่ 2</div>
-        <div class="survival-item">🟢 ศุกร์: พรีเซนต์โปรเจกต์คอมพิวเตอร์</div>
+        <div id="survivalList"></div>
         <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="showToast('เดี๋ยวรอตารางสอนของจริงมาใส่ตรงนี้นะ 📅')">📅 ดูตารางเรียนประจำสัปดาห์</button>
       </div>
 
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button style="background: var(--accent-soft); border: none; color: var(--accent); font-weight: bold; font-size: 13.5px; cursor: pointer; padding: 8px 14px; border-radius: 8px; box-shadow: 0 2px 4px rgba(212, 98, 42, 0.1);" onclick="openRequestModal()">➕ สั่งงานนอกระบบ</button>
       </div>
+      
       <div id="pendingSection">
         <p class="section-label">งานที่ต้องทำ</p>
         <div id="taskList"></div>
       </div>
+      
       <div id="completedSection" class="hidden" style="margin-top: 24px;">
         <p class="section-label">งานที่เสร็จเรียบร้อยแล้ว</p>
         <div id="completedList"></div>
       </div>
+      
       <div class="empty-state hidden" id="emptyState" style="padding-top: 10px;">
         <div class="ic">📭</div>
         <div>ตอนนี้ไม่มีงานเลย สบายใจได้!<br><span style="font-size: 12px; color: var(--accent); margin-top: 8px; display: inline-block;">(หรือกดสั่งงานด่วนด้านบนได้เลย)</span></div>
@@ -1018,7 +1021,7 @@
       <div id="musicList"></div>
     </div>
 
-    <!-- 📱 TAB 5: คลังสรุป (Vault) 🔥 แท็บใหม่ทำเงิน -->
+    <!-- 📱 TAB 5: คลังสรุป (Vault) -->
     <div id="tab-vault" class="screen">
       <p class="section-label">📚 คลังแสงสรุปสอบ (แจกฟรี)</p>
       
@@ -1040,7 +1043,6 @@
         <button class="btn-download" onclick="showToast('โหลดเสร็จแล้ว! อ่านให้รอดนะ ✌️')">โหลด</button>
       </div>
 
-      <!-- ป้ายตกทอง (Upsell) -->
       <div class="upsell-box">
         <h4>ขี้เกียจอ่านเองใช่ป่าว? 🥱</h4>
         <p>จ้างไทม์ทำสรุปเฉพาะจุดที่เรียนไม่เข้าใจ<br>หรือจ้างพิมพ์รายงานด่วน กดตรงนี้เลย!</p>
@@ -1143,8 +1145,6 @@
   const DISCORD_WEBHOOK_URL = "";
   const MY_PROMPTPAY = "0963413738";
   const MY_NAME = "ณัฐพงศ์ เภกะนันทน์";
-
-  // ⚠️ Klipy API Key
   const KLIPY_API_KEY = "6hbhgjA0xqjeLcQj2x8NKebL8PynvkAiiBboTCBwvmH6uybR9tU2QfL0Z685mYQV";
 
   let selectedNumber = null;
@@ -1217,7 +1217,6 @@
     document.getElementById('pwInput').focus();
   }
 
-  // ลบข้อความแจ้งเตือนทันทีที่เริ่มพิมพ์
   document.getElementById('pwInput').addEventListener('input', () => {
     document.getElementById('loginError').classList.remove('show');
   });
@@ -1295,13 +1294,77 @@
     }
   })();
 
+  // ดึงการตั้งค่าทั้งหมดมาแสดงผล (รวมถึงคิวและศูนย์บัญชาการ)
   function listenToSettings() {
     db.collection('system_settings').doc('main').onSnapshot(snap => {
-      if (snap.exists && snap.data().announcement) {
-        document.getElementById('announcementText').textContent = snap.data().announcement;
-        document.getElementById('announcementBanner').classList.remove('hidden');
-      } else {
-        document.getElementById('announcementBanner').classList.add('hidden');
+      if (snap.exists && snap.data()) {
+        const d = snap.data();
+
+        // 1. กระดานข่าวห้อง
+        if (d.announcement) {
+          document.getElementById('announcementText').textContent = d.announcement;
+          document.getElementById('announcementBanner').classList.remove('hidden');
+        } else {
+          document.getElementById('announcementBanner').classList.add('hidden');
+        }
+
+        // 2. หลอดคิวงาน
+        if (d.queue_max !== undefined && d.queue_max > 0) {
+          const qCurr = d.queue_current || 0;
+          const qMax = d.queue_max || 5;
+          const qEta = d.queue_eta || '';
+          
+          let pct = (qCurr / qMax) * 100;
+          if (pct > 100) pct = 100;
+
+          let capTitle = `🔥 คิวงานไทม์คืนนี้`;
+          let capClass = 'capacity-box';
+          
+          if (qCurr >= qMax) {
+            capTitle = `🛑 คิวเต็มแล้ว! ปิดรับงานชั่วคราว`;
+            capClass += ' full'; // ใส่คลาสให้หลอดหยุดกระพริบ
+          } else if (qCurr >= qMax - 1) {
+            capTitle = `🔥 คิวงานไทม์ (ใกล้เต็ม!)`;
+          }
+
+          let html = `
+            <div class="cap-header">
+              <span>${capTitle}</span>
+              <span>${qCurr} / ${qMax} คิว</span>
+            </div>
+            <div class="cap-bg"><div class="cap-fill" style="width: ${pct}%;"></div></div>
+          `;
+          
+          if (qEta) {
+            html += `<div class="cap-text">⏳ คาดว่าจะเสร็จ: ${escapeHtml(qEta)}</div>`;
+          }
+          
+          document.getElementById('capacityContainer').className = capClass;
+          document.getElementById('capacityContainer').innerHTML = html;
+          document.getElementById('capacityContainer').classList.remove('hidden');
+        } else {
+          document.getElementById('capacityContainer').classList.add('hidden');
+        }
+
+        // 3. ศูนย์บัญชาการเอาตัวรอด
+        const sItems = d.survival_items || [];
+        if (sItems.length > 0) {
+          const sList = document.getElementById('survivalList');
+          sList.innerHTML = sItems.map(item => {
+            let cls = 'survival-item';
+            let emoji = '🟢';
+            
+            if (item.type === 'red') { cls += ' alert'; emoji = '🔴'; }
+            if (item.type === 'yellow') { cls += ' warn'; emoji = '🟡'; }
+            
+            return `<div class="${cls}">${emoji} ${escapeHtml(item.text)}</div>`;
+          }).join('');
+          
+          document.getElementById('survivalContainer').classList.remove('hidden');
+        } else {
+          document.getElementById('survivalContainer').classList.add('hidden');
+        }
+
       }
     });
   }

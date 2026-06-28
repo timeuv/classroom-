@@ -86,6 +86,24 @@
     font-weight: 700;
   }
 
+  /* ---- Notice Box ---- */
+  .notice-box {
+    background: #2A241D;
+    border-left: 4px solid var(--accent);
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #E5E0D6;
+  }
+  .notice-box strong {
+    color: var(--accent);
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14.5px;
+  }
+
   .action-row {
     display: flex;
     gap: 8px;
@@ -275,6 +293,12 @@
       <span class="brand-sub" id="currentMonthLabel">ยอดของเดือนนี้</span>
     </div>
     <div class="stat-pill">ได้แล้ว <span id="totalEarn">0</span> / 5,000</div>
+  </div>
+
+  <!-- ป้ายประกาศความโปร่งใส -->
+  <div class="notice-box">
+    <strong>📢 หมายเหตุความโปร่งใส</strong>
+    ข้อมูลประวัติและยอดเงินทั้งหมดที่เกิดขึ้น <b>ก่อนวันที่ 30 มิถุนายน</b> เป็นเพียงการ "ทดสอบระบบ" เท่านั้น เนื่องจากระบบถูกออกแบบมาให้อ่านได้อย่างเดียวและไม่สามารถแก้ไขหรือลบประวัติย้อนหลังได้ เพื่อให้ตรวจสอบยอดเงินได้โปร่งใส 100%
   </div>
 
   <div class="action-row">

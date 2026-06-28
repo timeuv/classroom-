@@ -150,6 +150,10 @@
   .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1E1B16; color: white; padding: 12px 20px; border-radius: 100px; font-size: 14px; font-weight: 600; opacity: 0; transition: 0.25s; pointer-events: none; z-index: 100; white-space: nowrap; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .hidden { display: none !important; }
+  
+  /* เพิ่มคลาสสำหรับกล่องแจ้งเตือน (กันบั๊ก) */
+  .error-msg { color: #C0392B; font-size: 13px; margin-top: 10px; display: none; }
+  .error-msg.show { display: block; }
 </style>
 </head>
 <body>
@@ -392,30 +396,52 @@
     document.getElementById('pwInput').focus();
   }
 
+  // เพิ่ม Event Listener ให้ข้อความหายไปตอนเริ่มพิมพ์ (ฝั่งเพื่อน)
+  document.getElementById('pwInput').addEventListener('input', () => {
+    document.getElementById('loginError').classList.remove('show');
+  });
+
   document.getElementById('loginBtn').onclick = doLogin;
   document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
   async function doLogin() {
     const pw = document.getElementById('pwInput').value.trim();
     if (!selectedNumber || !pw) return;
+
+    const loginError = document.getElementById('loginError');
+    loginError.classList.remove('show'); // ซ่อนข้อความค้างก่อนตรวจสอบใหม่
+
     const loginBtn = document.getElementById('loginBtn');
     loginBtn.disabled = true;
     loginBtn.textContent = 'กำลังตรวจสอบ...';
     try {
       const docRef = db.collection('users').doc(String(selectedNumber));
       const docSnap = await docRef.get();
-      if (!docSnap.exists || docSnap.data().password !== pw) {
-        document.getElementById('loginError').classList.add('show');
+
+      // แยกระบบแจ้งเตือนให้ชัดเจนว่าไม่มีข้อมูลบัญชี
+      if (!docSnap.exists) {
+        loginError.textContent = 'ไม่มีข้อมูลเลขที่นี้ในระบบ (แอดมินต้องไปเพิ่มใน Firebase)';
+        loginError.classList.add('show');
         loginBtn.disabled = false;
         loginBtn.textContent = 'เข้าสู่ระบบ';
         return;
       }
+
+      // ตรวจสอบรหัสผ่านผิด
+      if (docSnap.data().password !== pw) {
+        loginError.textContent = 'รหัสไม่ถูกต้อง ลองใหม่อีกครั้ง';
+        loginError.classList.add('show');
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'เข้าสู่ระบบ';
+        return;
+      }
+
       currentUser = { studentId: String(selectedNumber), name: docSnap.data().name || `เลขที่ ${selectedNumber}` };
       sessionStorage.setItem('cr_user', JSON.stringify(currentUser));
       enterDashboard();
     } catch (err) {
-      document.getElementById('loginError').textContent = 'เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง';
-      document.getElementById('loginError').classList.add('show');
+      loginError.textContent = 'เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง';
+      loginError.classList.add('show');
       loginBtn.disabled = false;
       loginBtn.textContent = 'เข้าสู่ระบบ';
     }
@@ -526,8 +552,6 @@
   }
 
   // ดึง URL รูปจากผลลัพธ์ Klipy แบบกันพลาด
-  // โครงสร้างที่ Klipy เคยใช้คือ item.files.{size}.gif.url เช่น files.sm.gif.url, files.md.gif.url
-  // เผื่อโครงสร้างจริงต่างไปเล็กน้อย ฟังก์ชันนี้ลองหาหลายแบบ แล้ว log ตัวอย่างไว้ใน console ถ้าหาไม่เจอ
   function extractGifUrls(item) {
     const f = item.files || item.file || {};
     const thumb = f.sm?.gif?.url || f.preview?.gif?.url || f.tinygif?.url || f.xs?.gif?.url || f.md?.gif?.url;

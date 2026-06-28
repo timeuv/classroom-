@@ -19,6 +19,7 @@
     --accent-soft: #3A2A1E;
     --green: #5FAE82;
     --green-soft: #1E2E24;
+    --red: #E8836A;
     --muted: #9A9286;
     --shadow: 0 2px 14px rgba(0,0,0,0.3);
   }
@@ -64,7 +65,7 @@
     font-size: 15px;
     cursor: pointer;
   }
-  .gate-err { color: #E8836A; font-size: 13px; margin-top: 10px; display: none; }
+  .gate-err { color: var(--red); font-size: 13px; margin-top: 10px; display: none; }
   .gate-err.show { display: block; }
 
   /* ---- header ---- */
@@ -72,8 +73,10 @@
     display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 24px;
   }
-  .brand { font-size: 19px; font-weight: 800; }
+  .brand { font-size: 19px; font-weight: 800; line-height: 1.2; }
   .brand span { color: var(--accent); }
+  .brand-sub { font-size: 12px; color: var(--muted); font-weight: normal; display: block; }
+  
   .stat-pill {
     background: var(--paper);
     border: 1px solid var(--line);
@@ -170,7 +173,7 @@
 
   .empty-state { text-align: center; padding: 30px; color: var(--muted); font-size: 14px; }
 
-  /* ---- history (read-only) ---- */
+  /* ---- history & summary (read-only) ---- */
   .history-card {
     background: var(--paper);
     border-radius: 14px;
@@ -184,7 +187,7 @@
     gap: 12px;
   }
   .history-left .order-title { font-size: 14px; }
-  .history-left .order-who { font-size: 12.5px; }
+  .history-left .order-who { font-size: 12.5px; margin-top: 2px;}
   .history-right {
     text-align: right;
     white-space: nowrap;
@@ -199,13 +202,6 @@
     color: var(--muted);
     margin-top: 2px;
   }
-
-  /* ---- new claim flash ---- */
-  @keyframes flash {
-    0% { background: var(--accent-soft); }
-    100% { background: var(--paper); }
-  }
-  .flash { animation: flash 1.8s ease; }
 
   /* ---- pay modal ---- */
   .modal-backdrop {
@@ -254,8 +250,11 @@
 <!-- ============ ADMIN DASHBOARD ============ -->
 <div class="wrap hidden" id="adminScreen">
   <div class="topbar">
-    <div class="brand">Admin · ฝาก<span>งาน</span></div>
-    <div class="stat-pill">ยอดรวม <span id="totalEarn">0</span> / 5,000 บาท</div>
+    <div class="brand">
+      Admin · ฝาก<span>งาน</span>
+      <span class="brand-sub" id="currentMonthLabel">ยอดของเดือนนี้</span>
+    </div>
+    <div class="stat-pill">ได้แล้ว <span id="totalEarn">0</span> / 5,000</div>
   </div>
 
   <div class="action-row">
@@ -271,12 +270,16 @@
   <div id="doneList"></div>
   <div class="empty-state hidden" id="doneEmpty">ไม่มีงานที่ทำเสร็จรออยู่</div>
 
-  <p class="section-label">💰 ประวัติการได้เงิน</p>
+  <p class="section-label">📊 สรุปยอดรายเดือน (ย้อนหลัง)</p>
+  <div id="monthlySummaryList"></div>
+
+  <p class="section-label">💰 ประวัติการได้เงิน (ล่าสุด)</p>
   <div id="historyList"></div>
   <div class="empty-state hidden" id="historyEmpty">ยังไม่มีประวัติการรับเงิน</div>
 </div>
 
-<!-- ============ ADD TASK MODAL ============ -->
+<!-- ============ MODALS ============ -->
+<!-- เพิ่มงานเอง -->
 <div class="modal-backdrop" id="addTaskModal">
   <div class="modal-box">
     <h3>เพิ่มงานเอง</h3>
@@ -292,7 +295,7 @@
   </div>
 </div>
 
-<!-- ============ EXTRA INCOME MODAL ============ -->
+<!-- ได้รับเพิ่มเติม -->
 <div class="modal-backdrop" id="extraIncomeModal">
   <div class="modal-box">
     <h3>ได้รับเพิ่มเติม</h3>
@@ -310,7 +313,7 @@
   </div>
 </div>
 
-<!-- ============ PAYMENT MODAL ============ -->
+<!-- รับเงิน -->
 <div class="modal-backdrop" id="payModal">
   <div class="modal-box">
     <h3>บันทึกยอดเงิน</h3>
@@ -329,7 +332,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // ⚠️ เปลี่ยนรหัสแอดมินตรงนี้เป็นรหัสที่คุณต้องการ
+  // ⚠️ เปลี่ยนรหัสแอดมินตรงนี้
   const ADMIN_PASSWORD = "changeme123";
 
   let allOrders = [];
@@ -338,6 +341,8 @@
   let activeOrderId = null;
   let knownOrderIds = new Set();
   let firstLoad = true;
+
+  const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
   function checkAdminPw() {
     const val = document.getElementById('adminPw').value;
@@ -359,7 +364,6 @@
     document.getElementById('adminScreen').classList.remove('hidden');
     listenToTasks();
     listenToOrders();
-    listenToStats();
     listenToIncomeLogs();
   }
 
@@ -374,7 +378,6 @@
     db.collection('orders').orderBy('created_at', 'desc').onSnapshot(snap => {
       const newOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-      // ตรวจหาออเดอร์ใหม่ (คนกด "ให้ไทม์ทำงาน") เพื่อแจ้งเตือนในหน้านี้
       if (!firstLoad) {
         newOrders.forEach(o => {
           if (!knownOrderIds.has(o.id) && o.status === 'pending') {
@@ -384,16 +387,8 @@
       }
       knownOrderIds = new Set(newOrders.map(o => o.id));
       firstLoad = false;
-
       allOrders = newOrders;
       renderOrders();
-    });
-  }
-
-  function listenToStats() {
-    db.collection('system_stats').doc('main').onSnapshot(snap => {
-      const total = snap.exists ? (snap.data().total_earnings || 0) : 0;
-      document.getElementById('totalEarn').textContent = total.toLocaleString('th-TH');
     });
   }
 
@@ -413,17 +408,16 @@
     const pendingList = document.getElementById('pendingList');
     const doneList = document.getElementById('doneList');
     const historyList = document.getElementById('historyList');
-    const pendingEmpty = document.getElementById('pendingEmpty');
-    const doneEmpty = document.getElementById('doneEmpty');
-    const historyEmpty = document.getElementById('historyEmpty');
+    const monthlySummaryList = document.getElementById('monthlySummaryList');
 
     const pending = allOrders.filter(o => o.status === 'pending');
     const done = allOrders.filter(o => o.status === 'done');
     const paid = allOrders.filter(o => o.status === 'paid');
 
-    pendingEmpty.classList.toggle('hidden', pending.length > 0);
-    doneEmpty.classList.toggle('hidden', done.length > 0);
+    document.getElementById('pendingEmpty').classList.toggle('hidden', pending.length > 0);
+    document.getElementById('doneEmpty').classList.toggle('hidden', done.length > 0);
 
+    // เรนเดอร์งานที่กำลังทำ / รอรับเงิน
     pendingList.innerHTML = pending.map(o => `
       <div class="order-card pending">
         <div class="order-top">
@@ -456,7 +450,7 @@
       </div>
     `).join('');
 
-    // ประวัติการได้เงิน — รวมทั้งจากงานในระบบ และที่บันทึกเพิ่มเองทุกที่ ดูอย่างเดียว แก้ไขไม่ได้
+    // ประวัติทั้งหมด
     const historyItems = [
       ...paid.map(o => ({
         type: 'order',
@@ -474,37 +468,94 @@
       }))
     ].sort((a, b) => (b.time?.toMillis?.() || 0) - (a.time?.toMillis?.() || 0));
 
-    historyEmpty.classList.toggle('hidden', historyItems.length > 0);
+    document.getElementById('historyEmpty').classList.toggle('hidden', historyItems.length > 0);
+    
+    // โชว์แค่ประวัติ 15 รายการล่าสุดในหน้าหลัก
+    historyList.innerHTML = historyItems.slice(0, 15).map(item => `
+      <div class="history-card">
+        <div class="history-left">
+          <div class="order-title">${escapeHtml(item.title)}</div>
+          <div class="order-who">ได้จาก ${escapeHtml(item.from)}</div>
+        </div>
+        <div class="history-right">
+          <div class="history-amount">+${item.amount.toLocaleString('th-TH')} บาท</div>
+          <div class="history-time">${formatTime(item.time)}</div>
+        </div>
+      </div>
+    `).join('');
 
-    historyList.innerHTML = historyItems.map(item => `
-        <div class="history-card">
+    // --- การคำนวณยอดรายเดือน ---
+    const monthlyData = {};
+    historyItems.forEach(item => {
+      if (!item.time) return;
+      const d = item.time.toDate ? item.time.toDate() : new Date(item.time);
+      const ymKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      monthlyData[ymKey] = (monthlyData[ymKey] || 0) + item.amount;
+    });
+
+    const now = new Date();
+    const currentYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    
+    // อัปเดตยอดของเดือนปัจจุบันด้านบนสุด
+    const currentEarn = monthlyData[currentYM] || 0;
+    document.getElementById('totalEarn').textContent = currentEarn.toLocaleString('th-TH');
+    document.getElementById('currentMonthLabel').textContent = `ยอดของเดือน ${monthNames[now.getMonth()]}`;
+
+    // สร้างสรุปย้อนหลังของเดือนที่ผ่านๆ มา
+    let summaryHtml = '';
+    const sortedMonths = Object.keys(monthlyData).sort().reverse();
+    
+    sortedMonths.forEach(ym => {
+      if (ym === currentYM) return; // ข้ามเดือนปัจจุบันไป เพราะโชว์อยู่ข้างบนแล้ว
+
+      const [yearStr, monthStr] = ym.split('-');
+      const y = parseInt(yearStr);
+      const mIndex = parseInt(monthStr) - 1;
+      const total = monthlyData[ym];
+      
+      // หาจำนวนวันของเดือนนั้น (ใช้วันที่ 0 ของเดือนถัดไป)
+      const daysInMonth = new Date(y, mIndex + 1, 0).getDate();
+      const avgPerDay = total / daysInMonth;
+      
+      // เช็กเป้า 160 บาท/วัน
+      const isPassed = avgPerDay >= 160;
+      const borderColor = isPassed ? 'var(--green)' : 'var(--red)';
+      const textColor = isPassed ? 'var(--green)' : 'var(--red)';
+      const statusText = isPassed ? '✅ ผ่านเป้า' : '❌ ไม่ถึงเป้า';
+
+      summaryHtml += `
+        <div class="history-card" style="border-left-color: ${borderColor}">
           <div class="history-left">
-            <div class="order-title">${escapeHtml(item.title)}</div>
-            <div class="order-who">ได้จาก ${escapeHtml(item.from)}</div>
+            <div class="order-title">เดือน${monthNames[mIndex]} ${y}</div>
+            <div class="order-who">เฉลี่ย ${avgPerDay.toFixed(0)} บาท/วัน (เป้า 160)</div>
           </div>
           <div class="history-right">
-            <div class="history-amount">+${item.amount.toLocaleString('th-TH')} บาท</div>
-            <div class="history-time">${formatTime(item.time)}</div>
+            <div class="history-amount" style="color: ${textColor}">${total.toLocaleString('th-TH')} บาท</div>
+            <div class="history-time">${statusText}</div>
           </div>
         </div>
-      `).join('');
+      `;
+    });
+
+    if (summaryHtml === '') {
+      monthlySummaryList.innerHTML = '<div class="empty-state">ยังไม่มีข้อมูลของเดือนที่แล้ว</div>';
+    } else {
+      monthlySummaryList.innerHTML = summaryHtml;
+    }
   }
 
+  // Action Functions
   async function markOrderDone(orderId) {
     try {
       await db.collection('orders').doc(orderId).update({ status: 'done' });
       showToast('อัปเดตเป็น "ทำเสร็จแล้ว" แล้ว');
-    } catch (err) {
-      console.error(err);
-      showToast('อัปเดตไม่สำเร็จ');
-    }
+    } catch (err) { console.error(err); showToast('อัปเดตไม่สำเร็จ'); }
   }
 
   function openPayModal(orderId) {
     activeOrderId = orderId;
     const order = allOrders.find(o => o.id === orderId);
-    document.getElementById('payContext').textContent =
-      `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`;
+    document.getElementById('payContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`;
     document.getElementById('payAmount').value = '';
     document.getElementById('payModal').classList.add('show');
     setTimeout(() => document.getElementById('payAmount').focus(), 100);
@@ -516,75 +567,44 @@
   }
 
   async function confirmPayment() {
-    const amountStr = document.getElementById('payAmount').value;
-    const amount = parseFloat(amountStr);
+    const amount = parseFloat(document.getElementById('payAmount').value);
     if (!activeOrderId || isNaN(amount) || amount <= 0) {
       showToast('กรอกจำนวนเงินให้ถูกต้อง');
       return;
     }
-
     try {
-      // อัปเดตสถานะออเดอร์ + ราคา + เวลาที่ได้รับเงิน
       await db.collection('orders').doc(activeOrderId).update({
         status: 'paid',
         price: amount,
         paid_at: firebase.firestore.FieldValue.serverTimestamp()
       });
-
-      // บวกเข้ายอดรวม (ใช้ transaction กันยอดชนกัน)
-      const statsRef = db.collection('system_stats').doc('main');
-      await db.runTransaction(async (tx) => {
-        const snap = await tx.get(statsRef);
-        const current = snap.exists ? (snap.data().total_earnings || 0) : 0;
-        tx.set(statsRef, { total_earnings: current + amount }, { merge: true });
-      });
-
       showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`);
       closePayModal();
-    } catch (err) {
-      console.error(err);
-      showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง');
-    }
+    } catch (err) { console.error(err); showToast('บันทึกไม่สำเร็จ'); }
   }
 
-  // ---------------- Add task manually (งานนอกเหนือจาก Classroom) ----------------
   function openAddTaskModal() {
     document.getElementById('newTaskTitle').value = '';
     document.getElementById('newTaskDesc').value = '';
     document.getElementById('addTaskModal').classList.add('show');
     setTimeout(() => document.getElementById('newTaskTitle').focus(), 100);
   }
-
-  function closeAddTaskModal() {
-    document.getElementById('addTaskModal').classList.remove('show');
-  }
+  function closeAddTaskModal() { document.getElementById('addTaskModal').classList.remove('show'); }
 
   async function confirmAddTask() {
     const title = document.getElementById('newTaskTitle').value.trim();
     const desc = document.getElementById('newTaskDesc').value.trim();
-
-    if (!title) {
-      showToast('กรอกชื่องานด้วย');
-      return;
-    }
-
+    if (!title) return showToast('กรอกชื่องานด้วย');
     try {
       await db.collection('assignments').add({
-        title: title,
-        description: desc,
-        due_date: null,
-        created_at: firebase.firestore.FieldValue.serverTimestamp(),
-        source: 'manual'
+        title: title, description: desc, due_date: null,
+        created_at: firebase.firestore.FieldValue.serverTimestamp(), source: 'manual'
       });
       showToast('เพิ่มงานแล้ว');
       closeAddTaskModal();
-    } catch (err) {
-      console.error(err);
-      showToast('เพิ่มงานไม่สำเร็จ ลองใหม่อีกครั้ง');
-    }
+    } catch (err) { console.error(err); showToast('เพิ่มงานไม่สำเร็จ'); }
   }
 
-  // ---------------- Extra income (ได้รับเพิ่มเติม นอกเหนือจากงานในระบบ) ----------------
   function openExtraIncomeModal() {
     document.getElementById('extraFrom').value = '';
     document.getElementById('extraReason').value = '';
@@ -592,75 +612,39 @@
     document.getElementById('extraIncomeModal').classList.add('show');
     setTimeout(() => document.getElementById('extraFrom').focus(), 100);
   }
-
-  function closeExtraIncomeModal() {
-    document.getElementById('extraIncomeModal').classList.remove('show');
-  }
+  function closeExtraIncomeModal() { document.getElementById('extraIncomeModal').classList.remove('show'); }
 
   async function confirmExtraIncome() {
     const from = document.getElementById('extraFrom').value.trim();
     const reason = document.getElementById('extraReason').value.trim();
     const amount = parseFloat(document.getElementById('extraAmount').value);
-
-    if (!from || !reason || isNaN(amount) || amount <= 0) {
-      showToast('กรอกข้อมูลให้ครบและถูกต้อง');
-      return;
-    }
-
+    if (!from || !reason || isNaN(amount) || amount <= 0) return showToast('กรอกข้อมูลให้ครบและถูกต้อง');
     try {
-      // บันทึกประวัติ — เวลาที่บันทึกคือเวลาที่คีย์ข้อมูลตรงนี้ (serverTimestamp)
       await db.collection('income_logs').add({
-        from_name: from,
-        reason: reason,
-        amount: amount,
+        from_name: from, reason: reason, amount: amount,
         logged_at: firebase.firestore.FieldValue.serverTimestamp()
       });
-
-      // บวกเข้ายอดรวม (ใช้ transaction กันยอดชนกัน)
-      const statsRef = db.collection('system_stats').doc('main');
-      await db.runTransaction(async (tx) => {
-        const snap = await tx.get(statsRef);
-        const current = snap.exists ? (snap.data().total_earnings || 0) : 0;
-        tx.set(statsRef, { total_earnings: current + amount }, { merge: true });
-      });
-
       showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`);
       closeExtraIncomeModal();
-    } catch (err) {
-      console.error(err);
-      showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง');
-    }
+    } catch (err) { console.error(err); showToast('บันทึกไม่สำเร็จ'); }
   }
 
   function formatTime(ts) {
     if (!ts || !ts.toDate) return '';
-    const d = ts.toDate();
-    return d.toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    return ts.toDate().toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   }
 
   function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str || '';
-    return div.innerHTML;
+    const div = document.createElement('div'); div.textContent = str || ''; return div.innerHTML;
   }
 
   function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
 
-  document.getElementById('payModal').addEventListener('click', e => {
-    if (e.target.id === 'payModal') closePayModal();
-  });
-
-  document.getElementById('addTaskModal').addEventListener('click', e => {
-    if (e.target.id === 'addTaskModal') closeAddTaskModal();
-  });
-
-  document.getElementById('extraIncomeModal').addEventListener('click', e => {
-    if (e.target.id === 'extraIncomeModal') closeExtraIncomeModal();
+  document.querySelectorAll('.modal-backdrop').forEach(el => {
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
   });
 </script>
 

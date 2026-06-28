@@ -182,6 +182,8 @@
     transition: 0.15s;
   }
   .task-card:hover { border-color: var(--accent); }
+  
+  .task-card.opacity { opacity: 0.6; }
 
   .task-title {
     font-size: 15px;
@@ -253,6 +255,13 @@
   }
   .btn-claim:hover { background: #b8521f; }
   .btn-claim:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+
+  .btn-self {
+    background: var(--paper);
+    color: var(--ink);
+    border: 1.5px solid var(--line);
+  }
+  .btn-self:hover { border-color: var(--muted); }
 
   .btn-done {
     background: var(--green-soft);
@@ -327,12 +336,21 @@
       <div class="who" id="whoLabel" onclick="logout()">เลขที่ — · ออกจากระบบ</div>
     </div>
 
-    <p class="section-label">งานที่ยังไม่เสร็จ</p>
-    <div id="taskList"></div>
+    <!-- หมวดงานที่ต้องทำ -->
+    <div id="pendingSection">
+      <p class="section-label">งานที่ต้องทำ</p>
+      <div id="taskList"></div>
+    </div>
+
+    <!-- หมวดงานที่เสร็จแล้ว (จะโชว์เมื่อมีงาน) -->
+    <div id="completedSection" class="hidden" style="margin-top: 24px;">
+      <p class="section-label">งานที่เสร็จเรียบร้อยแล้ว</p>
+      <div id="completedList"></div>
+    </div>
 
     <div class="empty-state hidden" id="emptyState">
       <div class="ic">📭</div>
-      <div>ตอนนี้ยังไม่มีงานเข้ามาเลย</div>
+      <div>ตอนนี้ยังไม่มีงานเลย สบายใจได้!</div>
     </div>
   </div>
 
@@ -348,7 +366,8 @@
 
     <div class="modal-actions">
       <button class="btn btn-claim" id="claimBtn" onclick="claimTask()">ให้ไทม์ทำงานนี้</button>
-      <button class="btn btn-done hidden" id="doneBtn" onclick="markDone()">ทำแล้ว</button>
+      <button class="btn btn-self" id="selfBtn" onclick="startSelfTask()">งานนี้ขอทำเอง</button>
+      <button class="btn btn-done hidden" id="selfDoneBtn" onclick="finishSelfTask()">ทำเองเสร็จแล้ว (ส่งแล้ว)</button>
       <button class="btn btn-cancel" onclick="closeModal()">ปิด</button>
     </div>
   </div>
@@ -363,7 +382,7 @@
 
   // ---------------- State ----------------
   let selectedNumber = null;
-  let currentUser = null; // { studentId, name }
+  let currentUser = null; 
   let allTasks = [];
   let allOrders = [];
   let activeTaskId = null;
@@ -442,7 +461,6 @@
     listenToOrders();
   }
 
-  // Restore session if already logged in
   (function restoreSession() {
     const saved = sessionStorage.getItem('cr_user');
     if (saved) {
@@ -470,41 +488,62 @@
   // ---------------- Render task list ----------------
   function renderTasks() {
     const list = document.getElementById('taskList');
+    const compList = document.getElementById('completedList');
     const empty = document.getElementById('emptyState');
 
-    // ซ่อนงานที่ "ทำแล้ว" (status = done หรือ paid) ออกจาก dashboard หลัก
-    const visibleTasks = allTasks.filter(t => {
-      const order = allOrders.find(o => o.task_id === t.id);
-      return !order || (order.status !== 'done' && order.status !== 'paid');
-    });
-
-    if (visibleTasks.length === 0) {
-      list.innerHTML = '';
-      empty.classList.remove('hidden');
-      return;
-    }
-    empty.classList.add('hidden');
-
     list.innerHTML = '';
-    visibleTasks.forEach(t => {
-      const order = allOrders.find(o => o.task_id === t.id);
+    compList.innerHTML = '';
+
+    let hasPending = false;
+    let hasCompleted = false;
+
+    allTasks.forEach(t => {
+      // ค้นหาเฉพาะ Order ของเลขที่ที่ล็อกอินอยู่เท่านั้น (แก้ปัญหางานหายรวม)
+      const order = allOrders.find(o => o.task_id === t.id && o.student_id === currentUser.studentId);
+      
       const card = document.createElement('div');
       card.className = 'task-card';
       card.onclick = () => openTask(t.id);
 
       let badge = '';
-      if (order && order.status === 'pending') {
-        badge = order.student_id === currentUser.studentId
-          ? ' · กำลังทำโดยเรา'
-          : ' · มีคนรับแล้ว';
+      let isCompleted = false;
+
+      // จัดการสถานะและป้ายกำกับ
+      if (order) {
+        if (order.status === 'pending') {
+          badge = ' · ⏳ ไทม์กำลังทำ';
+        } else if (order.status === 'done') {
+          badge = ' · 💳 เสร็จแล้ว รอชำระเงิน';
+        } else if (order.status === 'paid') {
+          badge = ' · ✅ ไทม์ทำเสร็จแล้ว';
+          isCompleted = true;
+        } else if (order.status === 'self_working') {
+          badge = ' · ✍️ กำลังทำเอง';
+        } else if (order.status === 'self_done') {
+          badge = ' · ✅ ทำเองเสร็จแล้ว';
+          isCompleted = true;
+        }
       }
+
+      if (isCompleted) card.classList.add('opacity');
 
       card.innerHTML = `
         <div class="task-title">${escapeHtml(t.title)}</div>
         <div class="task-meta">${formatDate(t.due_date)}${badge}</div>
       `;
-      list.appendChild(card);
+
+      if (isCompleted) {
+        compList.appendChild(card);
+        hasCompleted = true;
+      } else {
+        list.appendChild(card);
+        hasPending = true;
+      }
     });
+
+    empty.classList.toggle('hidden', hasPending || hasCompleted);
+    document.getElementById('pendingSection').classList.toggle('hidden', !hasPending);
+    document.getElementById('completedSection').classList.toggle('hidden', !hasCompleted);
   }
 
   // ---------------- Task detail modal ----------------
@@ -512,7 +551,9 @@
     activeTaskId = taskId;
     const t = allTasks.find(x => x.id === taskId);
     if (!t) return;
-    const order = allOrders.find(o => o.task_id === taskId);
+    
+    // ดึงสถานะของเลขที่นั้นๆ
+    const order = allOrders.find(o => o.task_id === taskId && o.student_id === currentUser.studentId);
 
     document.getElementById('modalTitle').textContent = t.title;
     document.getElementById('modalMeta').textContent = formatDate(t.due_date);
@@ -520,26 +561,41 @@
 
     const statusTag = document.getElementById('statusTag');
     const claimBtn = document.getElementById('claimBtn');
-    const doneBtn = document.getElementById('doneBtn');
+    const selfBtn = document.getElementById('selfBtn');
+    const selfDoneBtn = document.getElementById('selfDoneBtn');
 
-    statusTag.classList.add('hidden');
-    claimBtn.classList.remove('hidden');
-    doneBtn.classList.add('hidden');
+    // ซ่อนปุ่มและ Tag สถานะทั้งหมดก่อน
+    statusTag.className = 'status-tag hidden';
+    claimBtn.classList.add('hidden');
+    selfBtn.classList.add('hidden');
+    selfDoneBtn.classList.add('hidden');
     claimBtn.disabled = false;
-    claimBtn.textContent = 'ให้ไทม์ทำงานนี้';
+    selfBtn.disabled = false;
 
-    if (order && order.status === 'pending') {
-      if (order.student_id === currentUser.studentId) {
-        statusTag.textContent = 'เรากำลังทำอยู่';
-        statusTag.className = 'status-tag mine';
-        claimBtn.classList.add('hidden');
-        doneBtn.classList.remove('hidden');
-      } else {
-        statusTag.textContent = 'มีคนรับงานนี้แล้ว';
-        statusTag.className = 'status-tag claimed';
-        claimBtn.disabled = true;
-        claimBtn.textContent = 'มีคนรับไปแล้ว';
-      }
+    if (!order) {
+      // กรณียังไม่ได้เลือกอะไรเลย ให้โชว์ปุ่มทั้งคู่
+      claimBtn.classList.remove('hidden');
+      selfBtn.classList.remove('hidden');
+    } else if (order.status === 'pending') {
+      statusTag.textContent = 'ไทม์กำลังทำงานนี้ให้คุณอยู่ ⏳';
+      statusTag.className = 'status-tag claimed';
+      statusTag.classList.remove('hidden');
+    } else if (order.status === 'done') {
+      statusTag.textContent = 'ไทม์ทำเสร็จแล้ว รอชำระเงิน 💳';
+      statusTag.className = 'status-tag claimed';
+      statusTag.classList.remove('hidden');
+    } else if (order.status === 'paid') {
+      statusTag.textContent = 'คุณชำระเงินและรับงานนี้เรียบร้อย ✅';
+      statusTag.className = 'status-tag mine';
+      statusTag.classList.remove('hidden');
+    } else if (order.status === 'self_working') {
+      statusTag.textContent = 'คุณกำลังทำงานนี้เอง สู้ๆ ✌️';
+      statusTag.className = 'status-tag mine';
+      statusTag.classList.remove('hidden');
+      selfDoneBtn.classList.remove('hidden');
+    } else if (order.status === 'self_done') {
+      statusTag.textContent = 'คุณทำเองเสร็จแล้ว (ส่งแล้ว) ✅';
+      statusTag.className = 'status-tag mine';
       statusTag.classList.remove('hidden');
     }
 
@@ -551,6 +607,7 @@
     activeTaskId = null;
   }
 
+  // แอคชั่น: ฝากไทม์ทำ
   async function claimTask() {
     if (!activeTaskId) return;
     const claimBtn = document.getElementById('claimBtn');
@@ -558,14 +615,6 @@
     claimBtn.textContent = 'กำลังบันทึก...';
 
     try {
-      // เช็คอีกครั้งว่ายังไม่มีใครรับ (กันชนกัน)
-      const existing = await db.collection('orders').where('task_id', '==', activeTaskId).get();
-      if (!existing.empty && existing.docs.some(d => d.data().status === 'pending')) {
-        showToast('มีคนรับงานนี้ไปก่อนแล้ว');
-        closeModal();
-        return;
-      }
-
       await db.collection('orders').add({
         task_id: activeTaskId,
         student_id: currentUser.studentId,
@@ -574,8 +623,7 @@
         price: null,
         created_at: firebase.firestore.FieldValue.serverTimestamp()
       });
-
-      showToast('รับงานนี้แล้ว เดี๋ยวรีบทำให้นะ 🙌');
+      showToast('สั่งงานให้ไทม์ทำเรียบร้อย เดี๋ยวรีบทำให้นะ 🙌');
       closeModal();
     } catch (err) {
       console.error(err);
@@ -585,14 +633,39 @@
     }
   }
 
-  async function markDone() {
+  // แอคชั่น: งานนี้ขอทำเอง
+  async function startSelfTask() {
+    if (!activeTaskId) return;
+    const selfBtn = document.getElementById('selfBtn');
+    selfBtn.disabled = true;
+
+    try {
+      await db.collection('orders').add({
+        task_id: activeTaskId,
+        student_id: currentUser.studentId,
+        student_name: currentUser.name,
+        status: 'self_working',
+        price: 0,
+        created_at: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast('ใช้เว็บนี้จดไว้ได้เลย สู้ๆ นะ! ✍️');
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง');
+      selfBtn.disabled = false;
+    }
+  }
+
+  // แอคชั่น: ทำเองเสร็จแล้วติ๊กออก
+  async function finishSelfTask() {
     if (!activeTaskId) return;
     const order = allOrders.find(o => o.task_id === activeTaskId && o.student_id === currentUser.studentId);
     if (!order) return;
 
     try {
-      await db.collection('orders').doc(order.id).update({ status: 'done' });
-      showToast('ทำเครื่องหมายว่าทำแล้ว ✅');
+      await db.collection('orders').doc(order.id).update({ status: 'self_done' });
+      showToast('เก่งมาก! ทำเครื่องหมายว่าส่งงานแล้ว ✅');
       closeModal();
     } catch (err) {
       console.error(err);

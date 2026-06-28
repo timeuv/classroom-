@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin · ฝากงาน</title>
+<title>ฝากงาน & คอมมูนิตี้</title>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -37,691 +37,988 @@
     --font-main: 'Outfit', system-ui, -apple-system, sans-serif;
   }
 
+  body[data-theme="dark"] {
+    --bg: #09090b; 
+    --ink: #fafafa; 
+    --paper: rgba(24, 24, 27, 0.6); 
+    --paper-solid: #18181b;
+    --line: rgba(255, 255, 255, 0.1);
+    --accent-soft: rgba(99, 102, 241, 0.15);
+    --green-soft: rgba(16, 185, 129, 0.15);
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
   * { 
     box-sizing: border-box; 
     transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
 
-  body { 
-    margin: 0; 
-    font-family: var(--font-main); 
-    background: var(--bg); 
-    color: var(--ink); 
+  body {
+    margin: 0;
+    font-family: var(--font-main);
+    background: var(--bg);
+    color: var(--ink);
     background-image: 
       radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
       radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
     background-attachment: fixed;
     min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
+    padding-bottom: 80px;
   }
 
   .wrap { 
-    max-width: 720px; 
+    max-width: 480px; 
     margin: 0 auto; 
-    padding: 28px 20px 60px; 
+    padding: 20px 18px 20px; 
   }
 
-  /* ---- gate ---- */
-  .gate-card { 
-    background: var(--paper); 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: var(--radius-lg); 
-    padding: 40px 32px; 
-    margin-top: 20vh; 
-    text-align: center; 
-    box-shadow: var(--shadow); 
-    max-width: 360px; 
-    margin-inline: auto; 
-    border: 1px solid var(--line);
-  }
-
-  .gate-card h1 { 
-    font-size: 24px; 
-    font-weight: 700;
-    margin: 0 0 24px; 
-    background: linear-gradient(135deg, #fff, #a1a1aa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .gate-card input { 
-    width: 100%; 
-    padding: 14px 16px; 
-    border-radius: var(--radius-sm); 
-    border: 1px solid var(--line); 
-    background: rgba(0,0,0,0.2); 
-    color: var(--ink); 
-    font-size: 16px; 
-    font-family: var(--font-main);
-    margin-bottom: 16px; 
-    outline: none;
-  }
-  .gate-card input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-soft);
-  }
-
-  .gate-card button { 
-    width: 100%; 
-    padding: 14px; 
-    border-radius: var(--radius-sm); 
-    border: none; 
-    background: var(--accent); 
-    color: white; 
-    font-weight: 600; 
-    font-size: 16px; 
-    font-family: var(--font-main);
-    cursor: pointer; 
-    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-  }
-  .gate-card button:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--accent-soft);
-  }
-  .gate-card button:active {
-    transform: translateY(0);
-  }
-
-  .gate-err { 
-    color: var(--red); 
-    font-size: 14px; 
-    margin-top: 12px; 
-    display: none; 
-    font-weight: 500;
-  }
-  .gate-err.show { display: block; animation: shake 0.4s ease; }
-
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    75% { transform: translateX(4px); }
-  }
-
-  /* ---- header ---- */
   .topbar { 
     display: flex; 
-    justify-content: space-between; 
     align-items: center; 
-    margin-bottom: 32px; 
+    justify-content: space-between; 
+    margin-bottom: 16px; 
   }
 
   .brand { 
-    font-size: 24px; 
+    font-size: 19px; 
     font-weight: 800; 
-    line-height: 1.2; 
-    letter-spacing: -0.5px;
+    letter-spacing: -0.3px; 
   }
 
   .brand span { 
     color: var(--accent); 
   }
 
-  .brand-sub { 
+  .header-actions { 
+    display: flex; 
+    gap: 8px; 
+    align-items: center; 
+  }
+
+  .theme-toggle { 
+    background: var(--paper); 
+    border: 1px solid var(--line); 
+    color: var(--ink); 
+    border-radius: 100px; 
+    padding: 6px 10px; 
+    cursor: pointer; 
+    font-size: 14px; 
+    transition: 0.2s; 
+  }
+
+  .who { 
     font-size: 13px; 
     color: var(--muted); 
-    font-weight: 500; 
-    display: block; 
-    letter-spacing: normal;
-  }
-
-  .stat-pill { 
     background: var(--paper); 
-    backdrop-filter: blur(8px);
     border: 1px solid var(--line); 
     border-radius: 100px; 
-    padding: 8px 16px; 
-    font-size: 14px; 
-    font-weight: 700; 
-    box-shadow: var(--shadow-sm);
+    padding: 6px 12px; 
+    cursor: pointer; 
   }
 
-  .notice-box { 
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(0,0,0,0));
-    border: 1px solid var(--accent-soft);
-    border-left: 4px solid var(--accent); 
-    padding: 16px 20px; 
-    border-radius: var(--radius-md); 
-    margin-bottom: 24px; 
-    font-size: 14px; 
-    line-height: 1.6; 
-    color: var(--ink); 
-    box-shadow: var(--shadow-sm);
+  .vip-badge { 
+    color: #D48806; 
+    background: #FFF4E5; 
+    padding: 2px 6px; 
+    border-radius: 4px; 
+    font-size: 11px; 
+    font-weight: bold; 
+    margin-left: 4px; 
   }
 
-  .notice-box strong { 
-    color: var(--accent); 
-    display: flex; 
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 6px; 
+  .announcement-banner { 
+    background: #14120F; 
+    color: #FFD700; 
+    padding: 12px 14px; 
+    border-radius: 10px; 
+    margin-bottom: 20px; 
     font-size: 15px; 
+    font-weight: 800; 
+    border: 2px solid #D4622A; 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    overflow: hidden; 
+    position: relative; 
+    animation: neonGlow 1s infinite alternate; 
   }
 
-  /* ---- Config Block ---- */
-  .config-box { 
-    background: var(--paper); 
+  @keyframes neonGlow { 
+    0% { box-shadow: 0 0 5px #D4622A, inset 0 0 5px #D4622A; border-color: #D4622A; } 
+    100% { box-shadow: 0 0 20px #FFD700, inset 0 0 10px #FFD700; border-color: #FFD700; } 
+  }
+
+  .siren { 
+    font-size: 18px; 
+    animation: sirenBlink 0.4s infinite alternate; 
+    flex-shrink: 0; 
+    z-index: 2; 
+  }
+
+  @keyframes sirenBlink { 
+    0% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 5px red); } 
+    100% { opacity: 0.6; transform: scale(1.2); } 
+  }
+
+  .marquee-wrapper { 
+    flex: 1; 
+    overflow: hidden; 
+    white-space: nowrap; 
+    position: relative; 
+  }
+
+  .marquee-text { 
+    display: inline-block; 
+    padding-left: 100%; 
+    animation: marquee 12s linear infinite; 
+    text-shadow: 0 0 5px #FFD700; 
+  }
+
+  @keyframes marquee { 
+    0% { transform: translate(0, 0); } 
+    100% { transform: translate(-100%, 0); } 
+  }
+
+  .login-card { 
+    background: var(--paper);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    padding: 20px; 
-    border-radius: var(--radius-lg); 
-    margin-bottom: 16px; 
     border: 1px solid var(--line); 
-    box-shadow: var(--shadow-sm);
+    border-radius: 20px; 
+    padding: 32px 24px; 
+    box-shadow: var(--shadow); 
+    text-align: center; 
   }
 
-  .config-box-title {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: var(--ink);
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  .login-card h1 { 
+    font-size: 20px; 
+    margin: 0 0 6px; 
   }
 
-  .config-row {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 12px;
+  .login-card p.sub { 
+    color: var(--muted); 
+    font-size: 13.5px; 
+    margin: 0 0 26px; 
   }
 
-  .config-box input, .config-box select, .config-box textarea { 
-    flex: 1; 
-    padding: 12px 14px; 
-    border-radius: var(--radius-sm); 
-    border: 1px solid var(--line); 
-    background: rgba(0,0,0,0.2); 
-    color: var(--ink); 
-    font-size: 14px; 
-    font-family: var(--font-main);
-    outline: none;
-  }
-  .config-box input:focus, .config-box select:focus, .config-box textarea:focus {
-    border-color: var(--accent);
-    background: rgba(0,0,0,0.3);
-  }
-
-  .config-box button { 
-    padding: 12px 20px; 
-    border-radius: var(--radius-sm); 
-    border: none; 
-    background: var(--accent); 
-    color: white; 
-    font-weight: 600; 
-    font-family: var(--font-main);
-    cursor: pointer; 
-    white-space: nowrap; 
-    transition: all 0.2s ease;
-  }
-  .config-box button:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--accent-soft);
-  }
-  .config-box button:active {
-    transform: translateY(0);
-  }
-
-  .admin-list-container {
-    margin-top: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .admin-list-item {
-    background: rgba(0,0,0,0.2);
-    padding: 12px 16px;
-    border-radius: var(--radius-sm);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    border-left: 4px solid var(--line);
-    border-top: 1px solid var(--line);
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-  }
-
-  .admin-list-item.red { border-left-color: var(--red); background: linear-gradient(90deg, var(--red-soft), transparent); }
-  .admin-list-item.yellow { border-left-color: var(--yellow); background: linear-gradient(90deg, var(--yellow-soft), transparent); }
-  .admin-list-item.green { border-left-color: var(--green); background: linear-gradient(90deg, var(--green-soft), transparent); }
-
-  .btn-del {
-    background: rgba(244, 63, 94, 0.1);
-    color: var(--red);
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 12px;
-    padding: 6px 10px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-  }
-  .btn-del:hover {
-    background: var(--red);
-    color: white;
-  }
-
-  .schedule-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .schedule-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    background: rgba(0,0,0,0.2);
-    padding: 14px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--line);
-  }
-
-  .schedule-row label {
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--accent);
-  }
-
-  .schedule-row textarea {
-    min-height: 70px;
-    resize: vertical;
-    padding: 10px;
-  }
-
-  .action-row { 
+  .number-grid { 
     display: grid; 
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px; 
-    margin-bottom: 32px; 
-    margin-top: 32px;
+    grid-template-columns: repeat(6, 1fr); 
+    gap: 8px; 
+    margin-bottom: 22px; 
   }
 
-  .btn-secondary { 
-    background: var(--paper);
-    backdrop-filter: blur(8px);
-    color: var(--ink); 
-    border: 1px solid var(--line); 
-    padding: 14px 12px; 
-    border-radius: var(--radius-sm); 
-    font-size: 14px; 
+  .num-btn { 
+    aspect-ratio: 1; 
+    border: 1.5px solid var(--line); 
+    background: var(--bg); 
+    border-radius: 10px; 
+    font-size: 15px; 
     font-weight: 600; 
-    font-family: var(--font-main);
     cursor: pointer; 
-    white-space: nowrap; 
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    color: var(--ink); 
   }
 
-  .btn-secondary:hover { 
+  .num-btn:hover { 
     border-color: var(--accent); 
-    background: rgba(255,255,255,0.05);
-    transform: translateY(-2px);
   }
 
-  .field-label { 
+  .num-btn.selected { 
+    background: var(--accent); 
+    border-color: var(--accent); 
+    color: white; 
+  }
+
+  .pw-row { 
+    display: none; 
+    margin-bottom: 16px; 
+  }
+
+  .pw-row.show { 
+    display: block; 
+  }
+
+  .pw-row label { 
     display: block; 
     text-align: left; 
     font-size: 13px; 
     color: var(--muted); 
-    font-weight: 600; 
-    margin-bottom: 8px; 
-    margin-top: 16px; 
+    margin-bottom: 6px; 
   }
 
-  .field-label:first-of-type { 
-    margin-top: 0; 
-  }
-
-  .modal-box textarea, .modal-box input[type="file"] { 
+  input, textarea { 
     width: 100%; 
     padding: 14px 16px; 
     border-radius: var(--radius-sm); 
     border: 1px solid var(--line); 
     background: rgba(0,0,0,0.2); 
     color: var(--ink); 
-    font-size: 14px; 
-    font-family: var(--font-main); 
-    margin-bottom: 8px; 
+    font-size: 16px; 
+    font-family: var(--font-main);
     outline: none;
   }
-  .modal-box textarea:focus {
+  input:focus, textarea:focus {
     border-color: var(--accent);
-  }
-
-  .modal-box textarea { 
-    resize: vertical; 
-    min-height: 80px; 
-  }
-
-  .section-label { 
-    font-size: 14px; 
-    font-weight: 700; 
-    color: var(--muted); 
-    text-transform: uppercase; 
-    letter-spacing: 1px; 
-    margin: 32px 0 12px 4px; 
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  /* ---- order cards ---- */
-  @keyframes rushBlink {
-    0% { border-color: var(--red); box-shadow: 0 0 0px var(--red-soft); }
-    50% { border-color: #be123c; box-shadow: 0 0 12px var(--red-soft); }
-    100% { border-color: var(--red); box-shadow: 0 0 0px var(--red-soft); }
-  }
-
-  .order-card { 
-    background: var(--paper); 
-    backdrop-filter: blur(12px);
-    border-radius: var(--radius-md); 
-    padding: 20px; 
-    margin-bottom: 12px; 
-    box-shadow: var(--shadow-sm); 
-    border-left: 4px solid var(--line); 
-    border-top: 1px solid var(--line);
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .order-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
-  }
-
-  .order-card.pending { border-left-color: var(--accent); }
-  .order-card.done { border-left-color: var(--green); }
-  .order-card.checking { border-left-color: var(--yellow); }
-  .order-card.rush { border-left-width: 5px; animation: rushBlink 2s infinite; }
-
-  .order-top { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: flex-start; 
-    gap: 12px; 
-  }
-
-  .order-title { 
-    font-size: 16px; 
-    font-weight: 700; 
-    margin: 0 0 6px; 
-    line-height: 1.4;
-  }
-
-  .order-who { 
-    font-size: 14px; 
-    color: var(--muted); 
-  }
-
-  .order-time { 
-    font-size: 12px; 
-    color: var(--muted); 
-    white-space: nowrap; 
+    box-shadow: 0 0 0 3px var(--accent-soft);
     background: rgba(0,0,0,0.3);
-    padding: 4px 8px;
-    border-radius: 6px;
-  }
-
-  .tag { 
-    display: inline-block; 
-    font-size: 12px; 
-    font-weight: 700; 
-    padding: 4px 12px; 
-    border-radius: 100px; 
-    margin-top: 12px; 
-  }
-
-  .tag.pending { background: var(--accent-soft); color: #a5b4fc; }
-  .tag.done { background: var(--green-soft); color: #6ee7b7; }
-  .tag.checking { background: var(--yellow-soft); color: #fcd34d; }
-  .tag.rush { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid var(--red-soft); }
-
-  .vip-badge { 
-    color: #f59e0b; 
-    background: rgba(245, 158, 11, 0.1); 
-    border: 1px solid rgba(245, 158, 11, 0.2);
-    padding: 2px 8px; 
-    border-radius: 6px; 
-    font-size: 11px; 
-    font-weight: 800; 
-    margin-left: 6px; 
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .order-actions { 
-    margin-top: 16px; 
-    display: flex; 
-    gap: 10px; 
   }
 
   .btn { 
-    padding: 10px 16px; 
+    width: 100%; 
+    padding: 14px; 
     border-radius: var(--radius-sm); 
     border: none; 
-    font-size: 14px; 
-    font-weight: 600; 
-    font-family: var(--font-main);
-    cursor: pointer; 
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-  }
-
-  .btn-mark-done { background: var(--green-soft); color: #6ee7b7; border: 1px solid transparent; }
-  .btn-mark-done:hover { background: rgba(16, 185, 129, 0.25); border-color: var(--green); }
-  .btn-pay { background: var(--accent); color: white; }
-  .btn-pay:hover { background: var(--accent-hover); box-shadow: 0 4px 12px var(--accent-soft); transform: translateY(-1px); }
-  .btn-verify { background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--line); }
-  .btn-verify:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
-
-  .empty-state { 
-    text-align: center; 
-    padding: 40px 20px; 
-    color: var(--muted); 
-    font-size: 15px; 
-    background: rgba(0,0,0,0.1);
-    border-radius: var(--radius-md);
-    border: 1px dashed var(--line);
-  }
-
-  /* ---- history & summary ---- */
-  .history-card { 
-    background: var(--paper); 
-    backdrop-filter: blur(8px);
-    border-radius: var(--radius-md); 
-    padding: 16px 20px; 
-    margin-bottom: 10px; 
-    box-shadow: var(--shadow-sm); 
-    border-left: 4px solid var(--green); 
-    border-top: 1px solid var(--line);
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    gap: 16px; 
-    transition: transform 0.2s ease;
-  }
-  .history-card:hover {
-    transform: translateX(4px);
-  }
-
-  .history-left .order-title { font-size: 15px; font-weight: 600; }
-  .history-left .order-who { font-size: 13px; margin-top: 4px; color: var(--muted); }
-  .history-right { text-align: right; white-space: nowrap; }
-  .history-amount { font-size: 18px; font-weight: 800; color: #6ee7b7; }
-  .history-time { font-size: 12px; color: var(--muted); margin-top: 4px; }
-  
-  .btn-view-slip { 
-    margin-top: 10px; 
-    background: transparent; 
-    border: 1px solid var(--accent); 
-    color: #a5b4fc; 
-    padding: 6px 12px; 
-    border-radius: var(--radius-sm); 
-    font-size: 12px; 
-    font-weight: 600; 
-    cursor: pointer; 
-    display: inline-block; 
-    transition: all 0.2s ease;
-  }
-
-  .btn-view-slip:hover { 
-    background: var(--accent-soft); 
-    color: white;
-  }
-
-  .history-hidden { display: none !important; }
-  .btn-toggle-history { 
-    width: 100%; 
-    background: rgba(0,0,0,0.2); 
-    color: var(--ink); 
-    border: 1px dashed var(--line); 
-    padding: 14px; 
-    border-radius: var(--radius-sm); 
-    font-size: 14px; 
-    font-weight: 600; 
-    font-family: var(--font-main);
-    cursor: pointer; 
-    margin-top: 12px; 
-    transition: all 0.2s ease; 
-  }
-
-  .btn-toggle-history:hover { 
-    border-color: var(--accent); 
-    background: rgba(255,255,255,0.05);
-  }
-
-  /* ---- modals ---- */
-  .modal-backdrop { 
-    position: fixed; 
-    inset: 0; 
-    background: rgba(0,0,0,0.7); 
-    backdrop-filter: blur(4px);
-    display: none; 
-    align-items: center; 
-    justify-content: center; 
-    z-index: 50; 
-    padding: 20px;
-  }
-
-  .modal-backdrop.show { 
-    display: flex; 
-    animation: fadeIn 0.2s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .modal-box { 
-    background: var(--paper-solid); 
-    border-radius: var(--radius-lg); 
-    padding: 28px; 
-    width: 100%; 
-    max-width: 400px; 
-    box-shadow: var(--shadow); 
-    border: 1px solid var(--line);
-    transform: scale(0.95);
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  .modal-backdrop.show .modal-box {
-    transform: scale(1);
-  }
-
-  .modal-box h3 { margin: 0 0 8px; font-size: 20px; font-weight: 700; color: var(--ink); }
-  .modal-box p { margin: 0 0 20px; color: var(--muted); font-size: 14px; line-height: 1.5; }
-  
-  .modal-box input[type="number"], 
-  .modal-box input[type="text"] { 
-    width: 100%; 
-    padding: 14px 16px; 
-    border-radius: var(--radius-sm); 
-    border: 1px solid var(--line); 
-    background: rgba(0,0,0,0.2); 
-    color: var(--ink); 
     font-size: 16px; 
-    font-family: var(--font-main);
     font-weight: 600; 
-    margin-bottom: 16px; 
-    outline: none;
+    font-family: var(--font-main);
+    cursor: pointer; 
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   }
-  .modal-box input[type="number"]:focus, 
-  .modal-box input[type="text"]:focus {
-    border-color: var(--accent);
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow-sm);
   }
-
-  .modal-box .row { 
-    display: flex; 
-    gap: 12px; 
-    margin-top: 8px;
+  .btn:active {
+    transform: translateY(0);
   }
 
-  .modal-box .row .btn { 
-    flex: 1; 
-    padding: 14px; 
-  }
-
-  .btn-cancel2 { 
-    background: rgba(255,255,255,0.05); 
-    color: var(--ink); 
-    border: 1px solid var(--line); 
-  }
-  .btn-cancel2:hover {
-    background: rgba(255,255,255,0.1);
-  }
-
-  .btn-confirm { 
+  .btn-primary { 
     background: var(--accent); 
     color: white; 
   }
-  .btn-confirm:hover {
+  .btn-primary:hover {
     background: var(--accent-hover);
+    box-shadow: 0 4px 12px var(--accent-soft);
   }
 
-  .btn-confirm:disabled { 
-    background: rgba(255,255,255,0.1); 
+  .btn-primary:disabled { 
+    background: var(--line); 
     color: var(--muted); 
     cursor: not-allowed; 
   }
 
-  .hidden { display: none !important; }
-  
+  .screen { 
+    display: none; 
+    animation: fadeIn 0.3s; 
+  }
+
+  .screen.active { 
+    display: block; 
+  }
+
+  @keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+  }
+
+  .bottom-nav { 
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    right: 0; 
+    background: var(--paper);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(24, 24, 27, 0.85); 
+    border-top: 1px solid var(--line); 
+    display: flex; 
+    justify-content: space-around; 
+    padding: 10px 0 20px; 
+    z-index: 40; 
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.05); 
+  }
+
+  .nav-item { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 4px; 
+    color: var(--muted); 
+    cursor: pointer; 
+    flex: 1; 
+    font-size: 11px; 
+    font-weight: 700; 
+    transition: 0.2s; 
+  }
+
+  .nav-item .ic { 
+    font-size: 22px; 
+  }
+
+  .nav-item.active { 
+    color: var(--accent); 
+  }
+
+  .nav-item.active .ic { 
+    transform: scale(1.1); 
+  }
+
+  /* 🔥 หลอดพลังคิวงาน */
+  .capacity-box { 
+    background: var(--paper);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line); 
+    border: 2px solid #C0392B; 
+    border-radius: 12px; 
+    padding: 12px 14px; 
+    margin-bottom: 16px; 
+    box-shadow: 0 4px 12px rgba(192,57,43,0.15); 
+    animation: pulseBorder 2s infinite; 
+  }
+
+  .capacity-box.full {
+    border-color: #C0392B;
+    background: #FDECEC;
+    animation: none;
+  }
+
+  @keyframes pulseBorder { 
+    0% { border-color: #C0392B; } 
+    50% { border-color: #E8836A; } 
+    100% { border-color: #C0392B; } 
+  }
+
+  .cap-header { 
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 13px; 
+    font-weight: 800; 
+    color: #C0392B; 
+    margin-bottom: 8px; 
+  }
+
+  .cap-bg { 
+    width: 100%; 
+    height: 8px; 
+    background: #E5E0D6; 
+    border-radius: 100px; 
+    overflow: hidden; 
+  }
+
+  .cap-fill { 
+    height: 100%; 
+    background: #C0392B; 
+    border-radius: 100px; 
+    transition: width 0.3s ease;
+  }
+
+  .cap-text { 
+    font-size: 11px; 
+    color: var(--muted); 
+    margin-top: 6px; 
+    text-align: right; 
+    font-weight: bold; 
+  }
+
+  /* 📍 ฟีเจอร์ใหม่: Live Class Card (เรียนวิชาอะไรอยู่) */
+  .live-class-card {
+    background: var(--paper);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(212, 98, 42, 0.15);
+  }
+
+  .live-pulse {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(212, 98, 42, 0.7);
+    animation: pulseLive 1.5s infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulseLive {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 98, 42, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(212, 98, 42, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 98, 42, 0); }
+  }
+
+  /* 🛡️ ศูนย์บัญชาการเอาตัวรอด */
+  .survival-hub { 
+    background: var(--paper);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line); 
+    border: 1.5px solid var(--line); 
+    border-radius: 14px; 
+    padding: 14px; 
+    margin-bottom: 24px; 
+    box-shadow: var(--shadow); 
+  }
+
+  .survival-title { 
+    font-size: 14.5px; 
+    font-weight: 800; 
+    margin: 0 0 10px 0; 
+    display: flex; 
+    align-items: center; 
+    gap: 6px; 
+    color: var(--ink); 
+  }
+
+  .survival-item { 
+    font-size: 13px; 
+    padding: 8px 10px; 
+    background: var(--bg); 
+    border-radius: 8px; 
+    margin-bottom: 6px; 
+    font-weight: 600; 
+    border-left: 3px solid var(--green); 
+  }
+
+  .survival-item.alert { 
+    border-left-color: #C0392B; 
+    background: #FDECEC; 
+    color: #C0392B; 
+  }
+
+  .survival-item.warn { 
+    border-left-color: #D48806; 
+    background: #FFF4E5; 
+    color: #D48806; 
+  }
+
+  /* 📚 คลังแสงสรุปสอบ */
+  .vault-card { 
+    background: var(--paper);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line); 
+    border: 1.5px solid var(--line); 
+    border-radius: 12px; 
+    padding: 12px; 
+    margin-bottom: 10px; 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+  }
+
+  .vault-icon { 
+    font-size: 28px; 
+    background: var(--bg); 
+    padding: 10px; 
+    border-radius: 10px; 
+  }
+
+  .vault-info { 
+    flex: 1; 
+  }
+
+  .vault-title { 
+    font-size: 14px; 
+    font-weight: 700; 
+    margin-bottom: 2px; 
+  }
+
+  .vault-desc { 
+    font-size: 12px; 
+    color: var(--muted); 
+  }
+
+  .btn-download { 
+    background: var(--green-soft); 
+    color: var(--green); 
+    border: none; 
+    padding: 6px 12px; 
+    border-radius: 8px; 
+    font-size: 12px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .upsell-box { 
+    background: var(--accent-soft); 
+    border: 2px dashed var(--accent); 
+    border-radius: 14px; 
+    padding: 16px; 
+    text-align: center; 
+    margin-top: 20px; 
+  }
+
+  .upsell-box h4 { 
+    margin: 0 0 6px 0; 
+    color: var(--accent); 
+    font-size: 16px; 
+  }
+
+  .upsell-box p { 
+    font-size: 13px; 
+    color: var(--accent); 
+    margin: 0 0 12px 0; 
+    opacity: 0.9; 
+    font-weight: 600; 
+  }
+
+  /* 📅 Modal ตารางเรียน */
+  .day-tab {
+    padding: 8px 14px;
+    background: var(--bg);
+    border: 1.5px solid var(--line);
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .day-tab.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .chat-box { 
+    background: var(--bg); 
+    border: 1.5px solid var(--line); 
+    border-radius: 14px; 
+    height: 60vh; 
+    overflow-y: auto; 
+    padding: 14px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    margin-bottom: 10px; 
+  }
+
+  .chat-bubble { 
+    max-width: 80%; 
+    padding: 10px 14px; 
+    border-radius: 14px; 
+    font-size: 14px; 
+    line-height: 1.4; 
+    background: var(--paper); 
+    color: var(--ink); 
+    align-self: flex-start; 
+    border: 1px solid var(--line); 
+  }
+
+  .chat-bubble.mine { 
+    background: var(--accent-soft); 
+    border-color: var(--accent-soft); 
+    align-self: flex-end; 
+  }
+
+  .chat-sender { 
+    font-size: 11px; 
+    color: var(--muted); 
+    margin-bottom: 4px; 
+    font-weight: bold; 
+  }
+
+  .chat-bubble img { 
+    max-width: 100%; 
+    border-radius: 8px; 
+    margin-top: 4px; 
+  }
+
+  .chat-input-area { 
+    display: flex; 
+    gap: 8px; 
+    position: relative; 
+  }
+
+  .btn-gif { 
+    background: #9b59b6; 
+    color: white; 
+    border: none; 
+    border-radius: 10px; 
+    padding: 0 16px; 
+    font-weight: bold; 
+    cursor: pointer; 
+  }
+
+  .gif-picker { 
+    position: absolute; 
+    bottom: 55px; 
+    left: 0; 
+    right: 0; 
+    background: var(--paper);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line); 
+    border: 1.5px solid var(--line); 
+    border-radius: 14px; 
+    padding: 12px; 
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.15); 
+    z-index: 10; 
+    display: none; 
+    flex-direction: column; 
+    gap: 10px; 
+  }
+
+  .gif-picker.show { 
+    display: flex; 
+    animation: fadeIn 0.2s ease; 
+  }
+
+  .gif-picker-header { 
+    display: flex; 
+    gap: 8px; 
+  }
+
+  .gif-picker-header input { 
+    flex: 1; 
+    padding: 8px 12px; 
+    font-size: 14px; 
+    border-radius: 8px; 
+  }
+
+  .gif-grid { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 6px; 
+    max-height: 180px; 
+    overflow-y: auto; 
+    justify-content: center; 
+  }
+
+  .gif-grid img { 
+    height: 70px; 
+    cursor: pointer; 
+    border-radius: 6px; 
+    transition: 0.15s; 
+  }
+
+  .gif-grid img:hover { 
+    transform: scale(1.05); 
+  }
+
+  .lfg-card { 
+    background: var(--paper);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line); 
+    border: 1.5px solid var(--line); 
+    border-radius: 14px; 
+    padding: 16px; 
+    margin-bottom: 10px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+  }
+
+  .lfg-game { 
+    font-size: 16px; 
+    font-weight: 800; 
+    margin-bottom: 4px; 
+    display: flex; 
+    align-items: center; 
+    gap: 6px; 
+  }
+
+  .lfg-desc { 
+    font-size: 13.5px; 
+    color: var(--muted); 
+    margin-bottom: 8px; 
+  }
+
+  .lfg-host { 
+    font-size: 11.5px; 
+    background: var(--bg); 
+    padding: 4px 8px; 
+    border-radius: 6px; 
+    display: inline-block; 
+    font-weight: bold; 
+  }
+
+  .btn-join { 
+    background: var(--accent); 
+    color: white; 
+    padding: 8px 16px; 
+    border-radius: 8px; 
+    font-size: 13px; 
+    font-weight: bold; 
+    border: none; 
+    cursor: pointer; 
+  }
+
+  .music-card { 
+    background: var(--paper);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line); 
+    border: 1.5px solid var(--line); 
+    border-radius: 14px; 
+    padding: 12px; 
+    margin-bottom: 10px; 
+    display: flex; 
+    gap: 12px; 
+    align-items: center; 
+  }
+
+  .music-thumb { 
+    width: 80px; 
+    height: 60px; 
+    border-radius: 8px; 
+    object-fit: cover; 
+    background: #000; 
+    flex-shrink: 0; 
+  }
+
+  .music-info { 
+    flex: 1; 
+    overflow: hidden; 
+  }
+
+  .music-title { 
+    font-size: 14px; 
+    font-weight: 700; 
+    margin-bottom: 4px; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+  }
+
+  .music-req { 
+    font-size: 11.5px; 
+    color: var(--muted); 
+  }
+
+  .btn-play { 
+    background: #E8836A; 
+    color: white; 
+    width: 36px; 
+    height: 36px; 
+    border-radius: 50%; 
+    border: none; 
+    font-size: 14px; 
+    cursor: pointer; 
+    flex-shrink: 0; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+  }
+
+  #floatingPlayer { 
+    position: fixed; 
+    bottom: 85px; 
+    left: 10px; 
+    right: 10px; 
+    background: #111; 
+    border-radius: 14px; 
+    padding: 10px; 
+    z-index: 45; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5); 
+    border: 2px solid var(--accent); 
+    transition: all 0.3s ease; 
+  }
+
+  #floatingPlayer iframe { 
+    width: 100%; 
+    height: 200px; 
+    border-radius: 8px; 
+    border: none; 
+    transition: all 0.3s ease; 
+  }
+
+  #floatingPlayer.minimized iframe { 
+    height: 0px; 
+    opacity: 0; 
+    margin: 0; 
+  }
+
+  .player-controls { 
+    display: flex; 
+    gap: 8px; 
+    justify-content: space-between; 
+  }
+
+  .player-controls button { 
+    flex: 1; 
+    background: #333; 
+    color: white; 
+    border: none; 
+    border-radius: 8px; 
+    padding: 8px; 
+    font-size: 13px; 
+    font-weight: bold; 
+    cursor: pointer; 
+  }
+
+  .player-controls .btn-minimize { 
+    background: var(--accent); 
+  }
+
+  .section-label { 
+    font-size: 13px; 
+    font-weight: 700; 
+    color: var(--muted); 
+    text-transform: uppercase; 
+    margin: 0 0 10px 2px; 
+  }
+
+  .task-card { 
+    background: var(--paper);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line); 
+    border-radius: 14px; 
+    padding: 16px; 
+    box-shadow: var(--shadow); 
+    margin-bottom: 10px; 
+    cursor: pointer; 
+    border: 1px solid transparent; 
+  }
+
+  .task-title { 
+    font-size: 15px; 
+    font-weight: 700; 
+    margin: 0 0 4px; 
+  }
+
+  .task-meta { 
+    font-size: 12.5px; 
+    color: var(--muted); 
+  }
+
+  .status-tag { 
+    display: inline-block; 
+    font-size: 12px; 
+    font-weight: 700; 
+    padding: 4px 10px; 
+    border-radius: 100px; 
+    margin-bottom: 12px; 
+  }
+
+  .status-tag.claimed { background: var(--accent-soft); color: var(--accent); }
+  .status-tag.mine { background: var(--green-soft); color: var(--green); }
+  .status-tag.alert { background: #FDECEC; color: #C0392B; }
+  .status-tag.wait { background: #FFF4E5; color: #D48806; }
+
+  .modal-backdrop { 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,0.6); 
+    display: none; 
+    align-items: flex-end; 
+    justify-content: center; 
+    z-index: 50; 
+  }
+
+  .modal-backdrop.show { 
+    display: flex; 
+  }
+
+  .modal-sheet { 
+    background: var(--paper);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line);
+    border-bottom: none; 
+    width: 100%; 
+    max-width: 480px; 
+    border-radius: 20px 20px 0 0; 
+    padding: 24px 20px 28px; 
+    animation: slideUp 0.25s ease; 
+  }
+
+  @keyframes slideUp { 
+    from { transform: translateY(30px); opacity: 0; } 
+    to { transform: translateY(0); opacity: 1; } 
+  }
+
+  .modal-title { 
+    font-size: 19px; 
+    font-weight: 800; 
+    margin: 0 0 4px; 
+  }
+
+  .btn-claim { 
+    background: var(--accent); 
+    color: white; 
+    width: 100%; 
+    padding: 14px; 
+    border-radius: 10px; 
+    border: none; 
+    font-size: 15px; 
+    font-weight: 700; 
+    cursor: pointer; 
+  }
+
+  .btn-self { 
+    background: var(--paper); 
+    color: var(--ink); 
+    border: 1.5px solid var(--line); 
+    width: 100%; 
+    padding: 14px; 
+    border-radius: 10px; 
+    font-size: 15px; 
+    font-weight: 700; 
+    cursor: pointer; 
+  }
+
+  .checkbox-rush { 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    font-size: 14px; 
+    font-weight: bold; 
+    color: #C0392B; 
+    background: #FDECEC; 
+    padding: 12px; 
+    border-radius: 10px; 
+    margin-bottom: 16px; 
+    cursor: pointer; 
+    border: 1px solid #C0392B; 
+  }
+
+  .checkbox-rush input { 
+    width: 18px; 
+    height: 18px; 
+    cursor: pointer; 
+  }
+
   .toast { 
     position: fixed; 
-    bottom: 32px; 
+    bottom: 100px; 
     left: 50%; 
     transform: translateX(-50%) translateY(20px); 
-    background: var(--ink); 
-    color: var(--bg); 
-    padding: 14px 24px; 
+    background: #1E1B16; 
+    color: white; 
+    padding: 12px 20px; 
     border-radius: 100px; 
     font-size: 14px; 
     font-weight: 600; 
-    box-shadow: var(--shadow);
     opacity: 0; 
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    transition: 0.25s; 
     pointer-events: none; 
     z-index: 100; 
+    white-space: nowrap; 
   }
 
   .toast.show { 
     opacity: 1; 
     transform: translateX(-50%) translateY(0); 
+  }
+
+  .hidden { 
+    display: none !important; 
+  }
+
+  .error-msg { 
+    color: #C0392B; 
+    font-size: 13px; 
+    margin-top: 10px; 
+    display: none; 
+  }
+
+  .error-msg.show { 
+    display: block; 
   }
 
   /* Custom Scrollbar */
@@ -742,213 +1039,273 @@
 </head>
 <body>
 
-<div id="gateScreen">
-  <div class="gate-card">
-    <h1>🔒 หน้า Admin</h1>
-    <input type="password" id="adminPw" placeholder="รหัสแอดมิน">
-    <button onclick="checkAdminPw()">เข้าสู่ระบบ</button>
-    <div class="gate-err" id="gateErr">รหัสไม่ถูกต้อง</div>
-  </div>
-</div>
+<div class="wrap">
 
-<div class="wrap hidden" id="adminScreen">
+  <div id="announcementBanner" class="announcement-banner hidden">
+    <span class="siren">🚨</span>
+    <div class="marquee-wrapper">
+      <span id="announcementText" class="marquee-text"></span>
+    </div>
+    <span class="siren">🚨</span>
+  </div>
+
   <div class="topbar">
-    <div class="brand">
-      Admin · ฝาก<span>งาน</span>
-      <span class="brand-sub" id="currentMonthLabel">ยอดของเดือนนี้</span>
-    </div>
-    <div class="stat-pill">ได้แล้ว <span id="totalEarn">0</span> / 5,000</div>
-  </div>
-
-  <div class="notice-box">
-    <strong>📢 หมายเหตุความโปร่งใส</strong>
-    ข้อมูลประวัติและยอดเงินทั้งหมดที่เกิดขึ้น <b>ก่อนวันที่ 30 มิถุนายน</b> เป็นเพียงการ "ทดสอบระบบ" เท่านั้น
-  </div>
-
-  <!-- โซนที่ 1: กระดานข่าว -->
-  <div class="config-box">
-    <div class="config-box-title">📢 กระดานข่าวห้อง (ตัววิ่ง)</div>
-    <div class="config-row">
-      <input type="text" id="adminAnnouncement" placeholder="พิมพ์แจ้งเตือนเพื่อนๆ ที่นี่...">
-      <button onclick="saveAnnouncement()">อัปเดต</button>
+    <div class="brand">ฝาก<span>งาน</span></div>
+    <div class="header-actions">
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
     </div>
   </div>
 
-  <!-- โซนที่ 2: ตั้งค่าคิวงาน -->
-  <div class="config-box">
-    <div class="config-box-title">🔥 ตั้งค่าคิวงานไทม์</div>
-    <div class="config-row">
-      <input type="number" id="qCurrent" placeholder="คิวปัจจุบัน" title="คิวปัจจุบัน" style="flex:0.5;">
-      <span style="font-weight:bold;">/</span>
-      <input type="number" id="qMax" placeholder="รับได้สูงสุด" title="รับได้สูงสุด" style="flex:0.5;">
-    </div>
-    <div class="config-row">
-      <input type="text" id="qEta" placeholder="เช่น เสร็จประมาณตี 2 (ปล่อยว่างได้)">
-      <button onclick="saveQueue()">อัปเดตคิว</button>
-    </div>
-  </div>
-
-  <!-- โซนที่ 3: ศูนย์บัญชาการเอาตัวรอด (แจ้งเตือนส่งงาน/สอบ) -->
-  <div class="config-box">
-    <div class="config-box-title">🛡️ ศูนย์บัญชาการ (แจ้งเตือนสอบ/ส่งงาน)</div>
-    <div class="config-row">
-      <input type="text" id="svText" placeholder="เช่น พรุ่งนี้: สอบคณิตศาสตร์" style="flex:2;">
-      <select id="svType" style="flex:1;">
-        <option value="red">🔴 ด่วน/สำคัญ</option>
-        <option value="yellow">🟡 ปานกลาง</option>
-        <option value="green">🟢 ทั่วไป</option>
-      </select>
-      <button onclick="addSurvivalItem()">เพิ่ม</button>
-    </div>
-    <div class="admin-list-container" id="adminSurvivalList"></div>
-  </div>
-
-  <!-- โซนที่ 4: คลังชีทสรุป (ใช้ลิงก์ Google Drive) -->
-  <div class="config-box">
-    <div class="config-box-title">📚 จัดการคลังชีทสรุป (อัปลิงก์)</div>
-    <div class="config-row">
-      <input type="text" id="vaultTitle" placeholder="ชื่อชีท (เช่น สรุปวิทย์)">
-      <input type="text" id="vaultDesc" placeholder="คำอธิบาย (อ่าน 10 นาทีรอด)">
-    </div>
-    <div class="config-row">
-      <input type="url" id="vaultLink" placeholder="ลิงก์ไฟล์ (เช่น ลิงก์ Google Drive)">
-      <button onclick="addVaultItem()">เพิ่มชีท</button>
-    </div>
-    <div class="admin-list-container" id="adminVaultList"></div>
-  </div>
-
-  <!-- โซนที่ 5: ตารางสอนเดินเรียน (พิมพ์ข้อความตามรูปแบบ) -->
-  <div class="config-box">
-    <div class="config-box-title">📅 ตารางสอนเดินเรียน (อัปเดตรายสัปดาห์)</div>
-    <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">
-      พิมพ์รูปแบบ: <b>HH:MM - HH:MM | ชื่อวิชา (ห้อง) ครู</b><br>
-      (ระบบเรียลไทม์หน้าแรก จะอ่านเวลาจากรูปแบบนี้เพื่อบอกว่าตอนนี้เรียนวิชาอะไร)
-    </div>
-    <div class="schedule-grid">
-      <div class="schedule-row">
-        <label>วันจันทร์</label>
-        <textarea id="sch_mon" placeholder="07:30 - 09:30 | 🎨 กราฟิกศิลป์ (ห้อง 421) ครูชาริกา"></textarea>
-      </div>
-      <div class="schedule-row">
-        <label>วันอังคาร</label>
-        <textarea id="sch_tue" placeholder="07:30 - 09:30 | 🇨🇳 จีน (ห้อง 235) ครูธัญชนก"></textarea>
-      </div>
-      <div class="schedule-row">
-        <label>วันพุธ</label>
-        <textarea id="sch_wed" placeholder="09:30 - 11:30 | 🖥️ ระบบคอมฯ (ห้อง 444) ครูภุชงค์"></textarea>
-      </div>
-      <div class="schedule-row">
-        <label>วันพฤหัสบดี</label>
-        <textarea id="sch_thu" placeholder="08:30 - 10:30 | 📱 ดิจิทัลอาชีพ (ห้อง 444) ครูฐิติกัลยาพัชร"></textarea>
-      </div>
-      <div class="schedule-row">
-        <label>วันศุกร์</label>
-        <textarea id="sch_fri" placeholder="09:30 - 11:30 | 🔬 วิทย์อาชีพ (ห้อง 221) ครูสุภาวดี"></textarea>
+  <!-- ================= หน้าล็อกอิน (โชว์ข้อมูลล่อใจ) ================= -->
+  <div id="loginScreen">
+    
+    <!-- 📍 ป้าย Live Class (หน้าล็อกอิน) -->
+    <div id="loginLiveClassCard" class="live-class-card hidden">
+      <div class="live-pulse" id="loginLivePulse"></div>
+      <div>
+        <div style="font-size:11px; color:var(--muted); font-weight:bold; margin-bottom:2px;">📍 ตอนนี้กำลังเรียน...</div>
+        <div id="loginLiveClassText" style="font-size:15px; font-weight:800; color:var(--accent);">กำลังโหลด...</div>
       </div>
     </div>
-    <button onclick="saveSchedule()" style="width:100%; margin-top:10px;">บันทึกตารางเรียน</button>
+
+    <!-- 🔥 หลอดพลังคิวงาน (โชว์คนนอก) -->
+    <div id="loginCapacityContainer" class="capacity-box hidden"></div>
+
+    <!-- 🛡️ ศูนย์บัญชาการเอาตัวรอด (โชว์คนนอก) -->
+    <div id="loginSurvivalContainer" class="survival-hub hidden">
+      <h3 class="survival-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</h3>
+      <div id="loginSurvivalList"></div>
+      <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน</button>
+    </div>
+
+    <!-- 📚 คลังสรุปสอบ (โชว์คนนอก โหลดฟรีไม่ต้องล็อกอิน) -->
+    <div id="loginVaultContainer" class="hidden" style="margin-bottom: 24px;">
+      <p class="section-label">📚 คลังแสงสรุปสอบ (โหลดฟรีไม่ต้องเข้าระบบ)</p>
+      <div id="loginVaultList"></div>
+    </div>
+
+    <div class="login-card">
+      <h1>🔒 เข้าระบบเพื่อนในห้อง</h1>
+      <p class="sub">เพื่อสั่งงาน / แชท / หาตี้ / ขอเพลง</p>
+      <div class="number-grid" id="numberGrid"></div>
+      <div class="pw-row" id="pwRow">
+        <label id="pwLabel">รหัสของเลขที่ ...</label>
+        <input type="password" id="pwInput" placeholder="กรอกรหัส" autocomplete="off">
+      </div>
+      <button class="btn btn-primary" id="loginBtn" disabled>เข้าสู่ระบบ</button>
+      <div class="error-msg" id="loginError">รหัสไม่ถูกต้อง ลองใหม่อีกครั้ง</div>
+    </div>
+
   </div>
 
-  <div class="action-row">
-    <button class="btn btn-secondary" onclick="openAddTaskModal()">➕ เพิ่มงานเอง</button>
-    <button class="btn btn-secondary" onclick="openExtraIncomeModal()">💵 ได้รับเพิ่มเติม</button>
-    <button class="btn btn-secondary" onclick="openManageTasksModal()">🗑️ ลบงาน</button>
+  <!-- ================= หน้าแอปหลัก (ต้องล็อกอิน) ================= -->
+  <div id="appScreen" class="hidden">
+    
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+      <div class="who" id="whoLabel" onclick="logout()">เลขที่ —</div>
+    </div>
+
+    <!-- 📱 TAB 1: งาน (Tasks) -->
+    <div id="tab-tasks" class="screen active">
+      
+      <!-- 📍 ป้าย Live Class (หน้าแอปหลัก) -->
+      <div id="appLiveClassCard" class="live-class-card hidden">
+        <div class="live-pulse" id="appLivePulse"></div>
+        <div>
+          <div style="font-size:11px; color:var(--muted); font-weight:bold; margin-bottom:2px;">📍 ตอนนี้กำลังเรียน...</div>
+          <div id="appLiveClassText" style="font-size:15px; font-weight:800; color:var(--accent);">กำลังโหลด...</div>
+        </div>
+      </div>
+
+      <!-- 🔥 หลอดพลังคิวงาน -->
+      <div id="capacityContainer" class="capacity-box hidden"></div>
+
+      <!-- 🛡️ ศูนย์บัญชาการเอาตัวรอด -->
+      <div id="survivalContainer" class="survival-hub hidden">
+        <h3 class="survival-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</h3>
+        <div id="survivalList"></div>
+        <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน</button>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+        <button style="background: var(--accent-soft); border: none; color: var(--accent); font-weight: bold; font-size: 13.5px; cursor: pointer; padding: 8px 14px; border-radius: 8px; box-shadow: 0 2px 4px rgba(212, 98, 42, 0.1);" onclick="openRequestModal()">➕ สั่งงานนอกระบบ</button>
+      </div>
+      
+      <div id="pendingSection">
+        <p class="section-label">งานที่ต้องทำ</p>
+        <div id="taskList"></div>
+      </div>
+      
+      <div id="completedSection" class="hidden" style="margin-top: 24px;">
+        <p class="section-label">งานที่เสร็จเรียบร้อยแล้ว</p>
+        <div id="completedList"></div>
+      </div>
+      
+      <div class="empty-state hidden" id="emptyState" style="padding-top: 10px;">
+        <div class="ic">📭</div>
+        <div>ตอนนี้ไม่มีงานเลย สบายใจได้!<br><span style="font-size: 12px; color: var(--accent); margin-top: 8px; display: inline-block;">(หรือกดสั่งงานด่วนด้านบนได้เลย)</span></div>
+      </div>
+    </div>
+
+    <!-- 📱 TAB 2: แชทห้อง (Chat) -->
+    <div id="tab-chat" class="screen">
+      <p class="section-label" style="display:flex; justify-content:space-between; align-items:center;">
+        💬 ห้องเม้ามอย
+        <span style="font-size:11px; background:var(--bg); padding:2px 6px; border-radius:4px; text-transform: none;">ลบข้อความไม่ได้นะจ๊ะ</span>
+      </p>
+
+      <div class="chat-box" id="chatBox"></div>
+
+      <div class="chat-input-area">
+        <div class="gif-picker" id="gifPicker">
+          <div class="gif-picker-header">
+            <input type="text" id="gifSearchInput" placeholder="ค้นหา GIF ที่นี่..." onkeypress="if(event.key==='Enter') searchGifUI()">
+            <button class="btn btn-primary" style="width:auto; padding: 0 10px;" onclick="searchGifUI()">ค้นหา</button>
+            <button class="btn btn-self" style="width:auto; padding: 0 10px; border:none; background: transparent; color: var(--muted); font-size: 18px;" onclick="closeGifPicker()">✖️</button>
+          </div>
+          <div class="gif-grid" id="gifGrid"></div>
+        </div>
+
+        <input type="text" id="chatInput" placeholder="พิมพ์ข้อความ..." onkeypress="if(event.key==='Enter') sendChat()">
+        <button class="btn-gif" onclick="openGifPicker()">GIF</button>
+        <button class="btn btn-primary" style="width: auto; padding: 0 16px;" onclick="sendChat()">ส่ง</button>
+      </div>
+    </div>
+
+    <!-- 📱 TAB 3: ลานหาตี้ (LFG) -->
+    <div id="tab-lfg" class="screen">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <p class="section-label" style="margin: 0;">🎮 บอร์ดหาตี้</p>
+        <button style="background: var(--green-soft); color: var(--green); border: none; font-weight: bold; padding: 8px 14px; border-radius: 8px; cursor: pointer;" onclick="openPartyModal()">+ ตั้งตี้ใหม่</button>
+      </div>
+      <div id="partyList"></div>
+    </div>
+
+    <!-- 📱 TAB 4: บอร์ดดีเจ (Music) -->
+    <div id="tab-music" class="screen">
+      <p class="section-label">🎧 ขอเพลง / ดีเจห้อง</p>
+      <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <input type="text" id="ytInput" placeholder="วางลิงก์ YouTube ที่นี่...">
+        <button class="btn btn-primary" style="width: auto; padding: 0 16px;" onclick="requestSong()">ขอเพลง</button>
+      </div>
+      <div id="musicList"></div>
+    </div>
+
+    <!-- 📱 TAB 5: คลังสรุป (Vault) -->
+    <div id="tab-vault" class="screen">
+      <p class="section-label">📚 คลังแสงสรุปสอบ (แจกฟรี)</p>
+      
+      <div id="vaultListContainer"></div>
+
+      <div class="upsell-box">
+        <h4>ขี้เกียจอ่านเองใช่ป่าว? 🥱</h4>
+        <p>จ้างไทม์ทำสรุปเฉพาะจุดที่เรียนไม่เข้าใจ<br>หรือจ้างพิมพ์รายงานด่วน กดตรงนี้เลย!</p>
+        <button class="btn-claim" onclick="openRequestModal()">⚡ จ้างทำสรุป / รายงานพิเศษ</button>
+      </div>
+    </div>
+
+    <!-- Floating YouTube Player -->
+    <div id="floatingPlayer" class="hidden">
+      <div style="color:white; font-size:12px; font-weight:bold; margin-bottom: 6px; padding-left: 4px;">🎶 กำลังเล่นเพลง...</div>
+      <iframe id="ytIframe" src="" allow="autoplay"></iframe>
+      <div class="player-controls">
+        <button class="btn-minimize" id="btnMinimize" onclick="togglePlayer()">ย่อหน้าจอ 🔽</button>
+        <button class="close-btn" onclick="closePlayer()">ปิดเพลง ❌</button>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <div class="nav-item active" onclick="switchTab('tab-tasks', this)">
+        <span class="ic">📝</span>งาน
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-vault', this)">
+        <span class="ic">📚</span>คลังชีท
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-chat', this)">
+        <span class="ic">💬</span>แชท
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-lfg', this)">
+        <span class="ic">🎮</span>หาตี้
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-music', this)">
+        <span class="ic">🎧</span>เพลง
+      </div>
+    </nav>
   </div>
-
-  <p class="section-label">⏳ รอดำเนินการ / กำลังทำ</p>
-  <div id="pendingList"></div>
-  <div class="empty-state hidden" id="pendingEmpty">ยังไม่มีใครรับงานตอนนี้</div>
-
-  <p class="section-label">✅ ทำเสร็จแล้ว รอส่ง/รอรับเงิน/ตรวจสอบ</p>
-  <div id="doneList"></div>
-  <div class="empty-state hidden" id="doneEmpty">ไม่มีงานที่ทำเสร็จรออยู่</div>
-
-  <p class="section-label">📊 สรุปยอดรายเดือน (ย้อนหลัง)</p>
-  <div id="monthlySummaryList"></div>
-
-  <p class="section-label">💰 ประวัติการได้เงินทั้งหมด</p>
-  <div id="historyList"></div>
-  <button id="toggleHistoryBtn" class="btn-toggle-history hidden" onclick="toggleHistory()">ดูประวัติทั้งหมด</button>
-  <div class="empty-state hidden" id="historyEmpty">ยังไม่มีประวัติการรับเงิน</div>
 </div>
 
 <!-- ============ MODALS ============ -->
-<div class="modal-backdrop" id="addTaskModal">
-  <div class="modal-box">
-    <h3>เพิ่มงานเอง</h3>
-    <p>สำหรับงานที่ไม่ได้มาจาก Google Classroom</p>
-    <label class="field-label">ชื่องาน</label>
-    <input type="text" id="newTaskTitle" placeholder="เช่น ช่วยพิมพ์รายงานวิชา...">
-    <label class="field-label">รายละเอียด (ใส่หรือไม่ใส่ก็ได้)</label>
-    <textarea id="newTaskDesc" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
-    <div class="row">
-      <button class="btn btn-cancel2" onclick="closeAddTaskModal()">ยกเลิก</button>
-      <button class="btn btn-confirm" onclick="confirmAddTask()">เพิ่มงาน</button>
+
+<!-- Modal ตารางสอนเดินเรียน -->
+<div class="modal-backdrop" id="scheduleModal">
+  <div class="modal-sheet">
+    <h2 class="modal-title">📅 ตารางสอน / ห้องเรียน</h2>
+    <div style="display:flex; gap:6px; margin-bottom:12px; overflow-x:auto; padding-bottom:4px;">
+      <button class="day-tab" id="tab_mon" onclick="showSchedule('mon')">จันทร์</button>
+      <button class="day-tab" id="tab_tue" onclick="showSchedule('tue')">อังคาร</button>
+      <button class="day-tab" id="tab_wed" onclick="showSchedule('wed')">พุธ</button>
+      <button class="day-tab" id="tab_thu" onclick="showSchedule('thu')">พฤหัส</button>
+      <button class="day-tab" id="tab_fri" onclick="showSchedule('fri')">ศุกร์</button>
+    </div>
+    <div id="scheduleContent" style="white-space: pre-wrap; font-size:14px; background:var(--bg); padding:14px; border-radius:10px; min-height:120px; border:1px solid var(--line);">
+      ไม่มีข้อมูลตารางเรียน
+    </div>
+    <button class="btn btn-self" onclick="closeScheduleModal()" style="margin-top:16px;">ปิดหน้าต่าง</button>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal-sheet">
+    <span class="status-tag hidden" id="statusTag"></span>
+    <h2 class="modal-title" id="modalTitle" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;"></h2>
+    <div class="modal-meta" id="modalMeta"></div>
+    <div class="modal-desc" id="modalDesc"></div>
+
+    <div id="paymentSection" class="hidden" style="margin-top: 16px; padding-top: 16px; border-top: 1.5px dashed var(--line); margin-bottom: 16px;">
+      <p style="font-size: 14px; font-weight: 700; margin: 0 0 10px; color: var(--accent);">งานเสร็จแล้ว! เลือกวิธีชำระเงินได้เลย 👇</p>
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+         <button class="btn" style="flex: 1; background: #003D6B; color: white;" onclick="showPromptPay()">📲 โอนเงิน (QR)</button>
+         <button class="btn btn-self" style="flex: 1;" onclick="showCash()">💵 จ่ายเงินสด</button>
+      </div>
+      <div id="payDetails" class="hidden" style="background: var(--bg); padding: 16px; border-radius: 10px; font-size: 14px; text-align: center; border: 1.5px solid var(--line);"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-claim" id="claimBtn" onclick="claimTask()">ให้ไทม์ทำงานนี้</button>
+      <button class="btn btn-self" id="selfBtn" onclick="startSelfTask()">งานนี้ขอทำเอง</button>
+      <button class="btn btn-done hidden" id="selfDoneBtn" onclick="finishSelfTask()">ทำเองเสร็จแล้ว (ส่งแล้ว)</button>
+      <button class="btn btn-cancel" onclick="closeModal()">ปิด</button>
     </div>
   </div>
 </div>
 
-<div class="modal-backdrop" id="extraIncomeModal">
-  <div class="modal-box">
-    <h3>ได้รับเพิ่มเติม</h3>
-    <p>สำหรับเงินที่ได้นอกเหนือจากงานในระบบ</p>
-    <label class="field-label">ได้จากใคร</label>
-    <input type="text" id="extraFrom" placeholder="เช่น เลขที่ 5 หรือ ชื่อเพื่อน">
-    <label class="field-label">ได้เพราะอะไร</label>
-    <input type="text" id="extraReason" placeholder="เช่น ช่วยทำสไลด์, ค่าปริ้นงาน">
-    <label class="field-label">จำนวนเงิน (บาท)</label>
-    <input type="number" id="extraAmount" placeholder="0" inputmode="numeric">
-    <div class="row">
-      <button class="btn btn-cancel2" onclick="closeExtraIncomeModal()">ยกเลิก</button>
-      <button class="btn btn-confirm" onclick="confirmExtraIncome()">บันทึก</button>
+<div class="modal-backdrop" id="reqModalBackdrop">
+  <div class="modal-sheet">
+    <h2 class="modal-title" style="margin-bottom: 8px;">➕ สั่งงานนอกระบบ</h2>
+    <p style="font-size: 14px; color: var(--muted); margin: 0 0 16px;">มีงานอะไรที่อยากให้ไทม์ช่วย พิมพ์บอกตรงนี้ได้เลย</p>
+    <input type="text" id="reqTitle" placeholder="ชื่องาน (เช่น ช่วยสรุปวิชาสังคมให้หน่อย)" style="margin-bottom: 10px;">
+    <textarea id="reqDesc" placeholder="รายละเอียดแบบจัดเต็ม..." style="margin-bottom: 16px; min-height: 80px;"></textarea>
+    <label class="checkbox-rush">
+      <input type="checkbox" id="reqRush">
+      🔥 ขอคิวด่วนไฟลุก! (บวกราคาเพิ่มนิดหน่อย)
+    </label>
+    <div class="modal-actions" style="flex-direction: row; gap: 8px;">
+      <button class="btn btn-self" style="flex: 1; border: 1.5px solid var(--line);" onclick="closeRequestModal()">ยกเลิก</button>
+      <button class="btn btn-claim" style="flex: 1;" id="submitReqBtn" onclick="submitRequestTask()">ส่งให้ไทม์</button>
     </div>
   </div>
 </div>
 
-<div class="modal-backdrop" id="payModal">
-  <div class="modal-box">
-    <h3>บันทึกยอดเงิน (จ่ายสด)</h3>
-    <p id="payContext"></p>
-    <input type="number" id="payAmount" placeholder="จำนวนเงิน (บาท)" inputmode="numeric">
-    
-    <label class="field-label" style="margin-top: 10px;">📷 ถ่ายรูปเงินเป็นหลักฐาน (เปิดกล้องได้)</label>
-    <input type="file" id="cashImageInput" accept="image/*" capture="environment" style="margin-bottom: 16px;">
-
-    <div class="row">
-      <button class="btn btn-cancel2" onclick="closePayModal()">ยกเลิก</button>
-      <button class="btn btn-confirm" id="btnConfirmCash" onclick="confirmPayment()">ยืนยันรับเงินแล้ว</button>
+<div class="modal-backdrop" id="partyModalBackdrop">
+  <div class="modal-sheet">
+    <h2 class="modal-title" style="margin-bottom: 8px;">🎮 ตั้งตี้หาคนเล่นเกม</h2>
+    <input type="text" id="partyGame" placeholder="ชื่อเกม (เช่น RoV, Valorant)" style="margin-bottom: 10px;">
+    <input type="text" id="partyDesc" placeholder="รายละเอียด (เช่น ขาด 1 โรมมิ่ง, แบกแรงค์หน่อย)" style="margin-bottom: 16px;">
+    <div class="modal-actions" style="flex-direction: row; gap: 8px;">
+      <button class="btn btn-self" style="flex: 1;" onclick="closePartyModal()">ยกเลิก</button>
+      <button class="btn btn-claim" style="flex: 1; background: var(--green);" onclick="createParty()">ตั้งตี้เลย!</button>
     </div>
-  </div>
-</div>
-
-<div class="modal-backdrop" id="verifySlipModal">
-  <div class="modal-box">
-    <h3>ตรวจสอบสลิปการโอนเงิน</h3>
-    <p id="verifyContext"></p>
-    <img id="slipImagePreview" src="" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-bottom: 12px; border: 1.5px solid var(--line);">
-    <input type="number" id="verifyAmount" placeholder="ยอดเงินตามสลิป (บาท)" inputmode="numeric">
-    <div class="row">
-      <button class="btn btn-cancel2" onclick="closeVerifyModal()">ปิด</button>
-      <button class="btn btn-confirm" onclick="confirmVerifyPayment()">ยืนยันยอดนี้</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-backdrop" id="viewHistorySlipModal">
-  <div class="modal-box">
-    <h3>หลักฐานการชำระเงิน</h3>
-    <p id="historySlipContext"></p>
-    <img id="historySlipImage" src="" style="width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; margin-bottom: 12px; border: 1.5px solid var(--line); background: #000;">
-    <button class="btn btn-cancel2" style="width: 100%; border-color: var(--line);" onclick="closeHistorySlipModal()">ปิดหน้าต่าง</button>
-  </div>
-</div>
-
-<div class="modal-backdrop" id="manageTasksModal">
-  <div class="modal-box" style="max-height: 80vh; overflow-y: auto;">
-    <h3>จัดการ/ลบงาน</h3>
-    <p>ลบงานทดลอง หรือ งานที่สร้างผิดออกจากระบบ</p>
-    <div id="manageTaskList" style="margin-bottom: 16px;"></div>
-    <button class="btn btn-cancel2" style="width: 100%;" onclick="closeManageTasksModal()">ปิดหน้าต่าง</button>
   </div>
 </div>
 
@@ -958,306 +1315,1093 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // ⚠️ เปลี่ยนรหัสแอดมินตรงนี้
-  const ADMIN_PASSWORD = "changeme123";
+  const DISCORD_WEBHOOK_URL = "";
+  const MY_PROMPTPAY = "0963413738";
+  const MY_NAME = "ณัฐพงศ์ เภกะนันทน์";
+  const KLIPY_API_KEY = "6hbhgjA0xqjeLcQj2x8NKebL8PynvkAiiBboTCBwvmH6uybR9tU2QfL0Z685mYQV";
 
-  let allOrders = []; 
-  let allTasks = []; 
-  let allIncomeLogs = []; 
-  let loyaltyData = {};
-  let activeOrderId = null; 
-  let isHistoryExpanded = false;
+  let selectedNumber = null;
+  let currentUser = null;
+  let allTasks = [];
+  let allOrders = [];
+  let activeTaskId = null;
+  let isVip = false;
   
-  // ตัวแปรเก็บข้อมูลศูนย์บัญชาการและคลังชีท
-  let currentSurvivalItems = [];
-  let currentVaultItems = [];
+  // ตัวแปรเก็บตารางสอน
+  let currentScheduleData = {};
 
-  const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️';
+  }
 
-  function checkAdminPw() {
-    const val = document.getElementById('adminPw').value;
-    document.getElementById('gateErr').classList.remove('show');
-    
-    if (val === ADMIN_PASSWORD) { 
-      sessionStorage.setItem('cr_admin_ok', '1'); 
-      enterAdmin(); 
-    } else { 
-      document.getElementById('gateErr').textContent = 'รหัสไม่ถูกต้อง';
-      document.getElementById('gateErr').classList.add('show'); 
+  function toggleTheme() {
+    if (document.body.getAttribute('data-theme') === 'dark') {
+      document.body.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      document.getElementById('themeBtn').textContent = '🌙';
+    } else {
+      document.body.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      document.getElementById('themeBtn').textContent = '☀️';
     }
   }
 
-  document.getElementById('adminPw').addEventListener('keydown', e => { 
-    if (e.key === 'Enter') checkAdminPw(); 
-  });
-  
-  document.getElementById('adminPw').addEventListener('input', () => {
-    document.getElementById('gateErr').classList.remove('show');
+  function switchTab(tabId, el) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    
+    if (tabId === 'tab-chat') {
+      const box = document.getElementById('chatBox');
+      box.scrollTop = box.scrollHeight;
+    }
+  }
+
+  async function sendDiscordNotify(message) {
+    if (!DISCORD_WEBHOOK_URL) return;
+    try {
+      await fetch(DISCORD_WEBHOOK_URL, { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({ content: message }) 
+      });
+    } catch (e) { 
+      console.error("Discord Notify Error:", e); 
+    }
+  }
+
+  const numberGrid = document.getElementById('numberGrid');
+  for (let i = 1; i <= 30; i++) {
+    const b = document.createElement('button');
+    b.className = 'num-btn';
+    b.textContent = i;
+    b.onclick = () => selectNumber(i, b);
+    numberGrid.appendChild(b);
+  }
+
+  function selectNumber(n, btnEl) {
+    selectedNumber = n;
+    document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('selected'));
+    btnEl.classList.add('selected');
+    document.getElementById('pwRow').classList.add('show');
+    document.getElementById('pwLabel').textContent = `รหัสของเลขที่ ${n}`;
+    document.getElementById('loginBtn').disabled = false;
+    document.getElementById('loginError').classList.remove('show');
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+
+  // ลบข้อความแจ้งเตือนทันทีที่เริ่มพิมพ์
+  document.getElementById('pwInput').addEventListener('input', () => {
+    document.getElementById('loginError').classList.remove('show');
   });
 
-  (function restoreAdmin() { 
-    if (sessionStorage.getItem('cr_admin_ok') === '1') {
-      enterAdmin(); 
+  document.getElementById('loginBtn').onclick = doLogin;
+  document.getElementById('pwInput').addEventListener('keydown', e => { 
+    if (e.key === 'Enter') doLogin(); 
+  });
+
+  async function doLogin() {
+    const pw = document.getElementById('pwInput').value.trim();
+    if (!selectedNumber || !pw) return;
+
+    const loginError = document.getElementById('loginError');
+    loginError.classList.remove('show');
+
+    const loginBtn = document.getElementById('loginBtn');
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'กำลังตรวจสอบ...';
+    
+    try {
+      const docRef = db.collection('users').doc(String(selectedNumber));
+      const docSnap = await docRef.get();
+
+      if (!docSnap.exists) {
+        loginError.textContent = 'ไม่มีข้อมูลเลขที่นี้ในระบบ';
+        loginError.classList.add('show');
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'เข้าสู่ระบบ';
+        return;
+      }
+
+      if (docSnap.data().password !== pw) {
+        loginError.textContent = 'รหัสไม่ถูกต้อง ลองใหม่อีกครั้ง';
+        loginError.classList.add('show');
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'เข้าสู่ระบบ';
+        return;
+      }
+
+      currentUser = { studentId: String(selectedNumber), name: docSnap.data().name || `เลขที่ ${selectedNumber}` };
+      sessionStorage.setItem('cr_user', JSON.stringify(currentUser));
+      enterDashboard();
+    } catch (err) {
+      loginError.textContent = 'เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง';
+      loginError.classList.add('show');
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'เข้าสู่ระบบ';
+    }
+  }
+
+  function logout() { 
+    sessionStorage.removeItem('cr_user'); 
+    location.reload(); 
+  }
+
+  function enterDashboard() {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('appScreen').classList.remove('hidden');
+    document.getElementById('whoLabel').textContent = `${currentUser.name} · ออกจากระบบ`;
+    listenToTasks();
+    listenToOrders();
+    listenToChats();
+    listenToParties();
+    listenToMusic();
+    updateLiveClassIndicator(); // โชว์ระบบ Live ทันทีที่เข้าหน้าจอหลัก
+  }
+
+  // โหลด Settings ให้โชว์หน้าแรกทันที (ไม่ต้องล็อกอินก็เห็นคิวงาน ตารางสอน และคลังชีท)
+  listenToSettings();
+
+  (function restoreSession() {
+    const saved = sessionStorage.getItem('cr_user');
+    if (saved) { 
+      currentUser = JSON.parse(saved); 
+      enterDashboard(); 
     }
   })();
 
-  function enterAdmin() {
-    document.getElementById('gateScreen').classList.add('hidden');
-    document.getElementById('adminScreen').classList.remove('hidden');
-    listenToSettings(); 
-    listenToTasks(); 
-    listenToOrders(); 
-    listenToIncomeLogs();
-  }
-
-  // ดึงการตั้งค่าระบบทั้งหมด
+  // --- ดึงข้อมูลจาก Firebase (กระดานข่าว, คิว, แจ้งเตือน, คลังชีท, ตารางสอน) ---
   function listenToSettings() {
     db.collection('system_settings').doc('main').onSnapshot(snap => {
-      if(snap.exists && snap.data()) {
+      if (snap.exists && snap.data()) {
         const d = snap.data();
-        
-        // 1. กระดานข่าว
-        document.getElementById('adminAnnouncement').value = d.announcement || '';
-        
-        // 2. คิวงาน
-        document.getElementById('qCurrent').value = d.queue_current !== undefined ? d.queue_current : 0;
-        document.getElementById('qMax').value = d.queue_max !== undefined ? d.queue_max : 5;
-        document.getElementById('qEta').value = d.queue_eta || '';
-        
-        // 3. ศูนย์บัญชาการ
-        currentSurvivalItems = d.survival_items || [];
-        renderAdminSurvivalList();
 
-        // 4. คลังชีท
-        currentVaultItems = d.vault_items || [];
-        renderAdminVaultList();
+        // 1. กระดานข่าวห้อง
+        if (d.announcement) {
+          document.getElementById('announcementText').textContent = d.announcement;
+          document.getElementById('announcementBanner').classList.remove('hidden');
+        } else {
+          document.getElementById('announcementBanner').classList.add('hidden');
+        }
 
-        // 5. ตารางสอน
-        const sch = d.schedule || {};
-        document.getElementById('sch_mon').value = sch.mon || '';
-        document.getElementById('sch_tue').value = sch.tue || '';
-        document.getElementById('sch_wed').value = sch.wed || '';
-        document.getElementById('sch_thu').value = sch.thu || '';
-        document.getElementById('sch_fri').value = sch.fri || '';
+        // 2. หลอดคิวงาน
+        if (d.queue_max !== undefined && d.queue_max > 0) {
+          const qCurr = d.queue_current || 0;
+          const qMax = d.queue_max || 5;
+          const qEta = d.queue_eta || '';
+          
+          let pct = (qCurr / qMax) * 100;
+          if (pct > 100) pct = 100;
+
+          let capTitle = `🔥 คิวงานไทม์คืนนี้`;
+          let capClass = 'capacity-box';
+          
+          if (qCurr >= qMax) {
+            capTitle = `🛑 คิวเต็มแล้ว! ปิดรับงานชั่วคราว`;
+            capClass += ' full'; 
+          } else if (qCurr >= qMax - 1) {
+            capTitle = `🔥 คิวงานไทม์ (ใกล้เต็ม!)`;
+          }
+
+          let html = `
+            <div class="cap-header">
+              <span>${capTitle}</span>
+              <span>${qCurr} / ${qMax} คิว</span>
+            </div>
+            <div class="cap-bg"><div class="cap-fill" style="width: ${pct}%;"></div></div>
+          `;
+          if (qEta) html += `<div class="cap-text">⏳ คาดว่าจะเสร็จ: ${escapeHtml(qEta)}</div>`;
+          
+          // โชว์ทั้งหน้าล็อกอินและหน้าแอป
+          ['loginCapacityContainer', 'capacityContainer'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) { el.className = capClass; el.innerHTML = html; el.classList.remove('hidden'); }
+          });
+        } else {
+          if(document.getElementById('loginCapacityContainer')) document.getElementById('loginCapacityContainer').classList.add('hidden');
+          if(document.getElementById('capacityContainer')) document.getElementById('capacityContainer').classList.add('hidden');
+        }
+
+        // 3. ศูนย์บัญชาการเอาตัวรอด
+        const sItems = d.survival_items || [];
+        if (sItems.length > 0) {
+          let sHtml = sItems.map(item => {
+            let cls = 'survival-item'; let emoji = '🟢';
+            if (item.type === 'red') { cls += ' alert'; emoji = '🔴'; }
+            if (item.type === 'yellow') { cls += ' warn'; emoji = '🟡'; }
+            return `<div class="${cls}">${emoji} ${escapeHtml(item.text)}</div>`;
+          }).join('');
+          
+          ['loginSurvivalList', 'survivalList'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.innerHTML = sHtml;
+          });
+          document.getElementById('loginSurvivalContainer').classList.remove('hidden');
+          document.getElementById('survivalContainer').classList.remove('hidden');
+        } else {
+          document.getElementById('loginSurvivalContainer').classList.add('hidden');
+          document.getElementById('survivalContainer').classList.add('hidden');
+        }
+
+        // 4. คลังชีทสรุป
+        const vItems = d.vault_items || [];
+        if (vItems.length > 0) {
+          let vHtml = vItems.map(item => `
+            <div class="vault-card">
+              <div class="vault-icon">📚</div>
+              <div class="vault-info">
+                <div class="vault-title">${escapeHtml(item.title)}</div>
+                <div class="vault-desc">${escapeHtml(item.desc)}</div>
+              </div>
+              <a href="${item.link}" target="_blank" class="btn-download">โหลด/เปิดอ่าน</a>
+            </div>
+          `).join('');
+          
+          document.getElementById('loginVaultList').innerHTML = vHtml;
+          document.getElementById('vaultListContainer').innerHTML = vHtml;
+          document.getElementById('loginVaultContainer').classList.remove('hidden');
+        } else {
+          document.getElementById('loginVaultList').innerHTML = '<div class="empty-state">แอดมินยังไม่ได้ลงชีทเลย รอแป๊บนะ!</div>';
+          document.getElementById('vaultListContainer').innerHTML = '<div class="empty-state">แอดมินยังไม่ได้ลงชีทเลย รอแป๊บนะ!</div>';
+          document.getElementById('loginVaultContainer').classList.add('hidden');
+        }
+
+        // 5. ตารางสอน (โหลดเก็บไว้และแสดงระบบ Live ทันที)
+        currentScheduleData = d.schedule || {};
+        updateLiveClassIndicator();
       }
     });
   }
 
-  async function saveAnnouncement() {
-    const txt = document.getElementById('adminAnnouncement').value.trim();
-    try {
-      await db.collection('system_settings').doc('main').set({ announcement: txt }, { merge: true });
-      showToast('อัปเดตกระดานข่าวให้เพื่อนๆ แล้ว! 📢');
-    } catch (e) { showToast('อัปเดตไม่สำเร็จ'); }
-  }
+  // ==========================================
+  // 📍 ระบบเช็กคาบเรียนแบบ Real-time
+  // ==========================================
+  function updateLiveClassIndicator() {
+    // อัปเดตทั้งการ์ดหน้าล็อกอิน และหน้าหลัก
+    const loginCard = document.getElementById('loginLiveClassCard');
+    const loginText = document.getElementById('loginLiveClassText');
+    const loginPulse = document.getElementById('loginLivePulse');
 
-  async function saveQueue() {
-    const curr = parseInt(document.getElementById('qCurrent').value) || 0;
-    const max = parseInt(document.getElementById('qMax').value) || 5;
-    const eta = document.getElementById('qEta').value.trim();
-    try {
-      await db.collection('system_settings').doc('main').set({ 
-        queue_current: curr, queue_max: max, queue_eta: eta 
-      }, { merge: true });
-      showToast('อัปเดตคิวงานเรียบร้อย! 🔥');
-    } catch (e) { showToast('อัปเดตคิวไม่สำเร็จ'); }
-  }
+    const appCard = document.getElementById('appLiveClassCard');
+    const appText = document.getElementById('appLiveClassText');
+    const appPulse = document.getElementById('appLivePulse');
 
-  // --- จัดการศูนย์บัญชาการ ---
-  async function addSurvivalItem() {
-    const txt = document.getElementById('svText').value.trim();
-    const type = document.getElementById('svType').value;
-    if(!txt) return;
-    currentSurvivalItems.push({ text: txt, type: type });
-    try {
-      await db.collection('system_settings').doc('main').set({ survival_items: currentSurvivalItems }, { merge: true });
-      document.getElementById('svText').value = '';
-      showToast('เพิ่มรายการแจ้งเตือนแล้ว 🛡️');
-    } catch (e) { showToast('เพิ่มไม่สำเร็จ'); }
-  }
-
-  async function deleteSurvivalItem(index) {
-    if(!confirm('ลบรายการนี้ใช่ไหม?')) return;
-    currentSurvivalItems.splice(index, 1);
-    try {
-      await db.collection('system_settings').doc('main').set({ survival_items: currentSurvivalItems }, { merge: true });
-      showToast('ลบรายการแล้ว');
-    } catch (e) { showToast('ลบไม่สำเร็จ'); }
-  }
-
-  function renderAdminSurvivalList() {
-    const list = document.getElementById('adminSurvivalList');
-    if(currentSurvivalItems.length === 0) {
-      list.innerHTML = '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">ยังไม่มีแจ้งเตือน</div>';
+    if (!currentScheduleData || Object.keys(currentScheduleData).length === 0) {
+      if(loginCard) loginCard.classList.add('hidden');
+      if(appCard) appCard.classList.add('hidden');
       return;
     }
-    list.innerHTML = currentSurvivalItems.map((item, index) => {
-      let emoji = '🟢'; if(item.type === 'red') emoji = '🔴'; if(item.type === 'yellow') emoji = '🟡';
-      return `<div class="admin-list-item ${item.type}"><span>${emoji} ${escapeHtml(item.text)}</span><button class="btn-del" onclick="deleteSurvivalItem(${index})">ลบ</button></div>`;
-    }).join('');
-  }
 
-  // --- จัดการคลังชีท ---
-  async function addVaultItem() {
-    const title = document.getElementById('vaultTitle').value.trim();
-    const desc = document.getElementById('vaultDesc').value.trim();
-    const link = document.getElementById('vaultLink').value.trim();
-    if(!title || !link) { showToast('ใส่ชื่อกับลิงก์ให้ครบด้วยครับ'); return; }
-    currentVaultItems.push({ title: title, desc: desc, link: link });
-    try {
-      await db.collection('system_settings').doc('main').set({ vault_items: currentVaultItems }, { merge: true });
-      document.getElementById('vaultTitle').value = ''; document.getElementById('vaultDesc').value = ''; document.getElementById('vaultLink').value = '';
-      showToast('เพิ่มไฟล์ลงคลังแสงแล้ว 📚');
-    } catch (e) { showToast('เพิ่มชีทไม่สำเร็จ'); }
-  }
+    const now = new Date();
+    const day = now.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+    const hour = now.getHours();
+    const min = now.getMinutes();
+    const currentMins = hour * 60 + min;
 
-  async function deleteVaultItem(index) {
-    if(!confirm('ลบชีทนี้ทิ้งใช่ไหม?')) return;
-    currentVaultItems.splice(index, 1);
-    try {
-      await db.collection('system_settings').doc('main').set({ vault_items: currentVaultItems }, { merge: true });
-      showToast('ลบชีทแล้ว');
-    } catch (e) { showToast('ลบไม่สำเร็จ'); }
-  }
+    const dayMap = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
+    const todayKey = dayMap[day];
 
-  function renderAdminVaultList() {
-    const list = document.getElementById('adminVaultList');
-    if(currentVaultItems.length === 0) {
-      list.innerHTML = '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">ยังไม่มีไฟล์ในคลัง</div>';
-      return;
+    let statusText = "กำลังโหลด...";
+    let pulseColor = "var(--accent)";
+    let textColor = "var(--accent)";
+
+    if (!todayKey) {
+      statusText = "🥳 วันหยุด! พักผ่อนให้เต็มที่";
+      textColor = "var(--green)";
+      pulseColor = "var(--green)";
+    } else {
+      const scheduleText = currentScheduleData[todayKey];
+      if (!scheduleText) {
+        statusText = "😅 ยังไม่มีข้อมูลตารางเรียนวันนี้";
+        textColor = "var(--muted)";
+        pulseColor = "var(--muted)";
+      } else {
+        const lines = scheduleText.split('\n');
+        let activeClass = null;
+        let firstClassStart = 9999;
+        let lastClassEnd = 0;
+
+        for (let line of lines) {
+          // ดักจับรูปแบบ: 07:30 - 09:30 | 🎨 กราฟิกศิลป์
+          const match = line.match(/(\d{2})\s*:\s*(\d{2})\s*-\s*(\d{2})\s*:\s*(\d{2})\s*\|\s*(.+)/);
+          if (match) {
+            const startMin = parseInt(match[1]) * 60 + parseInt(match[2]);
+            const endMin = parseInt(match[3]) * 60 + parseInt(match[4]);
+            
+            if (startMin < firstClassStart) firstClassStart = startMin;
+            if (endMin > lastClassEnd) lastClassEnd = endMin;
+
+            if (currentMins >= startMin && currentMins < endMin) {
+               activeClass = match[5].trim();
+               // ตรวจจับคำว่า พัก หรือ คาบว่าง ในวิชา
+               if(activeClass.includes('พัก') || activeClass.includes('ว่าง') || activeClass.includes('💤') || activeClass.includes('⏸️')) {
+                 statusText = activeClass;
+                 textColor = "#D48806";
+                 pulseColor = "#D48806";
+                 activeClass = "BREAK"; // dummy value to bypass below if
+               }
+            }
+          }
+        }
+
+        if (activeClass && activeClass !== "BREAK") {
+          statusText = activeClass;
+          textColor = "var(--accent)";
+          pulseColor = "var(--accent)";
+        } else if (!activeClass) {
+          if (firstClassStart !== 9999 && currentMins < firstClassStart) {
+            statusText = "⏳ รอกริ่งเข้าเรียนคาบแรก...";
+            textColor = "var(--muted)";
+            pulseColor = "var(--muted)";
+          } else if (lastClassEnd !== 0 && currentMins >= lastClassEnd) {
+            statusText = "🎉 เลิกเรียนแล้ว! กลับบ้านกันเถอะ";
+            textColor = "var(--green)";
+            pulseColor = "var(--green)";
+          } else {
+            statusText = "🚶‍♂️ กำลังเปลี่ยนคาบ / พักเบรค";
+            textColor = "#D48806";
+            pulseColor = "#D48806";
+          }
+        }
+      }
     }
-    list.innerHTML = currentVaultItems.map((item, index) => {
-      return `<div class="admin-list-item green"><div><strong>${escapeHtml(item.title)}</strong><br><span style="font-size:11px; color:var(--muted);">${escapeHtml(item.desc)}</span></div><button class="btn-del" onclick="deleteVaultItem(${index})">ลบ</button></div>`;
-    }).join('');
+
+    // อัปเดต UI หน้าล็อกอิน
+    if(loginCard && loginText && loginPulse) {
+      loginCard.classList.remove('hidden');
+      loginText.textContent = statusText;
+      loginText.style.color = textColor;
+      loginPulse.style.background = pulseColor;
+      if(pulseColor === "var(--accent)") {
+        loginPulse.style.boxShadow = "0 0 0 0 rgba(212, 98, 42, 0.7)";
+      } else {
+        loginPulse.style.boxShadow = "none";
+      }
+    }
+
+    // อัปเดต UI หน้าหลัก
+    if(appCard && appText && appPulse) {
+      appCard.classList.remove('hidden');
+      appText.textContent = statusText;
+      appText.style.color = textColor;
+      appPulse.style.background = pulseColor;
+      if(pulseColor === "var(--accent)") {
+        appPulse.style.boxShadow = "0 0 0 0 rgba(212, 98, 42, 0.7)";
+      } else {
+        appPulse.style.boxShadow = "none";
+      }
+    }
   }
 
-  // --- จัดการตารางเรียน ---
-  async function saveSchedule() {
-    const sch = {
-      mon: document.getElementById('sch_mon').value.trim(),
-      tue: document.getElementById('sch_tue').value.trim(),
-      wed: document.getElementById('sch_wed').value.trim(),
-      thu: document.getElementById('sch_thu').value.trim(),
-      fri: document.getElementById('sch_fri').value.trim()
-    };
-    try {
-      await db.collection('system_settings').doc('main').set({ schedule: sch }, { merge: true });
-      showToast('บันทึกตารางเรียนแล้ว! 📅');
-    } catch (e) { showToast('บันทึกตารางเรียนไม่สำเร็จ'); }
+  // สั่งให้ระบบเช็กเวลาใหม่ทุกๆ 1 นาที
+  setInterval(updateLiveClassIndicator, 60000);
+
+  // --- Modal ตารางเดินเรียน (แบบดูเต็มๆ) ---
+  function openScheduleModal() {
+    document.getElementById('scheduleModal').classList.add('show');
+    let day = new Date().getDay();
+    let dayMap = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
+    let todayKey = dayMap[day] || 'mon'; 
+    showSchedule(todayKey);
   }
 
-  function listenToTasks() { db.collection('assignments').onSnapshot(snap => { allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderOrders(); }); }
-  function listenToOrders() { db.collection('orders').orderBy('created_at', 'desc').onSnapshot(snap => { const newOrders = snap.docs.map(d => ({ id: d.id, ...d.data() })); loyaltyData = {}; newOrders.forEach(o => { if (o.status === 'paid') { loyaltyData[o.student_id] = (loyaltyData[o.student_id] || 0) + 1; } }); allOrders = newOrders; renderOrders(); }); }
-  function listenToIncomeLogs() { db.collection('income_logs').onSnapshot(snap => { allIncomeLogs = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderOrders(); }); }
-  function taskTitle(taskId) { const t = allTasks.find(x => x.id === taskId); return t ? t.title : '(ไม่พบชื่องาน)'; }
-  function toggleHistory() { isHistoryExpanded = !isHistoryExpanded; renderOrders(); }
+  function closeScheduleModal() {
+    document.getElementById('scheduleModal').classList.remove('show');
+  }
 
-  function renderOrders() {
-    const pendingList = document.getElementById('pendingList'); const doneList = document.getElementById('doneList'); const historyList = document.getElementById('historyList'); const monthlySummaryList = document.getElementById('monthlySummaryList');
-    let pending = allOrders.filter(o => o.status === 'pending'); pending.sort((a,b) => (b.is_rush ? 1 : 0) - (a.is_rush ? 1 : 0));
-    const doneOrChecking = allOrders.filter(o => o.status === 'done' || o.status === 'checking_slip'); const paid = allOrders.filter(o => o.status === 'paid');
-    document.getElementById('pendingEmpty').classList.toggle('hidden', pending.length > 0); document.getElementById('doneEmpty').classList.toggle('hidden', doneOrChecking.length > 0);
+  function showSchedule(dayKey) {
+    document.querySelectorAll('.day-tab').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('tab_' + dayKey).classList.add('active');
     
-    pendingList.innerHTML = pending.map(o => {
-      const t = allTasks.find(x => x.id === o.task_id); const isCustom = t && t.source === 'friend_request'; const isVip = loyaltyData[o.student_id] >= 5;
-      const customBadge = isCustom ? '<span style="color:#D4622A; font-size:11px; background:#FBE9DD; padding:2px 6px; border-radius:4px; margin-left:4px;">งานสั่งพิเศษ</span>' : '';
-      const rushBadge = o.is_rush ? '<span class="tag rush">🔥 งานด่วนไฟลุก!</span>' : '';
-      const vipBadge = isVip ? '<span class="vip-badge">👑 ลูกค้าประจำ</span>' : '';
-      const cardClass = o.is_rush ? 'pending rush' : 'pending';
-      return `<div class="order-card ${cardClass}"><div class="order-top"><div><div class="order-title">${escapeHtml(taskTitle(o.task_id))} ${customBadge}</div><div class="order-who">${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))} ${vipBadge}</div></div><div class="order-time">${formatTime(o.created_at)}</div></div><span class="tag pending">กำลังทำอยู่</span> ${rushBadge}<div class="order-actions" style="display: flex; gap: 8px;"><button class="btn btn-mark-done" style="flex: 2;" onclick="markOrderDone('${o.id}')">ทำเสร็จแล้ว</button><button class="btn" style="flex: 1; background: transparent; border: 1.5px solid var(--red); color: var(--red);" onclick="rejectOrder('${o.id}')">ปฏิเสธ</button></div></div>`;
-    }).join('');
-
-    doneList.innerHTML = doneOrChecking.map(o => {
-      let statusTag = ''; let actionBtn = ''; let cardClass = '';
-      if (o.status === 'done') { cardClass = 'done'; statusTag = '<span class="tag done">รอเพื่อนโอนเงิน/จ่ายสด</span>'; actionBtn = `<button class="btn btn-pay" onclick="openPayModal('${o.id}')">กดรับเงิน (กรณีจ่ายสด)</button>`; } 
-      else if (o.status === 'checking_slip') { cardClass = 'checking'; statusTag = '<span class="tag checking">แนบสลิปแล้ว รอคุณตรวจสอบ</span>'; actionBtn = `<button class="btn btn-verify" onclick="openVerifyModal('${o.id}')">ตรวจสอบสลิป</button>`; }
-      return `<div class="order-card ${cardClass}"><div class="order-top"><div><div class="order-title">${escapeHtml(taskTitle(o.task_id))}</div><div class="order-who">${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))}</div></div><div class="order-time">${formatTime(o.created_at)}</div></div>${statusTag}<div class="order-actions">${actionBtn}</div></div>`;
-    }).join('');
-
-    const historyItems = [...paid.map(o => ({ type: 'order', title: taskTitle(o.task_id), from: o.student_name || ('เลขที่ ' + o.student_id), amount: o.price || 0, time: o.paid_at || o.created_at, slip_image: o.slip_image || null })), ...allIncomeLogs.map(l => ({ type: 'manual', title: l.reason || 'ได้รับเพิ่มเติม', from: l.from_name || 'ไม่ระบุ', amount: l.amount || 0, time: l.logged_at, slip_image: null }))].sort((a, b) => (b.time?.toMillis?.() || 0) - (a.time?.toMillis?.() || 0));
-    document.getElementById('historyEmpty').classList.toggle('hidden', historyItems.length > 0);
-    const MAX_HISTORY = 15;
-    historyList.innerHTML = historyItems.map((item, index) => {
-      const hideClass = (!isHistoryExpanded && index >= MAX_HISTORY) ? 'history-hidden' : '';
-      let slipBtnHtml = item.slip_image ? `<button class="btn-view-slip" onclick="viewHistorySlip('${item.slip_image}', '${escapeHtml(item.title)}', '${escapeHtml(item.from)}')">📄 ดูหลักฐาน</button>` : '';
-      return `<div class="history-card ${hideClass}"><div class="history-left"><div class="order-title">${escapeHtml(item.title)}</div><div class="order-who">ได้จาก ${escapeHtml(item.from)}</div>${slipBtnHtml}</div><div class="history-right"><div class="history-amount">+${item.amount.toLocaleString('th-TH')} บาท</div><div class="history-time">${formatTime(item.time)}</div></div></div>`;
-    }).join('');
-
-    const toggleBtn = document.getElementById('toggleHistoryBtn');
-    if (historyItems.length > MAX_HISTORY) { toggleBtn.classList.remove('hidden'); toggleBtn.textContent = isHistoryExpanded ? 'ย่อประวัติ (แสดงแค่ 15 รายการล่าสุด)' : `ดูประวัติทั้งหมด (${historyItems.length} รายการ)`; } else { toggleBtn.classList.add('hidden'); }
-
-    const monthlyData = {};
-    historyItems.forEach(item => { if (!item.time) return; const d = item.time.toDate ? item.time.toDate() : new Date(item.time); const ymKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; monthlyData[ymKey] = (monthlyData[ymKey] || 0) + item.amount; });
-    const now = new Date(); const currentYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; const currentEarn = monthlyData[currentYM] || 0;
-    document.getElementById('totalEarn').textContent = currentEarn.toLocaleString('th-TH'); document.getElementById('currentMonthLabel').textContent = `ยอดของเดือน ${monthNames[now.getMonth()]}`;
-
-    let summaryHtml = ''; const sortedMonths = Object.keys(monthlyData).sort().reverse();
-    sortedMonths.forEach(ym => {
-      if (ym === currentYM) return;
-      const [yearStr, monthStr] = ym.split('-'); const y = parseInt(yearStr); const mIndex = parseInt(monthStr) - 1; const total = monthlyData[ym]; const daysInMonth = new Date(y, mIndex + 1, 0).getDate(); const avgPerDay = total / daysInMonth; const isPassed = avgPerDay >= 160; const borderColor = isPassed ? 'var(--green)' : 'var(--red)'; const textColor = isPassed ? 'var(--green)' : 'var(--red)'; const statusText = isPassed ? '✅ ผ่านเป้า' : '❌ ไม่ถึงเป้า';
-      summaryHtml += `<div class="history-card" style="border-left-color: ${borderColor}"><div class="history-left"><div class="order-title">เดือน${monthNames[mIndex]} ${y}</div><div class="order-who">เฉลี่ย ${avgPerDay.toFixed(0)} บาท/วัน (เป้า 160)</div></div><div class="history-right"><div class="history-amount" style="color: ${textColor}">${total.toLocaleString('th-TH')} บาท</div><div class="history-time">${statusText}</div></div></div>`;
-    });
-    if (summaryHtml === '') { monthlySummaryList.innerHTML = '<div class="empty-state">ยังไม่มีข้อมูลของเดือนที่แล้ว</div>'; } else { monthlySummaryList.innerHTML = summaryHtml; }
+    let rawText = currentScheduleData[dayKey] || '';
+    let displayHtml = rawText ? escapeHtml(rawText) : '<div style="color:var(--muted); text-align:center; padding-top:20px;">ยังไม่ได้ลงตารางของวันนี้</div>';
+    
+    document.getElementById('scheduleContent').innerHTML = displayHtml;
   }
 
-  window.viewHistorySlip = function(imgSrc, title, from) { document.getElementById('historySlipContext').textContent = `${title} · ${from}`; document.getElementById('historySlipImage').src = imgSrc; document.getElementById('viewHistorySlipModal').classList.add('show'); }
-  function closeHistorySlipModal() { document.getElementById('viewHistorySlipModal').classList.remove('show'); }
-
-  function openManageTasksModal() {
-    const list = document.getElementById('manageTaskList');
-    list.innerHTML = allTasks.map(t => `<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1.5px solid var(--line); border-radius: 10px; margin-bottom: 8px;"><div style="font-size: 14px; font-weight: 600; width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(t.title)}</div><button style="background: #E8836A; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;" onclick="deleteTask('${t.id}')">ลบทิ้ง</button></div>`).join('');
-    if(allTasks.length === 0) { list.innerHTML = '<div style="text-align: center; color: var(--muted); font-size: 13px; padding: 20px;">ไม่มีงานในระบบเลย</div>'; }
-    document.getElementById('manageTasksModal').classList.add('show');
-  }
-  function closeManageTasksModal() { document.getElementById('manageTasksModal').classList.remove('show'); }
-
-  async function deleteTask(taskId) { if(!confirm('แน่ใจนะว่าจะลบงานนี้?')) return; try { await db.collection('assignments').doc(taskId).delete(); showToast('ลบงานออกจากระบบแล้ว 🗑️'); openManageTasksModal(); } catch (err) { showToast('ลบไม่สำเร็จ ลองใหม่อีกครั้ง'); } }
-  async function rejectOrder(orderId) { if(!confirm('คุณแน่ใจนะว่าจะปฏิเสธงานนี้?')) return; try { await db.collection('orders').doc(orderId).update({ status: 'rejected' }); showToast('ปฏิเสธงานเรียบร้อย ❌'); } catch (err) { showToast('เกิดข้อผิดพลาด ลองใหม่อีกครั้ง'); } }
-  async function markOrderDone(orderId) { try { await db.collection('orders').doc(orderId).update({ status: 'done' }); showToast('ส่งแจ้งเตือนให้เพื่อนโอนเงินแล้ว!'); } catch (err) { showToast('อัปเดตไม่สำเร็จ'); } }
-
-  function openPayModal(orderId) { activeOrderId = orderId; const order = allOrders.find(o => o.id === orderId); document.getElementById('payContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`; document.getElementById('payAmount').value = ''; document.getElementById('cashImageInput').value = ''; document.getElementById('payModal').classList.add('show'); setTimeout(() => document.getElementById('payAmount').focus(), 100); }
-  function closePayModal() { document.getElementById('payModal').classList.remove('show'); activeOrderId = null; }
-  
-  function processCashImageWithWatermark(file, amount, studentName) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = new Image(); img.onload = function() {
-          const canvas = document.createElement('canvas'); const MAX_WIDTH = 800; const scaleSize = MAX_WIDTH / img.width; canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize; const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height); ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; ctx.fillRect(0, canvas.height - 70, canvas.width, 70);
-          const now = new Date(); const timeStr = now.toLocaleString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-          ctx.fillStyle = "#4ade80"; ctx.font = "bold 22px sans-serif"; ctx.fillText(`✅ รับเงินสด ${amount} บาท | จาก: ${studentName}`, 20, canvas.height - 40); ctx.fillStyle = "white"; ctx.font = "16px sans-serif"; ctx.fillText(`บันทึกเข้าระบบเมื่อ: ${timeStr} (ไม่อนุญาตให้ใช้ซ้ำ)`, 20, canvas.height - 15); resolve(canvas.toDataURL('image/jpeg', 0.7)); 
-        }; img.onerror = reject; img.src = e.target.result;
-      }; reader.onerror = reject; reader.readAsDataURL(file);
+  // ==========================================
+  // 💬 ฟีเจอร์ แชท & GIF Keyboard (ใช้ Klipy API)
+  // ==========================================
+  function listenToChats() {
+    db.collection('chats').orderBy('timestamp', 'desc').limit(50).onSnapshot(snap => {
+      const box = document.getElementById('chatBox');
+      const messages = snap.docs.map(d => d.data()).reverse();
+      box.innerHTML = messages.map(m => {
+        const isMine = m.sender_id === currentUser.studentId;
+        const time = m.timestamp ? new Date(m.timestamp.toDate()).toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'}) : '';
+        let contentHtml = m.type === 'gif' ? `<img src="${m.content}">` : escapeHtml(m.content);
+        return `
+          <div class="chat-bubble ${isMine ? 'mine' : ''}">
+            <div class="chat-sender">${escapeHtml(m.sender_name)} • ${time}</div>
+            ${contentHtml}
+          </div>
+        `;
+      }).join('');
+      box.scrollTop = box.scrollHeight;
     });
   }
 
-  async function confirmPayment() {
-    const amount = parseFloat(document.getElementById('payAmount').value); if (!activeOrderId || isNaN(amount) || amount <= 0) { showToast('กรอกจำนวนเงินให้ถูกต้อง'); return; }
-    const fileInput = document.getElementById('cashImageInput'); const btnConfirm = document.getElementById('btnConfirmCash'); btnConfirm.disabled = true; btnConfirm.textContent = "กำลังบันทึก...";
+  async function sendChat() {
+    const input = document.getElementById('chatInput');
+    const txt = input.value.trim();
+    if (!txt) return;
+    input.value = '';
+    await db.collection('chats').add({ 
+      sender_id: currentUser.studentId, 
+      sender_name: currentUser.name, 
+      type: 'text', 
+      content: txt, 
+      timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+    });
+  }
+
+  function openGifPicker() {
+    document.getElementById('gifPicker').classList.add('show');
+    loadTrendingGifs();
+  }
+
+  function closeGifPicker() {
+    document.getElementById('gifPicker').classList.remove('show');
+  }
+
+  async function loadTrendingGifs() {
+    const grid = document.getElementById('gifGrid');
+    grid.innerHTML = '<div style="color:var(--muted); font-size:12px; margin-top:20px;">กำลังโหลด...</div>';
     try {
-      let base64String = null; const order = allOrders.find(o => o.id === activeOrderId); const studentName = order ? (order.student_name || 'เลขที่ ' + order.student_id) : '';
-      if (fileInput.files && fileInput.files.length > 0) { base64String = await processCashImageWithWatermark(fileInput.files[0], amount, studentName); }
-      const updateData = { status: 'paid', price: amount, paid_at: firebase.firestore.FieldValue.serverTimestamp() };
-      if (base64String) { updateData.slip_image = base64String; }
-      await db.collection('orders').doc(activeOrderId).update(updateData); showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`); closePayModal();
-    } catch (err) { showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); } finally { btnConfirm.disabled = false; btnConfirm.textContent = "ยืนยันรับเงินแล้ว"; }
+      const customerId = currentUser ? currentUser.studentId : 'guest';
+      const res = await fetch(`https://api.klipy.com/api/v1/${KLIPY_API_KEY}/gifs/trending?customer_id=${encodeURIComponent(customerId)}&per_page=16&locale=th_TH`);
+      if (!res.ok) throw new Error('Klipy request failed: ' + res.status);
+      const json = await res.json();
+      renderGifsUI(json.data?.data);
+    } catch (e) {
+      console.error("โหลด GIF ไม่ได้", e);
+      grid.innerHTML = '<div style="color:var(--muted); font-size:12px; margin-top:20px;">โหลด GIF ไม่สำเร็จ ลองใหม่อีกครั้ง 😅</div>';
+    }
   }
 
-  function openVerifyModal(orderId) { activeOrderId = orderId; const order = allOrders.find(o => o.id === orderId); document.getElementById('verifyContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`; document.getElementById('slipImagePreview').src = order.slip_image || ''; document.getElementById('verifyAmount').value = ''; document.getElementById('verifySlipModal').classList.add('show'); setTimeout(() => document.getElementById('verifyAmount').focus(), 100); }
-  function closeVerifyModal() { document.getElementById('verifySlipModal').classList.remove('show'); activeOrderId = null; }
-  async function confirmVerifyPayment() { const amount = parseFloat(document.getElementById('verifyAmount').value); if (!activeOrderId || isNaN(amount) || amount <= 0) { showToast('กรอกจำนวนเงินให้ถูกต้อง'); return; } try { await db.collection('orders').doc(activeOrderId).update({ status: 'paid', price: amount, paid_at: firebase.firestore.FieldValue.serverTimestamp() }); showToast(`ตรวจสลิปเรียบร้อย +${amount.toLocaleString('th-TH')} บาท`); closeVerifyModal(); } catch (err) { showToast('บันทึกไม่สำเร็จ'); } }
-  function openAddTaskModal() { document.getElementById('newTaskTitle').value = ''; document.getElementById('newTaskDesc').value = ''; document.getElementById('addTaskModal').classList.add('show'); setTimeout(() => document.getElementById('newTaskTitle').focus(), 100); }
-  function closeAddTaskModal() { document.getElementById('addTaskModal').classList.remove('show'); }
-  async function confirmAddTask() { const title = document.getElementById('newTaskTitle').value.trim(); const desc = document.getElementById('newTaskDesc').value.trim(); if (!title) { showToast('กรอกชื่องานด้วย'); return; } try { await db.collection('assignments').add({ title: title, description: desc, due_date: null, created_at: firebase.firestore.FieldValue.serverTimestamp(), source: 'manual' }); showToast('เพิ่มงานแล้ว'); closeAddTaskModal(); } catch (err) { showToast('เพิ่มงานไม่สำเร็จ'); } }
-  function openExtraIncomeModal() { document.getElementById('extraFrom').value = ''; document.getElementById('extraReason').value = ''; document.getElementById('extraAmount').value = ''; document.getElementById('extraIncomeModal').classList.add('show'); setTimeout(() => document.getElementById('extraFrom').focus(), 100); }
-  function closeExtraIncomeModal() { document.getElementById('extraIncomeModal').classList.remove('show'); }
-  async function confirmExtraIncome() { const from = document.getElementById('extraFrom').value.trim(); const reason = document.getElementById('extraReason').value.trim(); const amount = parseFloat(document.getElementById('extraAmount').value); if (!from || !reason || isNaN(amount) || amount <= 0) { showToast('กรอกข้อมูลให้ครบและถูกต้อง'); return; } try { await db.collection('income_logs').add({ from_name: from, reason: reason, amount: amount, logged_at: firebase.firestore.FieldValue.serverTimestamp() }); showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`); closeExtraIncomeModal(); } catch (err) { showToast('บันทึกไม่สำเร็จ'); } }
-  function formatTime(ts) { if (!ts || !ts.toDate) return ''; return ts.toDate().toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
-  function escapeHtml(str) { const div = document.createElement('div'); div.textContent = str || ''; return div.innerHTML; }
-  function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
-  document.querySelectorAll('.modal-backdrop').forEach(el => { el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); }); });
-</script>
+  async function searchGifUI() {
+    const q = document.getElementById('gifSearchInput').value.trim();
+    if (!q) { 
+      loadTrendingGifs(); 
+      return; 
+    }
+    const grid = document.getElementById('gifGrid');
+    grid.innerHTML = '<div style="color:var(--muted); font-size:12px; margin-top:20px;">กำลังค้นหา...</div>';
+    try {
+      const customerId = currentUser ? currentUser.studentId : 'guest';
+      const res = await fetch(`https://api.klipy.com/api/v1/${KLIPY_API_KEY}/gifs/search?q=${encodeURIComponent(q)}&customer_id=${encodeURIComponent(customerId)}&per_page=16&locale=th_TH`);
+      if (!res.ok) throw new Error('Klipy request failed: ' + res.status);
+      const json = await res.json();
+      renderGifsUI(json.data?.data);
+    } catch (e) {
+      console.error("หา GIF ไม่เจอ", e);
+      grid.innerHTML = '<div style="color:var(--muted); font-size:12px; margin-top:20px;">ค้นหาไม่สำเร็จ ลองใหม่อีกครั้ง 😅</div>';
+    }
+  }
 
+  function extractGifUrls(item) {
+    const f = item.files || item.file || {};
+    const thumb = f.sm?.gif?.url || f.preview?.gif?.url || f.tinygif?.url || f.xs?.gif?.url || f.md?.gif?.url;
+    const full = f.md?.gif?.url || f.gif?.url || f.hd?.gif?.url || thumb;
+    return { thumb, full };
+  }
+
+  function renderGifsUI(gifsArray) {
+    const grid = document.getElementById('gifGrid');
+    if (!gifsArray || gifsArray.length === 0) {
+      grid.innerHTML = '<div style="color:var(--muted); font-size:12px; margin-top:20px;">ไม่พบ GIF ที่ค้นหา 😅</div>';
+      return;
+    }
+    const htmlParts = [];
+    gifsArray.forEach(g => {
+      const { thumb, full } = extractGifUrls(g);
+      if (!thumb) return;
+      htmlParts.push(`<img src="${thumb}" onclick="sendSelectedGif('${full}')">`);
+    });
+    if (htmlParts.length === 0) {
+      grid.innerHTML = '<div style="color:var(--muted); font-size:12px; margin-top:20px;">โหลดรูปไม่สำเร็จ 😅</div>';
+      return;
+    }
+    grid.innerHTML = htmlParts.join('');
+  }
+
+  async function sendSelectedGif(gifUrl) {
+    closeGifPicker();
+    await db.collection('chats').add({ 
+      sender_id: currentUser.studentId, 
+      sender_name: currentUser.name, 
+      type: 'gif', 
+      content: gifUrl, 
+      timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+    });
+  }
+
+  // ==========================================
+  // 🎮 ฟีเจอร์ ลานหาตี้
+  // ==========================================
+  function listenToParties() {
+    db.collection('party_board').orderBy('created_at', 'desc').onSnapshot(snap => {
+      const list = document.getElementById('partyList');
+      const parties = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      if (parties.length === 0) { 
+        list.innerHTML = '<div class="empty-state">ยังไม่มีคนตั้งตี้เลย เป็นคนแรกสิ!</div>'; 
+        return; 
+      }
+      list.innerHTML = parties.map(p => {
+        const isMine = p.creator_id === currentUser.studentId;
+        const btnHtml = isMine
+          ? `<button class="btn-join" style="background:#E8836A;" onclick="closePartyDoc('${p.id}')">ลบตี้</button>`
+          : `<button class="btn-join" onclick="showToast('ตะโกนเรียกเพื่อนในแชทเลย!')">ทักไปเล่น</button>`;
+        const time = p.created_at ? new Date(p.created_at.toDate()).toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'}) : '';
+        return `
+          <div class="lfg-card">
+            <div>
+              <div class="lfg-game">🎮 ${escapeHtml(p.game)}</div>
+              <div class="lfg-desc">${escapeHtml(p.desc)}</div>
+              <div class="lfg-host">ตั้งโดย: ${escapeHtml(p.creator_name)} (${time})</div>
+            </div>
+            ${btnHtml}
+          </div>
+        `;
+      }).join('');
+    });
+  }
+
+  function openPartyModal() {
+    document.getElementById('partyGame').value = '';
+    document.getElementById('partyDesc').value = '';
+    document.getElementById('partyModalBackdrop').classList.add('show');
+  }
+
+  function closePartyModal() { 
+    document.getElementById('partyModalBackdrop').classList.remove('show'); 
+  }
+
+  async function createParty() {
+    const game = document.getElementById('partyGame').value.trim();
+    const desc = document.getElementById('partyDesc').value.trim();
+    if (!game || !desc) { 
+      showToast('พิมพ์ให้ครบหน่อยน้า'); 
+      return; 
+    }
+    await db.collection('party_board').add({ 
+      game: game, 
+      desc: desc, 
+      creator_id: currentUser.studentId, 
+      creator_name: currentUser.name, 
+      created_at: firebase.firestore.FieldValue.serverTimestamp() 
+    });
+    showToast('ตั้งตี้เรียบร้อย รอดึงเพื่อนได้เลย!');
+    closePartyModal();
+  }
+
+  async function closePartyDoc(id) { 
+    await db.collection('party_board').doc(id).delete(); 
+    showToast('ลบตี้แล้ว'); 
+  }
+
+  // ==========================================
+  // 🎧 ฟีเจอร์ บอร์ดดีเจ & ระบบย่อเครื่องเล่น
+  // ==========================================
+  function extractYouTubeID(url) {
+    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  }
+
+  function listenToMusic() {
+    db.collection('music_board').orderBy('created_at', 'desc').limit(20).onSnapshot(snap => {
+      const list = document.getElementById('musicList');
+      const songs = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      if (songs.length === 0) { 
+        list.innerHTML = '<div class="empty-state">ยังไม่มีใครขอเพลงเลย แปะลิงก์ YouTube ด้านบนได้เลย!</div>'; 
+        return; 
+      }
+      list.innerHTML = songs.map(s => `
+        <div class="music-card">
+          <img class="music-thumb" src="https://img.youtube.com/vi/${s.yt_id}/mqdefault.jpg">
+          <div class="music-info">
+            <div class="music-title">▶️ เพลงคิวที่ ${songs.indexOf(s)+1}</div>
+            <div class="music-req">ขอโดย: ${escapeHtml(s.requested_by)}</div>
+          </div>
+          <button class="btn-play" onclick="playMusic('${s.yt_id}')">▶</button>
+          ${s.req_id === currentUser.studentId ? `<button style="background:transparent; border:none; color:var(--red); font-size:16px; cursor:pointer;" onclick="deleteMusic('${s.id}')">🗑</button>` : ''}
+        </div>
+      `).join('');
+    });
+  }
+
+  async function requestSong() {
+    const url = document.getElementById('ytInput').value.trim();
+    const ytId = extractYouTubeID(url);
+    if (!ytId) { 
+      showToast('ลิงก์ YouTube ไม่ถูกต้องครับ'); 
+      return; 
+    }
+    document.getElementById('ytInput').value = '';
+    await db.collection('music_board').add({ 
+      yt_id: ytId, 
+      requested_by: currentUser.name, 
+      req_id: currentUser.studentId, 
+      created_at: firebase.firestore.FieldValue.serverTimestamp() 
+    });
+    showToast('เพิ่มเพลงลงคิวแล้ว! 🎧');
+  }
+
+  async function deleteMusic(id) { 
+    await db.collection('music_board').doc(id).delete(); 
+  }
+
+  let isPlayerMinimized = false;
+
+  function playMusic(ytId) {
+    const player = document.getElementById('floatingPlayer');
+    document.getElementById('ytIframe').src = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
+    player.classList.remove('hidden');
+    player.classList.remove('minimized');
+    document.getElementById('btnMinimize').textContent = 'ย่อหน้าจอ 🔽';
+    isPlayerMinimized = false;
+    showToast('กำลังเล่นเพลง 🎶');
+  }
+
+  function togglePlayer() {
+    const player = document.getElementById('floatingPlayer');
+    const btn = document.getElementById('btnMinimize');
+    isPlayerMinimized = !isPlayerMinimized;
+    if (isPlayerMinimized) { 
+      player.classList.add('minimized'); 
+      btn.textContent = 'ขยายหน้าจอ 🔼'; 
+    } else { 
+      player.classList.remove('minimized'); 
+      btn.textContent = 'ย่อหน้าจอ 🔽'; 
+    }
+  }
+
+  function closePlayer() {
+    document.getElementById('floatingPlayer').classList.add('hidden');
+    document.getElementById('ytIframe').src = "";
+  }
+
+  // ==========================================
+  // โค้ดส่วนระบบงาน (Tasks)
+  // ==========================================
+  function listenToTasks() {
+    db.collection('assignments').orderBy('created_at', 'desc').onSnapshot(snap => {
+      allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderTasks();
+    });
+  }
+
+  function listenToOrders() {
+    db.collection('orders').onSnapshot(snap => {
+      allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (currentUser) {
+        const paidCount = allOrders.filter(o => o.student_id === currentUser.studentId && o.status === 'paid').length;
+        isVip = paidCount >= 5;
+      }
+      renderTasks();
+    });
+  }
+
+  function checkIsTestTask(title) {
+    if (!title) return false;
+    return title.includes('ทดลอง') || title.includes('ห้ามกด') || title === 'งานวิทยาศาสตร์' || title === 'วิทยาศาสตร์';
+  }
+
+  function renderTasks() {
+    const list = document.getElementById('taskList');
+    const compList = document.getElementById('completedList');
+    const empty = document.getElementById('emptyState');
+    list.innerHTML = '';
+    compList.innerHTML = '';
+    let hasPending = false;
+    let hasCompleted = false;
+
+    allTasks.forEach(t => {
+      if (t.requested_by && t.requested_by !== currentUser.studentId) return;
+      const order = allOrders.find(o => o.task_id === t.id && o.student_id === currentUser.studentId);
+      const card = document.createElement('div');
+      card.className = 'task-card';
+      card.onclick = () => openTask(t.id);
+
+      let badge = '';
+      let isCompleted = false;
+      let isTest = checkIsTestTask(t.title);
+      let isCustom = t.source === 'friend_request';
+
+      let testBadgeHtml = isTest ? '<span style="color: #C0392B; font-size: 11px; font-weight: bold; background: #FDECEC; padding: 2px 6px; border-radius: 4px; display: inline-block;">⚠️ ทดลองระบบ</span>' : '';
+      let customBadgeHtml = isCustom ? '<span style="color: #D4622A; font-size: 11px; font-weight: bold; background: #FBE9DD; padding: 2px 6px; border-radius: 4px; display: inline-block;">ที่คุณเสนอ</span>' : '';
+      let rushBadgeHtml = order && order.is_rush ? '<span style="color: #fff; font-size: 11px; font-weight: bold; background: #E8836A; padding: 2px 6px; border-radius: 4px; display: inline-block;">🔥 ด่วน!</span>' : '';
+
+      if (order) {
+        if (order.status === 'pending') { 
+          badge = ' · ⏳ ไทม์กำลังทำ'; 
+        } else if (order.status === 'done') { 
+          badge = ' · 🔴 เสร็จแล้ว! กดเพื่อดูวิธีจ่ายเงิน'; 
+          card.style.borderColor = '#E8836A'; 
+          card.style.borderWidth = '1.5px'; 
+        } else if (order.status === 'checking_slip') { 
+          badge = ' · 🔎 ส่งสลิปแล้วรอตรวจสอบ'; 
+          card.style.borderColor = '#D48806'; 
+          card.style.borderWidth = '1.5px'; 
+        } else if (order.status === 'paid') { 
+          badge = ' · ✅ ไทม์ทำเสร็จแล้ว'; 
+          isCompleted = true; 
+        } else if (order.status === 'self_working') { 
+          badge = ' · ✍️ กำลังทำเอง'; 
+        } else if (order.status === 'self_done') { 
+          badge = ' · ✅ ทำเองเสร็จแล้ว'; 
+          isCompleted = true; 
+        } else if (order.status === 'rejected') { 
+          badge = ' · ❌ ไทม์ปฏิเสธงานนี้'; 
+          card.style.borderColor = '#C0392B'; 
+          card.style.borderWidth = '1.5px'; 
+        }
+      }
+
+      if (isCompleted) {
+        card.classList.add('opacity');
+      }
+
+      card.innerHTML = `
+        <div class="task-title" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+          ${escapeHtml(t.title)} ${testBadgeHtml} ${customBadgeHtml} ${rushBadgeHtml}
+        </div>
+        <div class="task-meta">${formatDate(t.due_date)}${badge}</div>
+      `;
+
+      if (isCompleted) { 
+        compList.appendChild(card); 
+        hasCompleted = true; 
+      } else { 
+        list.appendChild(card); 
+        hasPending = true; 
+      }
+    });
+
+    empty.classList.toggle('hidden', hasPending || hasCompleted);
+    document.getElementById('pendingSection').classList.toggle('hidden', !hasPending);
+    document.getElementById('completedSection').classList.toggle('hidden', !hasCompleted);
+  }
+
+  function showPromptPay() {
+    const pd = document.getElementById('payDetails');
+    const ppNumber = MY_PROMPTPAY.replace(/[^0-9]/g, '');
+    pd.innerHTML = `
+      <img src="https://promptpay.io/${ppNumber}" style="width: 160px; height: 160px; margin-bottom: 12px; border-radius: 8px;">
+      <div style="font-weight: 800; font-size: 16px;">พร้อมเพย์: ${MY_PROMPTPAY}</div>
+      <div style="color: var(--muted); font-size: 13.5px; margin-bottom: 10px;">ชื่อบัญชี: ${MY_NAME}</div>
+      <div style="font-size: 12.5px; color: var(--accent); background: var(--accent-soft); padding: 8px; border-radius: 8px;">* โอนตามยอดที่ตกลงกันไว้ แล้วทักบอกไทม์ได้เลย!</div>
+      <div style="margin-top: 14px; border-top: 1px dashed var(--line); padding-top: 14px; text-align: left;">
+        <label style="font-size: 13px; font-weight: bold; margin-bottom: 6px; display: block; color: var(--ink);">แนบสลิปเพื่อยืนยันการโอน</label>
+        <input type="file" id="slipUploadInput" accept="image/*" style="font-size: 13px; margin-bottom: 8px; padding: 10px;">
+        <button class="btn btn-primary" style="width: 100%;" onclick="submitSlip()">ส่งสลิป</button>
+      </div>
+    `;
+    pd.classList.remove('hidden');
+  }
+
+  async function submitSlip() {
+    const fileInput = document.getElementById('slipUploadInput');
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) { 
+      showToast('กรุณาเลือกรูปสลิปก่อนครับ'); 
+      return; 
+    }
+    const btn = fileInput.nextElementSibling;
+    btn.disabled = true;
+    btn.textContent = "กำลังอัปโหลด...";
+    
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = async function() {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 600;
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const base64String = canvas.toDataURL('image/jpeg', 0.6);
+        
+        const order = allOrders.find(o => o.task_id === activeTaskId && o.student_id === currentUser.studentId);
+        if (order) {
+          try {
+            await db.collection('orders').doc(order.id).update({ status: 'checking_slip', slip_image: base64String });
+            sendDiscordNotify(`🔔 💸 **${currentUser.name}** ส่งสลิปโอนเงินมาให้ตรวจสอบแล้ว ไปดูที่หน้าเว็บเร็วเข้า!`);
+            showToast('ส่งสลิปเรียบร้อย รอไทม์ตรวจสอบนะครับ ⏳');
+            closeModal();
+          } catch (err) { 
+            console.error(err); 
+            showToast('ส่งไม่สำเร็จ ลองใหม่อีกครั้ง'); 
+            btn.disabled = false; 
+            btn.textContent = "ส่งสลิป"; 
+          }
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function showCash() {
+    const pd = document.getElementById('payDetails');
+    pd.innerHTML = `
+      <div style="font-size: 44px; margin-bottom: 8px;">💵</div>
+      <div style="font-weight: 800; font-size: 16px;">จ่ายด้วยเงินสด</div>
+      <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">เตรียมเงินสดมาให้ไทม์ที่โรงเรียนได้เลยนะ!</div>
+    `;
+    pd.classList.remove('hidden');
+  }
+
+  function openTask(taskId) {
+    activeTaskId = taskId;
+    const t = allTasks.find(x => x.id === taskId);
+    if (!t) return;
+    const order = allOrders.find(o => o.task_id === taskId && o.student_id === currentUser.studentId);
+    let isTest = checkIsTestTask(t.title);
+    let testBadgeHtml = isTest ? '<span style="color: #C0392B; font-size: 12px; font-weight: bold; background: #FDECEC; padding: 2px 8px; border-radius: 4px;">⚠️ ทดลองระบบ (ห้ามกด)</span>' : '';
+
+    document.getElementById('modalTitle').innerHTML = `${escapeHtml(t.title)} ${testBadgeHtml}`;
+    document.getElementById('modalMeta').textContent = formatDate(t.due_date);
+    document.getElementById('modalDesc').textContent = t.description || 'ไม่มีรายละเอียดเพิ่มเติม';
+
+    const statusTag = document.getElementById('statusTag');
+    const claimBtn = document.getElementById('claimBtn');
+    const selfBtn = document.getElementById('selfBtn');
+    const selfDoneBtn = document.getElementById('selfDoneBtn');
+    const paymentSection = document.getElementById('paymentSection');
+    const payDetails = document.getElementById('payDetails');
+
+    statusTag.className = 'status-tag hidden';
+    claimBtn.classList.add('hidden');
+    selfBtn.classList.add('hidden');
+    selfDoneBtn.classList.add('hidden');
+    paymentSection.classList.add('hidden');
+    payDetails.classList.add('hidden');
+    claimBtn.disabled = false;
+    selfBtn.disabled = false;
+    claimBtn.textContent = 'ให้ไทม์ทำงานนี้';
+
+    if (isTest) { 
+      claimBtn.disabled = true; 
+      claimBtn.textContent = '⚠️ งานนี้ตั้งไว้ทดสอบระบบเท่านั้น'; 
+      selfBtn.disabled = true; 
+    }
+
+    if (!order) { 
+      claimBtn.classList.remove('hidden'); 
+      selfBtn.classList.remove('hidden'); 
+    } else if (order.status === 'pending') { 
+      statusTag.textContent = 'ไทม์กำลังทำงานนี้ให้คุณอยู่ ⏳'; 
+      statusTag.className = 'status-tag claimed'; 
+      statusTag.classList.remove('hidden'); 
+    } else if (order.status === 'done') { 
+      statusTag.textContent = 'ไทม์ทำเสร็จแล้ว! รอชำระเงิน'; 
+      statusTag.className = 'status-tag alert'; 
+      statusTag.classList.remove('hidden'); 
+      paymentSection.classList.remove('hidden'); 
+    } else if (order.status === 'checking_slip') { 
+      statusTag.textContent = 'กำลังรอไทม์ตรวจสอบสลิป 🔎'; 
+      statusTag.className = 'status-tag wait'; 
+      statusTag.classList.remove('hidden'); 
+    } else if (order.status === 'paid') { 
+      statusTag.textContent = 'คุณชำระเงินและรับงานนี้เรียบร้อย ✅'; 
+      statusTag.className = 'status-tag mine'; 
+      statusTag.classList.remove('hidden'); 
+    } else if (order.status === 'self_working') { 
+      statusTag.textContent = 'คุณกำลังทำงานนี้เอง สู้ๆ ✌️'; 
+      statusTag.className = 'status-tag mine'; 
+      statusTag.classList.remove('hidden'); 
+      selfDoneBtn.classList.remove('hidden'); 
+    } else if (order.status === 'self_done') { 
+      statusTag.textContent = 'คุณทำเองเสร็จแล้ว (ส่งแล้ว) ✅'; 
+      statusTag.className = 'status-tag mine'; 
+      statusTag.classList.remove('hidden'); 
+    } else if (order.status === 'rejected') { 
+      statusTag.textContent = '❌ ไทม์ปฏิเสธรับงานนี้ (อาจจะยุ่งหรือคิวเต็ม 🙏)'; 
+      statusTag.className = 'status-tag alert'; 
+      statusTag.classList.remove('hidden'); 
+      claimBtn.disabled = true; 
+      claimBtn.textContent = 'โดนปฏิเสธแล้ว'; 
+      claimBtn.classList.remove('hidden'); 
+      selfBtn.classList.remove('hidden'); 
+    }
+
+    document.getElementById('modalBackdrop').classList.add('show');
+  }
+
+  function closeModal() { 
+    document.getElementById('modalBackdrop').classList.remove('show'); 
+    activeTaskId = null; 
+  }
+
+  function openRequestModal() {
+    document.getElementById('reqTitle').value = '';
+    document.getElementById('reqDesc').value = '';
+    document.getElementById('reqRush').checked = false;
+    document.getElementById('reqModalBackdrop').classList.add('show');
+    setTimeout(() => document.getElementById('reqTitle').focus(), 100);
+  }
+
+  function closeRequestModal() { 
+    document.getElementById('reqModalBackdrop').classList.remove('show'); 
+  }
+
+  document.getElementById('reqModalBackdrop').addEventListener('click', e => { 
+    if (e.target.id === 'reqModalBackdrop') closeRequestModal(); 
+  });
+
+  async function submitRequestTask() {
+    const title = document.getElementById('reqTitle').value.trim();
+    const desc = document.getElementById('reqDesc').value.trim();
+    const isRush = document.getElementById('reqRush').checked;
+    
+    if (!title) { 
+      showToast('ใส่ชื่องานให้หน่อยนะ!'); 
+      return; 
+    }
+    
+    const btn = document.getElementById('submitReqBtn');
+    btn.disabled = true;
+    btn.textContent = 'กำลังส่ง...';
+    
+    try {
+      const docRef = await db.collection('assignments').add({ 
+        title: title, 
+        description: desc, 
+        due_date: null, 
+        created_at: firebase.firestore.FieldValue.serverTimestamp(), 
+        source: 'friend_request', 
+        requested_by: currentUser.studentId 
+      });
+      
+      await db.collection('orders').add({ 
+        task_id: docRef.id, 
+        student_id: currentUser.studentId, 
+        student_name: currentUser.name, 
+        status: 'pending', 
+        price: null, 
+        is_rush: isRush, 
+        created_at: firebase.firestore.FieldValue.serverTimestamp() 
+      });
+      
+      let rushText = isRush ? "🔥 **(งานด่วนไฟลุก!)**" : "";
+      let vipText = isVip ? "👑 *(ลูกค้า VIP)*" : "";
+      sendDiscordNotify(`🔔 **มีออเดอร์ใหม่!**\n> **${currentUser.name}** ${vipText} สั่งงานนอกระบบมา: "${title}" ${rushText}`);
+      
+      showToast('ส่งงานให้ไทม์แล้ว รอไทม์รับงานนะ 🙌');
+      closeRequestModal();
+    } catch (err) { 
+      console.error(err); 
+      showToast('ส่งไม่สำเร็จ ลองอีกครั้งนะ'); 
+    } finally { 
+      btn.disabled = false; 
+      btn.textContent = 'ส่งให้ไทม์'; 
+    }
+  }
+
+  async function claimTask() {
+    if (!activeTaskId) return;
+    const claimBtn = document.getElementById('claimBtn');
+    claimBtn.disabled = true;
+    claimBtn.textContent = 'กำลังบันทึก...';
+    
+    try {
+      const t = allTasks.find(x => x.id === activeTaskId);
+      await db.collection('orders').add({ 
+        task_id: activeTaskId, 
+        student_id: currentUser.studentId, 
+        student_name: currentUser.name, 
+        status: 'pending', 
+        price: null, 
+        created_at: firebase.firestore.FieldValue.serverTimestamp() 
+      });
+      
+      let vipText = isVip ? "👑 *(ลูกค้า VIP)*" : "";
+      sendDiscordNotify(`🔔 **มีเพื่อนกดให้ทำงาน!**\n> **${currentUser.name}** ${vipText} ส่งงานห้องให้ไทม์ทำ: "${t ? t.title : 'งานจากระบบ'}"`);
+      
+      showToast('สั่งงานให้ไทม์ทำเรียบร้อย เดี๋ยวรีบทำให้นะ 🙌');
+      closeModal();
+    } catch (err) { 
+      console.error(err); 
+      showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); 
+      claimBtn.disabled = false; 
+      claimBtn.textContent = 'ให้ไทม์ทำงานนี้'; 
+    }
+  }
+
+  async function startSelfTask() {
+    if (!activeTaskId) return;
+    const selfBtn = document.getElementById('selfBtn');
+    selfBtn.disabled = true;
+    
+    try {
+      const existingOrder = allOrders.find(o => o.task_id === activeTaskId && o.student_id === currentUser.studentId);
+      
+      if (existingOrder) { 
+        await db.collection('orders').doc(existingOrder.id).update({ status: 'self_working' }); 
+      } else { 
+        await db.collection('orders').add({ 
+          task_id: activeTaskId, 
+          student_id: currentUser.studentId, 
+          student_name: currentUser.name, 
+          status: 'self_working', 
+          price: 0, 
+          created_at: firebase.firestore.FieldValue.serverTimestamp() 
+        }); 
+      }
+      
+      showToast('ใช้เว็บนี้จดไว้ได้เลย สู้ๆ นะ! ✍️');
+      closeModal();
+    } catch (err) { 
+      console.error(err); 
+      showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); 
+      selfBtn.disabled = false; 
+    }
+  }
+
+  async function finishSelfTask() {
+    if (!activeTaskId) return;
+    const order = allOrders.find(o => o.task_id === activeTaskId && o.student_id === currentUser.studentId);
+    if (!order) return;
+    
+    try { 
+      await db.collection('orders').doc(order.id).update({ status: 'self_done' }); 
+      showToast('เก่งมาก! ทำเครื่องหมายว่าส่งงานแล้ว ✅'); 
+      closeModal(); 
+    } catch (err) { 
+      console.error(err); 
+      showToast('อัปเดตไม่สำเร็จ ลองใหม่อีกครั้ง'); 
+    }
+  }
+
+  function formatDate(ts) {
+    if (!ts) return 'ไม่ระบุวันส่ง';
+    let d;
+    if (ts.toDate) d = ts.toDate(); 
+    else d = new Date(ts);
+    if (isNaN(d.getTime())) return 'ไม่ระบุวันส่ง';
+    return 'ส่ง ' + d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function escapeHtml(str) { 
+    const div = document.createElement('div'); 
+    div.textContent = str || ''; 
+    return div.innerHTML; 
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2400);
+  }
+</script>
 </body>
 </html>

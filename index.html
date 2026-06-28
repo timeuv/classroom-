@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ฝากงาน</title>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
@@ -25,288 +24,98 @@
     --shadow: 0 2px 10px rgba(30,27,22,0.06);
   }
 
+  /* 🌙 โหมดกลางคืน */
+  body[data-theme="dark"] {
+    --bg: #14120F;
+    --ink: #F2EEE6;
+    --paper: #1D1A16;
+    --line: #3A352C;
+    --accent-soft: #3A2A1E;
+    --green-soft: #1E2E24;
+    --shadow: 0 2px 14px rgba(0,0,0,0.4);
+  }
+
   * { box-sizing: border-box; }
-
   body {
-    margin: 0;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    min-height: 100vh;
+    margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--ink); min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
   }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 24px 18px 60px; min-height: 100vh; }
 
-  .wrap {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 24px 18px 60px;
-    min-height: 100vh;
-  }
-
-  /* ---------- Header ---------- */
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px; /* ปรับ margin นิดหน่อยให้สวยขึ้น */
-  }
-
-  .brand {
-    font-size: 19px;
-    font-weight: 800;
-    letter-spacing: -0.3px;
-  }
+  /* ---------- Header & Features ---------- */
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .brand { font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
   .brand span { color: var(--accent); }
+  
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+  .theme-toggle { background: var(--paper); border: 1px solid var(--line); color: var(--ink); border-radius: 100px; padding: 6px 10px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+  .who { font-size: 13px; color: var(--muted); background: var(--paper); border: 1px solid var(--line); border-radius: 100px; padding: 6px 12px; cursor: pointer; }
+  .vip-badge { color: #D48806; background: #FFF4E5; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 4px; }
 
-  .who {
-    font-size: 13px;
-    color: var(--muted);
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 100px;
-    padding: 6px 12px;
-    cursor: pointer;
-  }
+  .announcement-banner { background: var(--accent-soft); color: var(--accent); padding: 12px 14px; border-radius: 10px; margin-bottom: 20px; font-size: 13.5px; font-weight: bold; border: 1.5px solid var(--accent); display: flex; align-items: center; gap: 8px; line-height: 1.4; }
 
   /* ---------- Login screen ---------- */
-  .login-card {
-    background: var(--paper);
-    border-radius: 20px;
-    padding: 32px 24px;
-    box-shadow: var(--shadow);
-    margin-top: 12vh;
-    text-align: center;
-  }
-
-  .login-card h1 {
-    font-size: 22px;
-    margin: 0 0 6px;
-  }
-  .login-card p.sub {
-    color: var(--muted);
-    font-size: 14px;
-    margin: 0 0 26px;
-  }
-
-  .number-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 8px;
-    margin-bottom: 22px;
-  }
-
-  .num-btn {
-    aspect-ratio: 1;
-    border: 1.5px solid var(--line);
-    background: var(--bg);
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.15s;
-  }
+  .login-card { background: var(--paper); border-radius: 20px; padding: 32px 24px; box-shadow: var(--shadow); margin-top: 12vh; text-align: center; transition: 0.3s; }
+  .login-card h1 { font-size: 22px; margin: 0 0 6px; }
+  .login-card p.sub { color: var(--muted); font-size: 14px; margin: 0 0 26px; }
+  .number-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 22px; }
+  .num-btn { aspect-ratio: 1; border: 1.5px solid var(--line); background: var(--bg); border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.15s; color: var(--ink); }
   .num-btn:hover { border-color: var(--accent); }
-  .num-btn.selected {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-  }
-
-  .pw-row {
-    display: none;
-    margin-bottom: 16px;
-  }
+  .num-btn.selected { background: var(--accent); border-color: var(--accent); color: white; }
+  .pw-row { display: none; margin-bottom: 16px; }
   .pw-row.show { display: block; }
+  .pw-row label { display: block; text-align: left; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
 
-  .pw-row label {
-    display: block;
-    text-align: left;
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-
-  input[type="password"], input[type="text"], input[type="number"], input[type="file"] {
-    width: 100%;
-    padding: 13px 14px;
-    border: 1.5px solid var(--line);
-    border-radius: 10px;
-    font-size: 16px;
-    background: var(--bg);
-    color: var(--ink);
-  }
-  input:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
-
-  .btn {
-    width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    border: none;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.15s;
-  }
-  .btn-primary {
-    background: var(--ink);
-    color: white;
-  }
-  .btn-primary:hover { background: #3a352c; }
+  input, textarea { width: 100%; padding: 13px 14px; border: 1.5px solid var(--line); border-radius: 10px; font-size: 16px; background: var(--bg); color: var(--ink); font-family: inherit; }
+  input:focus, textarea:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+  
+  .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.15s; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #b8521f; }
   .btn-primary:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
-
-  .error-msg {
-    color: #C0392B;
-    font-size: 13px;
-    margin-top: 10px;
-    display: none;
-  }
+  .error-msg { color: #C0392B; font-size: 13px; margin-top: 10px; display: none; }
   .error-msg.show { display: block; }
 
   /* ---------- Task list ---------- */
-  .section-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 0 0 10px 2px;
-  }
-
-  .task-card {
-    background: var(--paper);
-    border-radius: 14px;
-    padding: 16px 16px;
-    box-shadow: var(--shadow);
-    margin-bottom: 10px;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: 0.15s;
-  }
+  .section-label { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px 2px; }
+  .task-card { background: var(--paper); border-radius: 14px; padding: 16px 16px; box-shadow: var(--shadow); margin-bottom: 10px; cursor: pointer; border: 1px solid transparent; transition: 0.15s; }
   .task-card:hover { border-color: var(--accent); }
-  
   .task-card.opacity { opacity: 0.6; }
-
-  .task-title {
-    font-size: 15px;
-    font-weight: 700;
-    margin: 0 0 4px;
-  }
-  .task-meta {
-    font-size: 12.5px;
-    color: var(--muted);
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 30px 20px;
-    color: var(--muted);
-  }
+  .task-title { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
+  .task-meta { font-size: 12.5px; color: var(--muted); }
+  .empty-state { text-align: center; padding: 30px 20px; color: var(--muted); }
   .empty-state .ic { font-size: 38px; margin-bottom: 10px; }
 
   /* ---------- Modals ---------- */
-  .modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(30,27,22,0.45);
-    display: none;
-    align-items: flex-end;
-    justify-content: center;
-    z-index: 50;
-  }
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: flex-end; justify-content: center; z-index: 50; }
   .modal-backdrop.show { display: flex; }
-
-  .modal-sheet {
-    background: var(--paper);
-    width: 100%;
-    max-width: 480px;
-    border-radius: 20px 20px 0 0;
-    padding: 24px 20px 28px;
-    animation: slideUp 0.25s ease;
-  }
-  @keyframes slideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-
-  .modal-title {
-    font-size: 19px;
-    font-weight: 800;
-    margin: 0 0 4px;
-  }
-  .modal-meta {
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 16px;
-  }
-  .modal-desc {
-    font-size: 14.5px;
-    line-height: 1.6;
-    background: var(--bg);
-    border-radius: 10px;
-    padding: 14px;
-    margin-bottom: 20px;
-    white-space: pre-wrap;
-  }
-
+  .modal-sheet { background: var(--paper); width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; padding: 24px 20px 28px; animation: slideUp 0.25s ease; }
+  @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-title { font-size: 19px; font-weight: 800; margin: 0 0 4px; }
+  .modal-meta { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .modal-desc { font-size: 14.5px; line-height: 1.6; background: var(--bg); border-radius: 10px; padding: 14px; margin-bottom: 20px; white-space: pre-wrap; }
   .modal-actions { display: flex; flex-direction: column; gap: 10px; }
-
-  .btn-claim {
-    background: var(--accent);
-    color: white;
-  }
+  .btn-claim { background: var(--accent); color: white; }
   .btn-claim:hover { background: #b8521f; }
   .btn-claim:disabled { background: var(--line) !important; color: var(--muted) !important; cursor: not-allowed; }
-
-  .btn-self {
-    background: var(--paper);
-    color: var(--ink);
-    border: 1.5px solid var(--line);
-  }
+  .btn-self { background: var(--paper); color: var(--ink); border: 1.5px solid var(--line); }
   .btn-self:hover { border-color: var(--muted); }
   .btn-self:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .btn-done {
-    background: var(--green-soft);
-    color: var(--green);
-  }
-  .btn-done:hover { background: #d5e9dc; }
-
-  .btn-cancel {
-    background: transparent;
-    color: var(--muted);
-  }
-
-  .status-tag {
-    display: inline-block;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 100px;
-    margin-bottom: 12px;
-  }
+  .btn-done { background: var(--green-soft); color: var(--green); }
+  .btn-cancel { background: transparent; color: var(--muted); }
+  
+  .status-tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 100px; margin-bottom: 12px; }
   .status-tag.claimed { background: var(--accent-soft); color: var(--accent); }
   .status-tag.mine { background: var(--green-soft); color: var(--green); }
   .status-tag.alert { background: #FDECEC; color: #C0392B; }
   .status-tag.wait { background: #FFF4E5; color: #D48806; }
 
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--ink);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 100px;
-    font-size: 14px;
-    font-weight: 600;
-    opacity: 0;
-    transition: 0.25s;
-    pointer-events: none;
-    z-index: 100;
-    white-space: nowrap;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .checkbox-rush { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; color: #C0392B; background: #FDECEC; padding: 12px; border-radius: 10px; margin-bottom: 16px; cursor: pointer; border: 1px solid #C0392B; }
+  .checkbox-rush input { width: 18px; height: 18px; cursor: pointer; }
 
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1E1B16; color: white; padding: 12px 20px; border-radius: 100px; font-size: 14px; font-weight: 600; opacity: 0; transition: 0.25s; pointer-events: none; z-index: 100; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .hidden { display: none !important; }
 </style>
 </head>
@@ -314,32 +123,34 @@
 
 <div class="wrap">
 
-  <!-- ============ LOGIN SCREEN ============ -->
   <div id="loginScreen">
     <div class="login-card">
       <h1>เลขที่เท่าไหร่ครับ/คะ?</h1>
       <p class="sub">เลือกเลขที่ตัวเองแล้วใส่รหัส</p>
-
       <div class="number-grid" id="numberGrid"></div>
-
       <div class="pw-row" id="pwRow">
         <label id="pwLabel">รหัสของเลขที่ ...</label>
         <input type="password" id="pwInput" placeholder="กรอกรหัส" autocomplete="off">
       </div>
-
       <button class="btn btn-primary" id="loginBtn" disabled>เข้าสู่ระบบ</button>
       <div class="error-msg" id="loginError">รหัสไม่ถูกต้อง ลองใหม่อีกครั้ง</div>
     </div>
   </div>
 
-  <!-- ============ DASHBOARD ============ -->
   <div id="dashScreen" class="hidden">
     <div class="topbar">
       <div class="brand">ฝาก<span>งาน</span></div>
-      <div class="who" id="whoLabel" onclick="logout()">เลขที่ — · ออกจากระบบ</div>
+      <div class="header-actions">
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+        <div class="who" id="whoLabel" onclick="logout()">เลขที่ —</div>
+      </div>
     </div>
 
-    <!-- ย้ายปุ่มสั่งงานมาไว้ตรงนี้ เพื่อให้เห็นเสมอ ไม่ว่าจะซ่อนหมวดหมู่งานไหนไป -->
+    <!-- กระดานข่าวห้อง -->
+    <div id="announcementBanner" class="announcement-banner hidden">
+      <span style="font-size: 18px;">📢</span> <span id="announcementText"></span>
+    </div>
+
     <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
       <button style="background: var(--accent-soft); border: none; color: var(--accent); font-weight: bold; font-size: 13.5px; cursor: pointer; padding: 8px 14px; border-radius: 8px; box-shadow: 0 2px 4px rgba(212, 98, 42, 0.1);" onclick="openRequestModal()">➕ สั่งงานนอกระบบ</button>
     </div>
@@ -354,16 +165,13 @@
       <div id="completedList"></div>
     </div>
 
-    <!-- ย้าย empty state ให้ขยับขึ้นมาหน่อยเมื่อไม่มีงานค้าง -->
     <div class="empty-state hidden" id="emptyState" style="padding-top: 10px;">
       <div class="ic">📭</div>
-      <div>ตอนนี้ยังไม่มีงานเลย สบายใจได้!<br><span style="font-size: 12px; color: var(--accent); margin-top: 8px; display: inline-block;">(หรือกดสั่งงานนอกระบบด้านบนได้เลย)</span></div>
+      <div>ตอนนี้ยังไม่มีงานเลย สบายใจได้!<br><span style="font-size: 12px; color: var(--accent); margin-top: 8px; display: inline-block;">(หรือกดสั่งงานด่วนด้านบนได้เลย)</span></div>
     </div>
   </div>
 
 </div>
-
-<!-- ============ MODALS ============ -->
 
 <!-- Task Detail Modal -->
 <div class="modal-backdrop" id="modalBackdrop">
@@ -395,11 +203,16 @@
 <div class="modal-backdrop" id="reqModalBackdrop">
   <div class="modal-sheet">
     <h2 class="modal-title" style="margin-bottom: 8px;">➕ สั่งงานนอกระบบ</h2>
-    <p style="font-size: 14px; color: var(--muted); margin: 0 0 16px;">มีงานอะไรที่อยากให้ไทม์ช่วย พิมพ์บอกตรงนี้ได้เลย (จะเห็นแค่คุณกับไทม์)</p>
+    <p style="font-size: 14px; color: var(--muted); margin: 0 0 16px;">มีงานอะไรที่อยากให้ไทม์ช่วย พิมพ์บอกตรงนี้ได้เลย</p>
     
-    <input type="text" id="reqTitle" placeholder="ชื่องาน (เช่น ช่วยสรุปวิชาสังคมให้หน่อย)" style="width: 100%; padding: 13px; border-radius: 10px; border: 1.5px solid var(--line); margin-bottom: 10px; font-size: 15px;">
-    <textarea id="reqDesc" placeholder="รายละเอียดแบบจัดเต็ม..." style="width: 100%; padding: 13px; border-radius: 10px; border: 1.5px solid var(--line); margin-bottom: 16px; font-size: 14.5px; min-height: 80px; font-family: inherit; resize: vertical;"></textarea>
+    <input type="text" id="reqTitle" placeholder="ชื่องาน (เช่น ช่วยสรุปวิชาสังคมให้หน่อย)" style="margin-bottom: 10px;">
+    <textarea id="reqDesc" placeholder="รายละเอียดแบบจัดเต็ม..." style="margin-bottom: 16px; min-height: 80px;"></textarea>
     
+    <label class="checkbox-rush">
+      <input type="checkbox" id="reqRush">
+      🔥 ขอคิวด่วนไฟลุก! (บวกราคาเพิ่มนิดหน่อย)
+    </label>
+
     <div class="modal-actions" style="flex-direction: row; gap: 8px;">
       <button class="btn btn-cancel" style="flex: 1; border: 1.5px solid var(--line);" onclick="closeRequestModal()">ยกเลิก</button>
       <button class="btn btn-claim" style="flex: 1;" id="submitReqBtn" onclick="submitRequestTask()">ส่งให้ไทม์</button>
@@ -413,65 +226,72 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
+  // ⚠️ ใส่ลิ้งก์ Discord Webhook ตรงนี้ เพื่อรับการแจ้งเตือน
+  const DISCORD_WEBHOOK_URL = ""; 
+
   const MY_PROMPTPAY = "0963413738";
   const MY_NAME = "ณัฐพงศ์ เภกะนันทน์"; 
 
-  let selectedNumber = null;
-  let currentUser = null; 
-  let allTasks = [];
-  let allOrders = [];
-  let activeTaskId = null;
+  let selectedNumber = null; let currentUser = null; 
+  let allTasks = []; let allOrders = []; let activeTaskId = null;
+  let isVip = false;
+
+  // โหลด Theme สี
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️';
+  }
+
+  function toggleTheme() {
+    if (document.body.getAttribute('data-theme') === 'dark') {
+      document.body.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      document.getElementById('themeBtn').textContent = '🌙';
+    } else {
+      document.body.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      document.getElementById('themeBtn').textContent = '☀️';
+    }
+  }
+
+  // ส่งแจ้งเตือน Discord
+  async function sendDiscordNotify(message) {
+    if (!DISCORD_WEBHOOK_URL) return;
+    try { await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: message }) }); } 
+    catch (e) { console.error(e); }
+  }
 
   const numberGrid = document.getElementById('numberGrid');
   for (let i = 1; i <= 30; i++) {
     const b = document.createElement('button');
-    b.className = 'num-btn';
-    b.textContent = i;
+    b.className = 'num-btn'; b.textContent = i;
     b.onclick = () => selectNumber(i, b);
     numberGrid.appendChild(b);
   }
 
   function selectNumber(n, btnEl) {
-    selectedNumber = n;
-    document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('selected'));
-    btnEl.classList.add('selected');
-    document.getElementById('pwRow').classList.add('show');
-    document.getElementById('pwLabel').textContent = `รหัสของเลขที่ ${n}`;
-    document.getElementById('loginBtn').disabled = false;
-    document.getElementById('loginError').classList.remove('show');
-    document.getElementById('pwInput').value = '';
-    document.getElementById('pwInput').focus();
+    selectedNumber = n; document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('selected'));
+    btnEl.classList.add('selected'); document.getElementById('pwRow').classList.add('show');
+    document.getElementById('pwLabel').textContent = `รหัสของเลขที่ ${n}`; document.getElementById('loginBtn').disabled = false;
+    document.getElementById('loginError').classList.remove('show'); document.getElementById('pwInput').value = ''; document.getElementById('pwInput').focus();
   }
 
   document.getElementById('loginBtn').onclick = doLogin;
   document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
   async function doLogin() {
-    const pw = document.getElementById('pwInput').value.trim();
-    if (!selectedNumber || !pw) return;
-
-    const loginBtn = document.getElementById('loginBtn');
-    loginBtn.disabled = true;
-    loginBtn.textContent = 'กำลังตรวจสอบ...';
-
+    const pw = document.getElementById('pwInput').value.trim(); if (!selectedNumber || !pw) return;
+    const loginBtn = document.getElementById('loginBtn'); loginBtn.disabled = true; loginBtn.textContent = 'กำลังตรวจสอบ...';
     try {
-      const docRef = db.collection('users').doc(String(selectedNumber));
-      const docSnap = await docRef.get();
-
+      const docRef = db.collection('users').doc(String(selectedNumber)); const docSnap = await docRef.get();
       if (!docSnap.exists || docSnap.data().password !== pw) {
-        document.getElementById('loginError').classList.add('show');
-        loginBtn.disabled = false;
-        loginBtn.textContent = 'เข้าสู่ระบบ';
-        return;
+        document.getElementById('loginError').classList.add('show'); loginBtn.disabled = false; loginBtn.textContent = 'เข้าสู่ระบบ'; return;
       }
       currentUser = { studentId: String(selectedNumber), name: docSnap.data().name || `เลขที่ ${selectedNumber}` };
-      sessionStorage.setItem('cr_user', JSON.stringify(currentUser));
-      enterDashboard();
+      sessionStorage.setItem('cr_user', JSON.stringify(currentUser)); enterDashboard();
     } catch (err) {
-      document.getElementById('loginError').textContent = 'เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง';
-      document.getElementById('loginError').classList.add('show');
-      loginBtn.disabled = false;
-      loginBtn.textContent = 'เข้าสู่ระบบ';
+      document.getElementById('loginError').textContent = 'เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง'; document.getElementById('loginError').classList.add('show');
+      loginBtn.disabled = false; loginBtn.textContent = 'เข้าสู่ระบบ';
     }
   }
 
@@ -480,14 +300,24 @@
   function enterDashboard() {
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('dashScreen').classList.remove('hidden');
-    document.getElementById('whoLabel').textContent = `${currentUser.name} · ออกจากระบบ`;
-    listenToTasks(); listenToOrders();
+    listenToSettings(); listenToTasks(); listenToOrders();
   }
 
   (function restoreSession() {
     const saved = sessionStorage.getItem('cr_user');
     if (saved) { currentUser = JSON.parse(saved); enterDashboard(); }
   })();
+
+  function listenToSettings() {
+    db.collection('system_settings').doc('main').onSnapshot(snap => {
+      if (snap.exists && snap.data().announcement) {
+        document.getElementById('announcementText').textContent = snap.data().announcement;
+        document.getElementById('announcementBanner').classList.remove('hidden');
+      } else {
+        document.getElementById('announcementBanner').classList.add('hidden');
+      }
+    });
+  }
 
   function listenToTasks() {
     db.collection('assignments').orderBy('created_at', 'desc').onSnapshot(snap => {
@@ -497,31 +327,29 @@
 
   function listenToOrders() {
     db.collection('orders').onSnapshot(snap => {
-      allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderTasks();
+      allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() })); 
+      
+      // คำนวณ VIP (จ่ายเงินครบ 3 ครั้ง)
+      const paidCount = allOrders.filter(o => o.student_id === currentUser.studentId && o.status === 'paid').length;
+      isVip = paidCount >= 3;
+      document.getElementById('whoLabel').innerHTML = `${currentUser.name} ${isVip ? '<span class="vip-badge">👑 VIP</span>' : ''}`;
+      
+      renderTasks();
     });
   }
 
   function checkIsTestTask(title) {
-    if (!title) return false;
-    return title.includes('ทดลอง') || title.includes('ห้ามกด') || title === 'งานวิทยาศาสตร์' || title === 'วิทยาศาสตร์';
+    if (!title) return false; return title.includes('ทดลอง') || title.includes('ห้ามกด') || title === 'งานวิทยาศาสตร์' || title === 'วิทยาศาสตร์';
   }
 
   function renderTasks() {
-    const list = document.getElementById('taskList');
-    const compList = document.getElementById('completedList');
-    const empty = document.getElementById('emptyState');
-
-    list.innerHTML = ''; compList.innerHTML = '';
-    let hasPending = false; let hasCompleted = false;
+    const list = document.getElementById('taskList'); const compList = document.getElementById('completedList'); const empty = document.getElementById('emptyState');
+    list.innerHTML = ''; compList.innerHTML = ''; let hasPending = false; let hasCompleted = false;
 
     allTasks.forEach(t => {
-      // ซ่อนงานที่เพื่อนคนอื่นเป็นคนสั่งทำพิเศษ
       if (t.requested_by && t.requested_by !== currentUser.studentId) return;
-
       const order = allOrders.find(o => o.task_id === t.id && o.student_id === currentUser.studentId);
-      const card = document.createElement('div');
-      card.className = 'task-card';
-      card.onclick = () => openTask(t.id);
+      const card = document.createElement('div'); card.className = 'task-card'; card.onclick = () => openTask(t.id);
 
       let badge = ''; let isCompleted = false;
       let isTest = checkIsTestTask(t.title);
@@ -529,6 +357,7 @@
       
       let testBadgeHtml = isTest ? '<span style="color: #C0392B; font-size: 11px; font-weight: bold; background: #FDECEC; padding: 2px 6px; border-radius: 4px; display: inline-block;">⚠️ ทดลองระบบ</span>' : '';
       let customBadgeHtml = isCustom ? '<span style="color: #D4622A; font-size: 11px; font-weight: bold; background: #FBE9DD; padding: 2px 6px; border-radius: 4px; display: inline-block;">ที่คุณเสนอ</span>' : '';
+      let rushBadgeHtml = order && order.is_rush ? '<span style="color: #fff; font-size: 11px; font-weight: bold; background: #E8836A; padding: 2px 6px; border-radius: 4px; display: inline-block;">🔥 ด่วน!</span>' : '';
 
       if (order) {
         if (order.status === 'pending') badge = ' · ⏳ ไทม์กำลังทำ';
@@ -544,7 +373,7 @@
 
       card.innerHTML = `
         <div class="task-title" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
-          ${escapeHtml(t.title)} ${testBadgeHtml} ${customBadgeHtml}
+          ${escapeHtml(t.title)} ${testBadgeHtml} ${customBadgeHtml} ${rushBadgeHtml}
         </div>
         <div class="task-meta">${formatDate(t.due_date)}${badge}</div>
       `;
@@ -559,8 +388,7 @@
   }
 
   function showPromptPay() {
-    const pd = document.getElementById('payDetails');
-    const ppNumber = MY_PROMPTPAY.replace(/[^0-9]/g, ''); 
+    const pd = document.getElementById('payDetails'); const ppNumber = MY_PROMPTPAY.replace(/[^0-9]/g, ''); 
     pd.innerHTML = `
       <img src="https://promptpay.io/${ppNumber}" style="width: 160px; height: 160px; margin-bottom: 12px; border-radius: 8px;">
       <div style="font-weight: 800; font-size: 16px;">พร้อมเพย์: ${MY_PROMPTPAY}</div>
@@ -596,6 +424,7 @@
         if (order) {
           try {
             await db.collection('orders').doc(order.id).update({ status: 'checking_slip', slip_image: base64String });
+            sendDiscordNotify(`🔔 💸 **${currentUser.name}** ส่งสลิปโอนเงินมาให้ตรวจสอบแล้ว ไปดูที่หน้าเว็บเร็วเข้า!`);
             showToast('ส่งสลิปเรียบร้อย รอไทม์ตรวจสอบนะครับ ⏳'); closeModal();
           } catch (err) {
             console.error(err); showToast('ส่งไม่สำเร็จ ลองใหม่อีกครั้ง'); btn.disabled = false; btn.textContent = "ส่งสลิป";
@@ -615,8 +444,7 @@
 
   function openTask(taskId) {
     activeTaskId = taskId;
-    const t = allTasks.find(x => x.id === taskId);
-    if (!t) return;
+    const t = allTasks.find(x => x.id === taskId); if (!t) return;
     const order = allOrders.find(o => o.task_id === taskId && o.student_id === currentUser.studentId);
 
     let isTest = checkIsTestTask(t.title);
@@ -626,30 +454,18 @@
     document.getElementById('modalMeta').textContent = formatDate(t.due_date);
     document.getElementById('modalDesc').textContent = t.description || 'ไม่มีรายละเอียดเพิ่มเติม';
 
-    const statusTag = document.getElementById('statusTag');
-    const claimBtn = document.getElementById('claimBtn');
-    const selfBtn = document.getElementById('selfBtn');
-    const selfDoneBtn = document.getElementById('selfDoneBtn');
-    const paymentSection = document.getElementById('paymentSection');
-    const payDetails = document.getElementById('payDetails');
+    const statusTag = document.getElementById('statusTag'); const claimBtn = document.getElementById('claimBtn'); const selfBtn = document.getElementById('selfBtn'); const selfDoneBtn = document.getElementById('selfDoneBtn'); const paymentSection = document.getElementById('paymentSection'); const payDetails = document.getElementById('payDetails');
 
-    statusTag.className = 'status-tag hidden';
-    claimBtn.classList.add('hidden'); selfBtn.classList.add('hidden'); selfDoneBtn.classList.add('hidden');
-    paymentSection.classList.add('hidden'); payDetails.classList.add('hidden');
-    claimBtn.disabled = false; selfBtn.disabled = false;
-    claimBtn.textContent = 'ให้ไทม์ทำงานนี้';
+    statusTag.className = 'status-tag hidden'; claimBtn.classList.add('hidden'); selfBtn.classList.add('hidden'); selfDoneBtn.classList.add('hidden'); paymentSection.classList.add('hidden'); payDetails.classList.add('hidden'); claimBtn.disabled = false; selfBtn.disabled = false; claimBtn.textContent = 'ให้ไทม์ทำงานนี้';
 
-    if (isTest) {
-      claimBtn.disabled = true; claimBtn.textContent = '⚠️ งานนี้ตั้งไว้ทดสอบระบบเท่านั้น'; selfBtn.disabled = true;
-    }
+    if (isTest) { claimBtn.disabled = true; claimBtn.textContent = '⚠️ งานนี้ตั้งไว้ทดสอบระบบเท่านั้น'; selfBtn.disabled = true; }
 
     if (!order) {
       claimBtn.classList.remove('hidden'); selfBtn.classList.remove('hidden');
     } else if (order.status === 'pending') {
       statusTag.textContent = 'ไทม์กำลังทำงานนี้ให้คุณอยู่ ⏳'; statusTag.className = 'status-tag claimed'; statusTag.classList.remove('hidden');
     } else if (order.status === 'done') {
-      statusTag.textContent = 'ไทม์ทำเสร็จแล้ว! รอชำระเงิน'; statusTag.className = 'status-tag alert'; statusTag.classList.remove('hidden');
-      paymentSection.classList.remove('hidden');
+      statusTag.textContent = 'ไทม์ทำเสร็จแล้ว! รอชำระเงิน'; statusTag.className = 'status-tag alert'; statusTag.classList.remove('hidden'); paymentSection.classList.remove('hidden');
     } else if (order.status === 'checking_slip') {
       statusTag.textContent = 'กำลังรอไทม์ตรวจสอบสลิป 🔎'; statusTag.className = 'status-tag wait'; statusTag.classList.remove('hidden');
     } else if (order.status === 'paid') {
@@ -660,19 +476,16 @@
       statusTag.textContent = 'คุณทำเองเสร็จแล้ว (ส่งแล้ว) ✅'; statusTag.className = 'status-tag mine'; statusTag.classList.remove('hidden');
     } else if (order.status === 'rejected') {
       statusTag.textContent = '❌ ไทม์ปฏิเสธรับงานนี้ (อาจจะยุ่งหรือคิวเต็ม 🙏)'; statusTag.className = 'status-tag alert'; statusTag.classList.remove('hidden');
-      claimBtn.disabled = true; claimBtn.textContent = 'โดนปฏิเสธแล้ว'; claimBtn.classList.remove('hidden');
-      selfBtn.classList.remove('hidden'); 
+      claimBtn.disabled = true; claimBtn.textContent = 'โดนปฏิเสธแล้ว'; claimBtn.classList.remove('hidden'); selfBtn.classList.remove('hidden'); 
     }
-
     document.getElementById('modalBackdrop').classList.add('show');
   }
 
   function closeModal() { document.getElementById('modalBackdrop').classList.remove('show'); activeTaskId = null; }
 
-  // --- ฟังก์ชันสั่งงานนอกระบบ (ใหม่) ---
   function openRequestModal() {
-    document.getElementById('reqTitle').value = '';
-    document.getElementById('reqDesc').value = '';
+    document.getElementById('reqTitle').value = ''; document.getElementById('reqDesc').value = '';
+    document.getElementById('reqRush').checked = false;
     document.getElementById('reqModalBackdrop').classList.add('show');
     setTimeout(() => document.getElementById('reqTitle').focus(), 100);
   }
@@ -682,71 +495,55 @@
   async function submitRequestTask() {
     const title = document.getElementById('reqTitle').value.trim();
     const desc = document.getElementById('reqDesc').value.trim();
+    const isRush = document.getElementById('reqRush').checked;
     if (!title) { showToast('ใส่ชื่องานให้หน่อยนะ!'); return; }
 
-    const btn = document.getElementById('submitReqBtn');
-    btn.disabled = true; btn.textContent = 'กำลังส่ง...';
+    const btn = document.getElementById('submitReqBtn'); btn.disabled = true; btn.textContent = 'กำลังส่ง...';
 
     try {
       const docRef = await db.collection('assignments').add({
-        title: title,
-        description: desc,
-        due_date: null,
-        created_at: firebase.firestore.FieldValue.serverTimestamp(),
-        source: 'friend_request',
-        requested_by: currentUser.studentId
+        title: title, description: desc, due_date: null, created_at: firebase.firestore.FieldValue.serverTimestamp(), source: 'friend_request', requested_by: currentUser.studentId
+      });
+      await db.collection('orders').add({
+        task_id: docRef.id, student_id: currentUser.studentId, student_name: currentUser.name, status: 'pending', price: null, is_rush: isRush, created_at: firebase.firestore.FieldValue.serverTimestamp()
       });
       
-      await db.collection('orders').add({
-        task_id: docRef.id,
-        student_id: currentUser.studentId,
-        student_name: currentUser.name,
-        status: 'pending',
-        price: null,
-        created_at: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      let rushText = isRush ? "🔥 **(งานด่วนไฟลุก!)**" : "";
+      let vipText = isVip ? "👑 *(ลูกค้า VIP)*" : "";
+      sendDiscordNotify(`🔔 **มีออเดอร์ใหม่!**\n> **${currentUser.name}** ${vipText} สั่งงานนอกระบบมา: "${title}" ${rushText}`);
 
-      showToast('ส่งงานให้ไทม์แล้ว รอไทม์รับงานนะ 🙌');
-      closeRequestModal();
-    } catch (err) {
-      console.error(err);
-      showToast('ส่งไม่สำเร็จ ลองอีกครั้งนะ');
-    } finally {
-      btn.disabled = false; btn.textContent = 'ส่งให้ไทม์';
-    }
+      showToast('ส่งงานให้ไทม์แล้ว รอไทม์รับงานนะ 🙌'); closeRequestModal();
+    } catch (err) { console.error(err); showToast('ส่งไม่สำเร็จ ลองอีกครั้งนะ'); } 
+    finally { btn.disabled = false; btn.textContent = 'ส่งให้ไทม์'; }
   }
 
   async function claimTask() {
     if (!activeTaskId) return;
     const claimBtn = document.getElementById('claimBtn'); claimBtn.disabled = true; claimBtn.textContent = 'กำลังบันทึก...';
     try {
+      const t = allTasks.find(x => x.id === activeTaskId);
       await db.collection('orders').add({ task_id: activeTaskId, student_id: currentUser.studentId, student_name: currentUser.name, status: 'pending', price: null, created_at: firebase.firestore.FieldValue.serverTimestamp() });
+      
+      let vipText = isVip ? "👑 *(ลูกค้า VIP)*" : "";
+      sendDiscordNotify(`🔔 **มีเพื่อนกดให้ทำงาน!**\n> **${currentUser.name}** ${vipText} ส่งงานห้องให้ไทม์ทำ: "${t ? t.title : 'งานจากระบบ'}"`);
+
       showToast('สั่งงานให้ไทม์ทำเรียบร้อย เดี๋ยวรีบทำให้นะ 🙌'); closeModal();
     } catch (err) { showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); claimBtn.disabled = false; claimBtn.textContent = 'ให้ไทม์ทำงานนี้'; }
   }
 
   async function startSelfTask() {
-    if (!activeTaskId) return;
-    const selfBtn = document.getElementById('selfBtn'); selfBtn.disabled = true;
-    
+    if (!activeTaskId) return; const selfBtn = document.getElementById('selfBtn'); selfBtn.disabled = true;
     try {
       const existingOrder = allOrders.find(o => o.task_id === activeTaskId && o.student_id === currentUser.studentId);
-      if (existingOrder) {
-        await db.collection('orders').doc(existingOrder.id).update({ status: 'self_working' });
-      } else {
-        await db.collection('orders').add({ task_id: activeTaskId, student_id: currentUser.studentId, student_name: currentUser.name, status: 'self_working', price: 0, created_at: firebase.firestore.FieldValue.serverTimestamp() });
-      }
+      if (existingOrder) await db.collection('orders').doc(existingOrder.id).update({ status: 'self_working' });
+      else await db.collection('orders').add({ task_id: activeTaskId, student_id: currentUser.studentId, student_name: currentUser.name, status: 'self_working', price: 0, created_at: firebase.firestore.FieldValue.serverTimestamp() });
       showToast('ใช้เว็บนี้จดไว้ได้เลย สู้ๆ นะ! ✍️'); closeModal();
     } catch (err) { showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); selfBtn.disabled = false; }
   }
 
   async function finishSelfTask() {
-    if (!activeTaskId) return;
-    const order = allOrders.find(o => o.task_id === activeTaskId && o.student_id === currentUser.studentId); if (!order) return;
-    try {
-      await db.collection('orders').doc(order.id).update({ status: 'self_done' });
-      showToast('เก่งมาก! ทำเครื่องหมายว่าส่งงานแล้ว ✅'); closeModal();
-    } catch (err) { showToast('อัปเดตไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+    if (!activeTaskId) return; const order = allOrders.find(o => o.task_id === activeTaskId && o.student_id === currentUser.studentId); if (!order) return;
+    try { await db.collection('orders').doc(order.id).update({ status: 'self_done' }); showToast('เก่งมาก! ทำเครื่องหมายว่าส่งงานแล้ว ✅'); closeModal(); } catch (err) { showToast('อัปเดตไม่สำเร็จ ลองใหม่อีกครั้ง'); }
   }
 
   function formatDate(ts) {

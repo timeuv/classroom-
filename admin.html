@@ -20,6 +20,8 @@
     --green: #5FAE82;
     --green-soft: #1E2E24;
     --red: #E8836A;
+    --yellow: #D48806;
+    --yellow-soft: #2B2111;
     --muted: #9A9286;
     --shadow: 0 2px 14px rgba(0,0,0,0.3);
   }
@@ -166,6 +168,7 @@
   }
   .order-card.pending { border-left-color: var(--accent); }
   .order-card.done { border-left-color: var(--green); }
+  .order-card.checking { border-left-color: var(--yellow); }
 
   .order-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
   .order-title { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
@@ -180,6 +183,7 @@
   }
   .tag.pending { background: var(--accent-soft); color: var(--accent); }
   .tag.done { background: var(--green-soft); color: var(--green); }
+  .tag.checking { background: var(--yellow-soft); color: var(--yellow); }
 
   .order-actions { margin-top: 12px; display: flex; gap: 8px; }
   .btn {
@@ -190,6 +194,8 @@
   .btn-mark-done:hover { background: #28402f; }
   .btn-pay { background: var(--accent); color: white; }
   .btn-pay:hover { background: #b8521f; }
+  .btn-verify { background: #003D6B; color: white; }
+  .btn-verify:hover { background: #002B4D; }
 
   .empty-state { text-align: center; padding: 30px; color: var(--muted); font-size: 14px; }
 
@@ -251,7 +257,7 @@
   .modal-backdrop.show { display: flex; }
   .modal-box {
     background: var(--paper); border-radius: 16px; padding: 24px;
-    width: 90%; max-width: 360px; box-shadow: var(--shadow);
+    width: 90%; max-width: 380px; box-shadow: var(--shadow);
   }
   .modal-box h3 { margin: 0 0 4px; font-size: 17px; }
   .modal-box p { margin: 0 0 16px; color: var(--muted); font-size: 13px; }
@@ -312,7 +318,7 @@
   <div id="pendingList"></div>
   <div class="empty-state hidden" id="pendingEmpty">ยังไม่มีใครรับงานตอนนี้</div>
 
-  <p class="section-label">✅ ทำเสร็จแล้ว รอส่ง/รอรับเงิน</p>
+  <p class="section-label">✅ ทำเสร็จแล้ว รอส่ง/รอรับเงิน/ตรวจสอบ</p>
   <div id="doneList"></div>
   <div class="empty-state hidden" id="doneEmpty">ไม่มีงานที่ทำเสร็จรออยู่</div>
 
@@ -360,7 +366,7 @@
   </div>
 </div>
 
-<!-- รับเงิน -->
+<!-- รับเงินสด -->
 <div class="modal-backdrop" id="payModal">
   <div class="modal-box">
     <h3>บันทึกยอดเงิน</h3>
@@ -369,6 +375,20 @@
     <div class="row">
       <button class="btn btn-cancel2" onclick="closePayModal()">ยกเลิก</button>
       <button class="btn btn-confirm" onclick="confirmPayment()">ยืนยันรับเงินแล้ว</button>
+    </div>
+  </div>
+</div>
+
+<!-- ตรวจสอบสลิป (ใหม่) -->
+<div class="modal-backdrop" id="verifySlipModal">
+  <div class="modal-box">
+    <h3>ตรวจสอบสลิปการโอนเงิน</h3>
+    <p id="verifyContext"></p>
+    <img id="slipImagePreview" src="" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-bottom: 12px; border: 1.5px solid var(--line);">
+    <input type="number" id="verifyAmount" placeholder="ยอดเงินตามสลิป (บาท)" inputmode="numeric">
+    <div class="row">
+      <button class="btn btn-cancel2" onclick="closeVerifyModal()">ปิด</button>
+      <button class="btn btn-confirm" onclick="confirmVerifyPayment()">ยืนยันยอดนี้</button>
     </div>
   </div>
 </div>
@@ -441,6 +461,11 @@
           if (!knownOrderIds.has(o.id) && o.status === 'pending') {
             showToast(`🔔 มีคนรับงานใหม่: ${o.student_name || 'เลขที่ ' + o.student_id}`);
           }
+          // เด้งเตือนเมื่อมีคนส่งสลิปมาใหม่
+          if (!knownOrderIds.has(o.id + '_slip') && o.status === 'checking_slip') {
+            showToast(`🔎 ${o.student_name || 'เลขที่ ' + o.student_id} ส่งสลิปมาให้ตรวจแล้ว!`);
+            knownOrderIds.add(o.id + '_slip');
+          }
         });
       }
       knownOrderIds = new Set(newOrders.map(o => o.id));
@@ -474,13 +499,13 @@
     const monthlySummaryList = document.getElementById('monthlySummaryList');
 
     const pending = allOrders.filter(o => o.status === 'pending');
-    const done = allOrders.filter(o => o.status === 'done');
+    // รวมรายการที่ทำเสร็จแล้ว และรายการที่รอตรวจสลิปไว้ด้วยกัน
+    const doneOrChecking = allOrders.filter(o => o.status === 'done' || o.status === 'checking_slip');
     const paid = allOrders.filter(o => o.status === 'paid');
 
     document.getElementById('pendingEmpty').classList.toggle('hidden', pending.length > 0);
-    document.getElementById('doneEmpty').classList.toggle('hidden', done.length > 0);
+    document.getElementById('doneEmpty').classList.toggle('hidden', doneOrChecking.length > 0);
 
-    // เรนเดอร์งานที่กำลังทำ / รอรับเงิน
     pendingList.innerHTML = pending.map(o => `
       <div class="order-card pending">
         <div class="order-top">
@@ -497,21 +522,35 @@
       </div>
     `).join('');
 
-    doneList.innerHTML = done.map(o => `
-      <div class="order-card done">
-        <div class="order-top">
-          <div>
-            <div class="order-title">${escapeHtml(taskTitle(o.task_id))}</div>
-            <div class="order-who">${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))}</div>
+    doneList.innerHTML = doneOrChecking.map(o => {
+      let statusTag = '';
+      let actionBtn = '';
+      let cardClass = '';
+
+      if (o.status === 'done') {
+        cardClass = 'done';
+        statusTag = '<span class="tag done">รอเพื่อนโอนเงิน/จ่ายสด</span>';
+        actionBtn = `<button class="btn btn-pay" onclick="openPayModal('${o.id}')">กดรับเงิน (กรณีจ่ายสด)</button>`;
+      } else if (o.status === 'checking_slip') {
+        cardClass = 'checking';
+        statusTag = '<span class="tag checking">แนบสลิปแล้ว รอคุณตรวจสอบ</span>';
+        actionBtn = `<button class="btn btn-verify" onclick="openVerifyModal('${o.id}')">ตรวจสอบสลิป</button>`;
+      }
+
+      return `
+        <div class="order-card ${cardClass}">
+          <div class="order-top">
+            <div>
+              <div class="order-title">${escapeHtml(taskTitle(o.task_id))}</div>
+              <div class="order-who">${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))}</div>
+            </div>
+            <div class="order-time">${formatTime(o.created_at)}</div>
           </div>
-          <div class="order-time">${formatTime(o.created_at)}</div>
+          ${statusTag}
+          <div class="order-actions">${actionBtn}</div>
         </div>
-        <span class="tag done">เสร็จแล้ว · รอรับเงิน</span>
-        <div class="order-actions">
-          <button class="btn btn-pay" onclick="openPayModal('${o.id}')">เพื่อนจ่ายเงินแล้ว</button>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     // ประวัติทั้งหมด
     const historyItems = [
@@ -617,7 +656,7 @@
     }
   }
 
-  // --- ฟังก์ชันลบงาน (ใหม่) ---
+  // --- ฟังก์ชันลบงาน ---
   function openManageTasksModal() {
     const list = document.getElementById('manageTaskList');
     list.innerHTML = allTasks.map(t => `
@@ -638,21 +677,21 @@
     try {
       await db.collection('assignments').doc(taskId).delete();
       showToast('ลบงานออกจากระบบแล้ว 🗑️');
-      openManageTasksModal(); // โหลดข้อมูลใหม่ในกล่องหลังลบ
+      openManageTasksModal(); 
     } catch (err) {
       console.error(err);
       showToast('ลบไม่สำเร็จ ลองใหม่อีกครั้ง');
     }
   }
-  // -------------------------
-
+  
   async function markOrderDone(orderId) {
     try {
       await db.collection('orders').doc(orderId).update({ status: 'done' });
-      showToast('อัปเดตเป็น "ทำเสร็จแล้ว" แล้ว');
+      showToast('ส่งแจ้งเตือนให้เพื่อนโอนเงินแล้ว!');
     } catch (err) { console.error(err); showToast('อัปเดตไม่สำเร็จ'); }
   }
 
+  // --- Modal สำหรับรับเงินสด ---
   function openPayModal(orderId) {
     activeOrderId = orderId;
     const order = allOrders.find(o => o.id === orderId);
@@ -661,8 +700,29 @@
     document.getElementById('payModal').classList.add('show');
     setTimeout(() => document.getElementById('payAmount').focus(), 100);
   }
-
   function closePayModal() { document.getElementById('payModal').classList.remove('show'); activeOrderId = null; }
+
+  // --- Modal สำหรับตรวจสอบสลิป (ใหม่) ---
+  function openVerifyModal(orderId) {
+    activeOrderId = orderId;
+    const order = allOrders.find(o => o.id === orderId);
+    document.getElementById('verifyContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`;
+    document.getElementById('slipImagePreview').src = order.slip_image || ''; // แสดงรูปภาพสลิปที่เซฟมา
+    document.getElementById('verifyAmount').value = '';
+    document.getElementById('verifySlipModal').classList.add('show');
+    setTimeout(() => document.getElementById('verifyAmount').focus(), 100);
+  }
+  function closeVerifyModal() { document.getElementById('verifySlipModal').classList.remove('show'); activeOrderId = null; }
+
+  async function confirmVerifyPayment() {
+    const amount = parseFloat(document.getElementById('verifyAmount').value);
+    if (!activeOrderId || isNaN(amount) || amount <= 0) { showToast('กรอกจำนวนเงินให้ถูกต้อง'); return; }
+    try {
+      await db.collection('orders').doc(activeOrderId).update({ status: 'paid', price: amount, paid_at: firebase.firestore.FieldValue.serverTimestamp() });
+      showToast(`ตรวจสลิปเรียบร้อย +${amount.toLocaleString('th-TH')} บาท`);
+      closeVerifyModal();
+    } catch (err) { console.error(err); showToast('บันทึกไม่สำเร็จ'); }
+  }
 
   async function confirmPayment() {
     const amount = parseFloat(document.getElementById('payAmount').value);

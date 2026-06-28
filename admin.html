@@ -146,19 +146,33 @@
     font-size: 14.5px; 
   }
 
-  /* ---- Config Block ---- */
+  /* ---- Config Block (แผงควบคุมใหม่) ---- */
   .config-box { 
     background: var(--paper); 
     padding: 16px; 
     border-radius: 14px; 
-    margin-bottom: 24px; 
-    border: 1.5px dashed var(--line); 
-    display: flex; 
-    gap: 8px; 
-    align-items: center; 
+    margin-bottom: 12px; 
+    border: 1.5px solid var(--line); 
   }
 
-  .config-box input { 
+  .config-box-title {
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .config-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .config-box input, .config-box select { 
     flex: 1; 
     padding: 10px; 
     border-radius: 8px; 
@@ -179,11 +193,43 @@
     white-space: nowrap; 
   }
 
+  .admin-sv-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .admin-sv-item {
+    background: var(--bg);
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    border-left: 3px solid var(--line);
+  }
+
+  .admin-sv-item.red { border-left-color: #C0392B; }
+  .admin-sv-item.yellow { border-left-color: #D48806; }
+  .admin-sv-item.green { border-left-color: var(--green); }
+
+  .btn-del-sv {
+    background: transparent;
+    color: var(--red);
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+  }
+
   .action-row { 
     display: flex; 
     flex-wrap: wrap; 
     gap: 8px; 
     margin-bottom: 22px; 
+    margin-top: 24px;
   }
 
   .btn-secondary { 
@@ -513,13 +559,46 @@
 
   <div class="notice-box">
     <strong>📢 หมายเหตุความโปร่งใส</strong>
-    ข้อมูลประวัติและยอดเงินทั้งหมดที่เกิดขึ้น <b>ก่อนวันที่ 30 มิถุนายน</b> เป็นเพียงการ "ทดสอบระบบ" เท่านั้น เนื่องจากระบบถูกออกแบบมาให้อ่านได้อย่างเดียวและไม่สามารถแก้ไขประวัติย้อนหลังได้ เพื่อให้ตรวจสอบยอดเงินได้โปร่งใส 100%
+    ข้อมูลประวัติและยอดเงินทั้งหมดที่เกิดขึ้น <b>ก่อนวันที่ 30 มิถุนายน</b> เป็นเพียงการ "ทดสอบระบบ" เท่านั้น
   </div>
 
+  <!-- โซนที่ 1: กระดานข่าว -->
   <div class="config-box">
-    <span style="font-size: 18px;">📢</span>
-    <input type="text" id="adminAnnouncement" placeholder="พิมพ์กระดานข่าวแจ้งเตือนเพื่อนๆ ที่นี่...">
-    <button onclick="saveAnnouncement()">อัปเดต</button>
+    <div class="config-box-title">📢 กระดานข่าวห้อง (ตัววิ่ง)</div>
+    <div class="config-row">
+      <input type="text" id="adminAnnouncement" placeholder="พิมพ์แจ้งเตือนเพื่อนๆ ที่นี่...">
+      <button onclick="saveAnnouncement()">อัปเดต</button>
+    </div>
+  </div>
+
+  <!-- โซนที่ 2: ตั้งค่าคิวงาน -->
+  <div class="config-box">
+    <div class="config-box-title">🔥 ตั้งค่าคิวงานไทม์</div>
+    <div class="config-row">
+      <input type="number" id="qCurrent" placeholder="คิวปัจจุบัน" title="คิวปัจจุบัน" style="flex:0.5;">
+      <span style="font-weight:bold;">/</span>
+      <input type="number" id="qMax" placeholder="รับได้สูงสุด" title="รับได้สูงสุด" style="flex:0.5;">
+    </div>
+    <div class="config-row">
+      <input type="text" id="qEta" placeholder="เช่น เสร็จประมาณตี 2 (ปล่อยว่างได้)">
+      <button onclick="saveQueue()">อัปเดตคิว</button>
+    </div>
+  </div>
+
+  <!-- โซนที่ 3: ศูนย์บัญชาการ (เตือนสอบ/ส่งงาน) -->
+  <div class="config-box">
+    <div class="config-box-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</div>
+    <div class="config-row">
+      <input type="text" id="svText" placeholder="เช่น พรุ่งนี้: สอบคณิตศาสตร์" style="flex:2;">
+      <select id="svType" style="flex:1;">
+        <option value="red">🔴 ด่วน/สำคัญ</option>
+        <option value="yellow">🟡 ปานกลาง</option>
+        <option value="green">🟢 ทั่วไป</option>
+      </select>
+      <button onclick="addSurvivalItem()">เพิ่ม</button>
+    </div>
+    <!-- แสดงรายการที่เพิ่มไว้ -->
+    <div class="admin-sv-list" id="adminSurvivalList"></div>
   </div>
 
   <div class="action-row">
@@ -639,14 +718,16 @@
   let allIncomeLogs = []; 
   let loyaltyData = {};
   let activeOrderId = null; 
-  let firstLoad = true; 
   let isHistoryExpanded = false;
+  
+  // ตัวแปรเก็บข้อมูลศูนย์บัญชาการ
+  let currentSurvivalItems = [];
 
   const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
   function checkAdminPw() {
     const val = document.getElementById('adminPw').value;
-    document.getElementById('gateErr').classList.remove('show'); // ล้างข้อความค้าง
+    document.getElementById('gateErr').classList.remove('show');
     
     if (val === ADMIN_PASSWORD) { 
       sessionStorage.setItem('cr_admin_ok', '1'); 
@@ -661,7 +742,6 @@
     if (e.key === 'Enter') checkAdminPw(); 
   });
   
-  // ซ่อนข้อความแจ้งเตือนทันทีที่เริ่มพิมพ์
   document.getElementById('adminPw').addEventListener('input', () => {
     document.getElementById('gateErr').classList.remove('show');
   });
@@ -681,14 +761,28 @@
     listenToIncomeLogs();
   }
 
+  // ดึงการตั้งค่าระบบ (รวมถึงคิวงานและศูนย์บัญชาการ)
   function listenToSettings() {
     db.collection('system_settings').doc('main').onSnapshot(snap => {
-      if(snap.exists && snap.data().announcement) {
-        document.getElementById('adminAnnouncement').value = snap.data().announcement;
+      if(snap.exists && snap.data()) {
+        const d = snap.data();
+        
+        // 1. กระดานข่าว
+        document.getElementById('adminAnnouncement').value = d.announcement || '';
+        
+        // 2. คิวงาน
+        document.getElementById('qCurrent').value = d.queue_current !== undefined ? d.queue_current : 0;
+        document.getElementById('qMax').value = d.queue_max !== undefined ? d.queue_max : 5;
+        document.getElementById('qEta').value = d.queue_eta || '';
+        
+        // 3. ศูนย์บัญชาการ
+        currentSurvivalItems = d.survival_items || [];
+        renderAdminSurvivalList();
       }
     });
   }
 
+  // เซฟกระดานข่าว
   async function saveAnnouncement() {
     const txt = document.getElementById('adminAnnouncement').value.trim();
     try {
@@ -697,6 +791,82 @@
     } catch (e) { 
       showToast('อัปเดตไม่สำเร็จ'); 
     }
+  }
+
+  // เซฟคิวงาน
+  async function saveQueue() {
+    const curr = parseInt(document.getElementById('qCurrent').value) || 0;
+    const max = parseInt(document.getElementById('qMax').value) || 5;
+    const eta = document.getElementById('qEta').value.trim();
+    try {
+      await db.collection('system_settings').doc('main').set({ 
+        queue_current: curr, 
+        queue_max: max, 
+        queue_eta: eta 
+      }, { merge: true });
+      showToast('อัปเดตคิวงานเรียบร้อย! 🔥');
+    } catch (e) {
+      showToast('อัปเดตคิวไม่สำเร็จ');
+    }
+  }
+
+  // เพิ่มรายการศูนย์บัญชาการ
+  async function addSurvivalItem() {
+    const txt = document.getElementById('svText').value.trim();
+    const type = document.getElementById('svType').value;
+    
+    if(!txt) return;
+    
+    currentSurvivalItems.push({ text: txt, type: type });
+    
+    try {
+      await db.collection('system_settings').doc('main').set({ 
+        survival_items: currentSurvivalItems 
+      }, { merge: true });
+      
+      document.getElementById('svText').value = '';
+      showToast('เพิ่มรายการแจ้งเตือนแล้ว 🛡️');
+    } catch (e) {
+      showToast('เพิ่มไม่สำเร็จ');
+    }
+  }
+
+  // ลบรายการศูนย์บัญชาการ
+  async function deleteSurvivalItem(index) {
+    if(!confirm('ลบรายการนี้ใช่ไหม?')) return;
+    
+    currentSurvivalItems.splice(index, 1);
+    
+    try {
+      await db.collection('system_settings').doc('main').set({ 
+        survival_items: currentSurvivalItems 
+      }, { merge: true });
+      showToast('ลบรายการแล้ว');
+    } catch (e) {
+      showToast('ลบไม่สำเร็จ');
+    }
+  }
+
+  // แสดงรายการศูนย์บัญชาการในฝั่ง Admin
+  function renderAdminSurvivalList() {
+    const list = document.getElementById('adminSurvivalList');
+    if(currentSurvivalItems.length === 0) {
+      list.innerHTML = '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">ยังไม่มีแจ้งเตือน</div>';
+      return;
+    }
+    
+    list.innerHTML = currentSurvivalItems.map((item, index) => {
+      let emoji = '🟢';
+      if(item.type === 'red') emoji = '🔴';
+      if(item.type === 'yellow') emoji = '🟡';
+      
+      return `
+        <div class="admin-sv-item ${item.type}">
+          <span>${emoji} ${escapeHtml(item.text)}</span>
+          <button class="btn-del-sv" onclick="deleteSurvivalItem(${index})">ลบ</button>
+        </div>
+      `;
+    }).join('');
   }
 
   function listenToTasks() { 
@@ -710,7 +880,7 @@
     db.collection('orders').orderBy('created_at', 'desc').onSnapshot(snap => {
       const newOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       
-      loyaltyData = {}; // ค้นหา VIP
+      loyaltyData = {};
       newOrders.forEach(o => {
         if (o.status === 'paid') {
           loyaltyData[o.student_id] = (loyaltyData[o.student_id] || 0) + 1;
@@ -744,7 +914,6 @@
     const historyList = document.getElementById('historyList'); 
     const monthlySummaryList = document.getElementById('monthlySummaryList');
 
-    // จัดลำดับ: งานด่วนมาก่อน
     let pending = allOrders.filter(o => o.status === 'pending');
     pending.sort((a,b) => (b.is_rush ? 1 : 0) - (a.is_rush ? 1 : 0));
 
@@ -757,7 +926,7 @@
     pendingList.innerHTML = pending.map(o => {
       const t = allTasks.find(x => x.id === o.task_id);
       const isCustom = t && t.source === 'friend_request';
-      const isVip = loyaltyData[o.student_id] >= 3;
+      const isVip = loyaltyData[o.student_id] >= 5;
       
       const customBadge = isCustom ? '<span style="color:#D4622A; font-size:11px; background:#FBE9DD; padding:2px 6px; border-radius:4px; margin-left:4px;">งานสั่งพิเศษ</span>' : '';
       const rushBadge = o.is_rush ? '<span class="tag rush">🔥 งานด่วนไฟลุก!</span>' : '';

@@ -228,6 +228,19 @@
     color: var(--muted);
     margin-top: 2px;
   }
+  .btn-view-slip {
+    margin-top: 8px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-block;
+  }
+  .btn-view-slip:hover { background: var(--accent-soft); }
 
   /* ---- history toggle ---- */
   .history-hidden { display: none !important; }
@@ -379,7 +392,7 @@
   </div>
 </div>
 
-<!-- ตรวจสอบสลิป (ใหม่) -->
+<!-- ตรวจสอบสลิปที่เพื่อนเพิ่งส่งมา (ทำงานอยู่) -->
 <div class="modal-backdrop" id="verifySlipModal">
   <div class="modal-box">
     <h3>ตรวจสอบสลิปการโอนเงิน</h3>
@@ -390,6 +403,16 @@
       <button class="btn btn-cancel2" onclick="closeVerifyModal()">ปิด</button>
       <button class="btn btn-confirm" onclick="confirmVerifyPayment()">ยืนยันยอดนี้</button>
     </div>
+  </div>
+</div>
+
+<!-- ดูสลิปย้อนหลังในหมวดประวัติ (ใหม่) -->
+<div class="modal-backdrop" id="viewHistorySlipModal">
+  <div class="modal-box">
+    <h3>หลักฐานการชำระเงิน</h3>
+    <p id="historySlipContext"></p>
+    <img id="historySlipImage" src="" style="width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; margin-bottom: 12px; border: 1.5px solid var(--line); background: #000;">
+    <button class="btn btn-cancel2" style="width: 100%; border-color: var(--line);" onclick="closeHistorySlipModal()">ปิดหน้าต่าง</button>
   </div>
 </div>
 
@@ -461,7 +484,6 @@
           if (!knownOrderIds.has(o.id) && o.status === 'pending') {
             showToast(`🔔 มีคนรับงานใหม่: ${o.student_name || 'เลขที่ ' + o.student_id}`);
           }
-          // เด้งเตือนเมื่อมีคนส่งสลิปมาใหม่
           if (!knownOrderIds.has(o.id + '_slip') && o.status === 'checking_slip') {
             showToast(`🔎 ${o.student_name || 'เลขที่ ' + o.student_id} ส่งสลิปมาให้ตรวจแล้ว!`);
             knownOrderIds.add(o.id + '_slip');
@@ -499,7 +521,6 @@
     const monthlySummaryList = document.getElementById('monthlySummaryList');
 
     const pending = allOrders.filter(o => o.status === 'pending');
-    // รวมรายการที่ทำเสร็จแล้ว และรายการที่รอตรวจสลิปไว้ด้วยกัน
     const doneOrChecking = allOrders.filter(o => o.status === 'done' || o.status === 'checking_slip');
     const paid = allOrders.filter(o => o.status === 'paid');
 
@@ -523,9 +544,7 @@
     `).join('');
 
     doneList.innerHTML = doneOrChecking.map(o => {
-      let statusTag = '';
-      let actionBtn = '';
-      let cardClass = '';
+      let statusTag = ''; let actionBtn = ''; let cardClass = '';
 
       if (o.status === 'done') {
         cardClass = 'done';
@@ -559,28 +578,38 @@
         title: taskTitle(o.task_id),
         from: o.student_name || ('เลขที่ ' + o.student_id),
         amount: o.price || 0,
-        time: o.paid_at || o.created_at
+        time: o.paid_at || o.created_at,
+        slip_image: o.slip_image || null // เช็กว่ามีรูปสลิปไหม
       })),
       ...allIncomeLogs.map(l => ({
         type: 'manual',
         title: l.reason || 'ได้รับเพิ่มเติม',
         from: l.from_name || 'ไม่ระบุ',
         amount: l.amount || 0,
-        time: l.logged_at
+        time: l.logged_at,
+        slip_image: null
       }))
     ].sort((a, b) => (b.time?.toMillis?.() || 0) - (a.time?.toMillis?.() || 0));
 
     document.getElementById('historyEmpty').classList.toggle('hidden', historyItems.length > 0);
     
-    // โชว์ประวัติพร้อมเช็กสถานะการย่อ/ขยาย
+    // โชว์ประวัติพร้อมสร้างปุ่มกดดูสลิป
     const MAX_HISTORY = 15;
     historyList.innerHTML = historyItems.map((item, index) => {
       const hideClass = (!isHistoryExpanded && index >= MAX_HISTORY) ? 'history-hidden' : '';
+      
+      // ถ้ามี slip_image ให้สร้างปุ่ม "ดูสลิป"
+      let slipBtnHtml = '';
+      if (item.slip_image) {
+        slipBtnHtml = `<button class="btn-view-slip" onclick="viewHistorySlip('${item.slip_image}', '${escapeHtml(item.title)}', '${escapeHtml(item.from)}')">📄 ดูสลิป</button>`;
+      }
+
       return `
         <div class="history-card ${hideClass}">
           <div class="history-left">
             <div class="order-title">${escapeHtml(item.title)}</div>
             <div class="order-who">ได้จาก ${escapeHtml(item.from)}</div>
+            ${slipBtnHtml}
           </div>
           <div class="history-right">
             <div class="history-amount">+${item.amount.toLocaleString('th-TH')} บาท</div>
@@ -656,6 +685,16 @@
     }
   }
 
+  // --- ฟังก์ชันดึงรูปสลิปในประวัติมาดู (ใหม่) ---
+  window.viewHistorySlip = function(imgSrc, title, from) {
+    document.getElementById('historySlipContext').textContent = `${title} · ${from}`;
+    document.getElementById('historySlipImage').src = imgSrc;
+    document.getElementById('viewHistorySlipModal').classList.add('show');
+  }
+  function closeHistorySlipModal() {
+    document.getElementById('viewHistorySlipModal').classList.remove('show');
+  }
+
   // --- ฟังก์ชันลบงาน ---
   function openManageTasksModal() {
     const list = document.getElementById('manageTaskList');
@@ -702,12 +741,12 @@
   }
   function closePayModal() { document.getElementById('payModal').classList.remove('show'); activeOrderId = null; }
 
-  // --- Modal สำหรับตรวจสอบสลิป (ใหม่) ---
+  // --- Modal สำหรับตรวจสอบสลิปที่เพิ่งส่ง ---
   function openVerifyModal(orderId) {
     activeOrderId = orderId;
     const order = allOrders.find(o => o.id === orderId);
     document.getElementById('verifyContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`;
-    document.getElementById('slipImagePreview').src = order.slip_image || ''; // แสดงรูปภาพสลิปที่เซฟมา
+    document.getElementById('slipImagePreview').src = order.slip_image || '';
     document.getElementById('verifyAmount').value = '';
     document.getElementById('verifySlipModal').classList.add('show');
     setTimeout(() => document.getElementById('verifyAmount').focus(), 100);

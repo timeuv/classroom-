@@ -316,7 +316,7 @@
     transform: scale(1.1); 
   }
 
-  /* 🔥 หลอดพลังคิวงาน (แสดงผลจากฐานข้อมูล) */
+  /* 🔥 หลอดพลังคิวงาน */
   .capacity-box { 
     background: var(--paper); 
     border: 2px solid #C0392B; 
@@ -371,7 +371,7 @@
     font-weight: bold; 
   }
 
-  /* 🛡️ ศูนย์บัญชาการเอาตัวรอด (แสดงผลจากฐานข้อมูล) */
+  /* 🛡️ ศูนย์บัญชาการเอาตัวรอด */
   .survival-hub { 
     background: var(--paper); 
     border: 1.5px solid var(--line); 
@@ -456,6 +456,8 @@
     font-size: 12px; 
     font-weight: bold; 
     cursor: pointer; 
+    text-decoration: none;
+    display: inline-block;
   }
 
   .upsell-box { 
@@ -479,6 +481,24 @@
     margin: 0 0 12px 0; 
     opacity: 0.9; 
     font-weight: 600; 
+  }
+
+  /* 📅 Modal ตารางเรียน */
+  .day-tab {
+    padding: 8px 14px;
+    background: var(--bg);
+    border: 1.5px solid var(--line);
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .day-tab.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
   }
 
   .chat-box { 
@@ -927,7 +947,7 @@
     </div>
   </div>
 
-  <!-- ================= หน้าล็อกอิน (แต่ดัดแปลงให้เป็นหน้าจอสาธารณะด้วย) ================= -->
+  <!-- ================= หน้าล็อกอิน (โชว์ข้อมูลล่อใจ) ================= -->
   <div id="loginScreen">
     
     <!-- 🔥 หลอดพลังคิวงาน (โชว์คนนอก) -->
@@ -937,30 +957,13 @@
     <div id="loginSurvivalContainer" class="survival-hub hidden">
       <h3 class="survival-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</h3>
       <div id="loginSurvivalList"></div>
-      <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="showToast('เดี๋ยวรอตารางสอนของจริงมาใส่ตรงนี้นะ 📅')">📅 ดูตารางเรียนประจำสัปดาห์</button>
+      <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน</button>
     </div>
 
     <!-- 📚 คลังสรุปสอบ (โชว์คนนอก โหลดฟรีไม่ต้องล็อกอิน) -->
-    <div id="loginVaultContainer" style="margin-bottom: 24px;">
-      <p class="section-label">📚 คลังแสงสรุปสอบ (โหลดฟรีไม่ต้องล็อกอิน)</p>
-      
-      <div class="vault-card">
-        <div class="vault-icon">📖</div>
-        <div class="vault-info">
-          <div class="vault-title">สรุปประวัติศาสตร์ (กลางภาค)</div>
-          <div class="vault-desc">สรุปย่อ 3 หน้า อ่าน 10 นาทีเข้าสอบได้เลย</div>
-        </div>
-        <button class="btn-download" onclick="showToast('โหลดเสร็จแล้ว! อ่านให้รอดนะ ✌️')">โหลด</button>
-      </div>
-      
-      <div class="vault-card">
-        <div class="vault-icon">📐</div>
-        <div class="vault-info">
-          <div class="vault-title">สูตรคณิตศาสตร์พื้นฐาน</div>
-          <div class="vault-desc">รวมสูตรที่ออกสอบบ่อยที่สุด พร้อมตัวอย่าง</div>
-        </div>
-        <button class="btn-download" onclick="showToast('โหลดเสร็จแล้ว! อ่านให้รอดนะ ✌️')">โหลด</button>
-      </div>
+    <div id="loginVaultContainer" class="hidden" style="margin-bottom: 24px;">
+      <p class="section-label">📚 คลังแสงสรุปสอบ (โหลดฟรีไม่ต้องเข้าระบบ)</p>
+      <div id="loginVaultList"></div>
     </div>
 
     <div class="login-card">
@@ -977,7 +980,7 @@
 
   </div>
 
-  <!-- ================= หน้าแอปหลัก (ต้องล็อกอินถึงจะเห็น) ================= -->
+  <!-- ================= หน้าแอปหลัก (ต้องล็อกอิน) ================= -->
   <div id="appScreen" class="hidden">
     
     <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
@@ -987,14 +990,14 @@
     <!-- 📱 TAB 1: งาน (Tasks) -->
     <div id="tab-tasks" class="screen active">
       
-      <!-- 🔥 หลอดพลังคิวงาน (โชว์คนใน) -->
+      <!-- 🔥 หลอดพลังคิวงาน -->
       <div id="capacityContainer" class="capacity-box hidden"></div>
 
-      <!-- 🛡️ ศูนย์บัญชาการเอาตัวรอด (โชว์คนใน) -->
+      <!-- 🛡️ ศูนย์บัญชาการเอาตัวรอด -->
       <div id="survivalContainer" class="survival-hub hidden">
         <h3 class="survival-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</h3>
         <div id="survivalList"></div>
-        <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="showToast('เดี๋ยวรอตารางสอนของจริงมาใส่ตรงนี้นะ 📅')">📅 ดูตารางเรียนประจำสัปดาห์</button>
+        <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน</button>
       </div>
 
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
@@ -1065,23 +1068,7 @@
     <div id="tab-vault" class="screen">
       <p class="section-label">📚 คลังแสงสรุปสอบ (แจกฟรี)</p>
       
-      <div class="vault-card">
-        <div class="vault-icon">📖</div>
-        <div class="vault-info">
-          <div class="vault-title">สรุปประวัติศาสตร์ (กลางภาค)</div>
-          <div class="vault-desc">สรุปย่อ 3 หน้า อ่าน 10 นาทีเข้าสอบได้เลย</div>
-        </div>
-        <button class="btn-download" onclick="showToast('โหลดเสร็จแล้ว! อ่านให้รอดนะ ✌️')">โหลด</button>
-      </div>
-      
-      <div class="vault-card">
-        <div class="vault-icon">📐</div>
-        <div class="vault-info">
-          <div class="vault-title">สูตรคณิตศาสตร์พื้นฐาน</div>
-          <div class="vault-desc">รวมสูตรที่ออกสอบบ่อยที่สุด พร้อมตัวอย่าง</div>
-        </div>
-        <button class="btn-download" onclick="showToast('โหลดเสร็จแล้ว! อ่านให้รอดนะ ✌️')">โหลด</button>
-      </div>
+      <div id="vaultListContainer"></div>
 
       <div class="upsell-box">
         <h4>ขี้เกียจอ่านเองใช่ป่าว? 🥱</h4>
@@ -1122,6 +1109,25 @@
 </div>
 
 <!-- ============ MODALS ============ -->
+
+<!-- Modal ตารางสอนเดินเรียน -->
+<div class="modal-backdrop" id="scheduleModal">
+  <div class="modal-sheet">
+    <h2 class="modal-title">📅 ตารางสอน / ห้องเรียน</h2>
+    <div style="display:flex; gap:6px; margin-bottom:12px; overflow-x:auto; padding-bottom:4px;">
+      <button class="day-tab" id="tab_mon" onclick="showSchedule('mon')">จันทร์</button>
+      <button class="day-tab" id="tab_tue" onclick="showSchedule('tue')">อังคาร</button>
+      <button class="day-tab" id="tab_wed" onclick="showSchedule('wed')">พุธ</button>
+      <button class="day-tab" id="tab_thu" onclick="showSchedule('thu')">พฤหัส</button>
+      <button class="day-tab" id="tab_fri" onclick="showSchedule('fri')">ศุกร์</button>
+    </div>
+    <div id="scheduleContent" style="white-space: pre-wrap; font-size:14px; background:var(--bg); padding:14px; border-radius:10px; min-height:120px; border:1px solid var(--line);">
+      ไม่มีข้อมูลตารางเรียน
+    </div>
+    <button class="btn btn-self" onclick="closeScheduleModal()" style="margin-top:16px;">ปิดหน้าต่าง</button>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal-sheet">
     <span class="status-tag hidden" id="statusTag"></span>
@@ -1193,6 +1199,9 @@
   let allOrders = [];
   let activeTaskId = null;
   let isVip = false;
+  
+  // ตัวแปรเก็บตารางสอน
+  let currentScheduleData = {};
 
   if (localStorage.getItem('theme') === 'dark') {
     document.body.setAttribute('data-theme', 'dark');
@@ -1325,7 +1334,7 @@
     listenToMusic();
   }
 
-  // เรียกใช้ทันทีเพื่อให้ดึงกระดานข่าว, คิวงาน และศูนย์เอาตัวรอด มาโชว์หน้าแรก
+  // โหลด Settings ให้โชว์หน้าแรกทันที (ไม่ต้องล็อกอินก็เห็นคิวงาน ตารางสอน และคลังชีท)
   listenToSettings();
 
   (function restoreSession() {
@@ -1336,7 +1345,7 @@
     }
   })();
 
-  // ดึงการตั้งค่าทั้งหมดมาแสดงผล (รวมถึงคิวและศูนย์บัญชาการ) โชว์ได้ทั้งหน้าล็อกอินและหน้าหลัก
+  // --- ดึงข้อมูลจาก Firebase (กระดานข่าว, คิว, แจ้งเตือน, คลังชีท, ตารางสอน) ---
   function listenToSettings() {
     db.collection('system_settings').doc('main').onSnapshot(snap => {
       if (snap.exists && snap.data()) {
@@ -1376,27 +1385,13 @@
             </div>
             <div class="cap-bg"><div class="cap-fill" style="width: ${pct}%;"></div></div>
           `;
+          if (qEta) html += `<div class="cap-text">⏳ คาดว่าจะเสร็จ: ${escapeHtml(qEta)}</div>`;
           
-          if (qEta) {
-            html += `<div class="cap-text">⏳ คาดว่าจะเสร็จ: ${escapeHtml(qEta)}</div>`;
-          }
-          
-          // อัปเดตหน้าล็อกอิน
-          const loginCap = document.getElementById('loginCapacityContainer');
-          if(loginCap) {
-            loginCap.className = capClass;
-            loginCap.innerHTML = html;
-            loginCap.classList.remove('hidden');
-          }
-
-          // อัปเดตหน้าแอปหลัก (Tab งาน)
-          const appCap = document.getElementById('capacityContainer');
-          if(appCap) {
-            appCap.className = capClass;
-            appCap.innerHTML = html;
-            appCap.classList.remove('hidden');
-          }
-
+          // โชว์ทั้งหน้าล็อกอินและหน้าแอป
+          ['loginCapacityContainer', 'capacityContainer'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) { el.className = capClass; el.innerHTML = html; el.classList.remove('hidden'); }
+          });
         } else {
           if(document.getElementById('loginCapacityContainer')) document.getElementById('loginCapacityContainer').classList.add('hidden');
           if(document.getElementById('capacityContainer')) document.getElementById('capacityContainer').classList.add('hidden');
@@ -1406,36 +1401,79 @@
         const sItems = d.survival_items || [];
         if (sItems.length > 0) {
           let sHtml = sItems.map(item => {
-            let cls = 'survival-item';
-            let emoji = '🟢';
-            
+            let cls = 'survival-item'; let emoji = '🟢';
             if (item.type === 'red') { cls += ' alert'; emoji = '🔴'; }
             if (item.type === 'yellow') { cls += ' warn'; emoji = '🟡'; }
-            
             return `<div class="${cls}">${emoji} ${escapeHtml(item.text)}</div>`;
           }).join('');
           
-          // อัปเดตหน้าล็อกอิน
-          const loginSurvList = document.getElementById('loginSurvivalList');
-          if(loginSurvList) {
-            loginSurvList.innerHTML = sHtml;
-            document.getElementById('loginSurvivalContainer').classList.remove('hidden');
-          }
-
-          // อัปเดตหน้าแอปหลัก
-          const appSurvList = document.getElementById('survivalList');
-          if(appSurvList) {
-            appSurvList.innerHTML = sHtml;
-            document.getElementById('survivalContainer').classList.remove('hidden');
-          }
-
+          ['loginSurvivalList', 'survivalList'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.innerHTML = sHtml;
+          });
+          document.getElementById('loginSurvivalContainer').classList.remove('hidden');
+          document.getElementById('survivalContainer').classList.remove('hidden');
         } else {
-          if(document.getElementById('loginSurvivalContainer')) document.getElementById('loginSurvivalContainer').classList.add('hidden');
-          if(document.getElementById('survivalContainer')) document.getElementById('survivalContainer').classList.add('hidden');
+          document.getElementById('loginSurvivalContainer').classList.add('hidden');
+          document.getElementById('survivalContainer').classList.add('hidden');
         }
 
+        // 4. คลังชีทสรุป
+        const vItems = d.vault_items || [];
+        if (vItems.length > 0) {
+          let vHtml = vItems.map(item => `
+            <div class="vault-card">
+              <div class="vault-icon">📚</div>
+              <div class="vault-info">
+                <div class="vault-title">${escapeHtml(item.title)}</div>
+                <div class="vault-desc">${escapeHtml(item.desc)}</div>
+              </div>
+              <a href="${item.link}" target="_blank" class="btn-download">โหลด/เปิดอ่าน</a>
+            </div>
+          `).join('');
+          
+          document.getElementById('loginVaultList').innerHTML = vHtml;
+          document.getElementById('vaultListContainer').innerHTML = vHtml;
+          document.getElementById('loginVaultContainer').classList.remove('hidden');
+        } else {
+          document.getElementById('loginVaultList').innerHTML = '<div class="empty-state">แอดมินยังไม่ได้ลงชีทเลย รอแป๊บนะ!</div>';
+          document.getElementById('vaultListContainer').innerHTML = '<div class="empty-state">แอดมินยังไม่ได้ลงชีทเลย รอแป๊บนะ!</div>';
+          document.getElementById('loginVaultContainer').classList.add('hidden');
+        }
+
+        // 5. ตารางสอน (โหลดเก็บไว้ในตัวแปร รอเพื่อนกดเปิดดู)
+        currentScheduleData = d.schedule || {};
       }
     });
+  }
+
+  // --- Modal ตารางเดินเรียน ---
+  function openScheduleModal() {
+    document.getElementById('scheduleModal').classList.add('show');
+    
+    // หาวันปัจจุบัน (0=Sun, 1=Mon, ..., 6=Sat)
+    let day = new Date().getDay();
+    let dayMap = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
+    
+    // ถ้าเป็นเสาร์-อาทิตย์ ให้โชว์วันจันทร์เป็นค่าเริ่มต้น
+    let todayKey = dayMap[day] || 'mon'; 
+    showSchedule(todayKey);
+  }
+
+  function closeScheduleModal() {
+    document.getElementById('scheduleModal').classList.remove('show');
+  }
+
+  function showSchedule(dayKey) {
+    // ลบคลาส active จากปุ่มทั้งหมด
+    document.querySelectorAll('.day-tab').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('tab_' + dayKey).classList.add('active');
+    
+    // แสดงข้อความ
+    let rawText = currentScheduleData[dayKey] || '';
+    let displayHtml = rawText ? escapeHtml(rawText) : '<div style="color:var(--muted); text-align:center;">ยังไม่ได้ลงตารางของวันนี้</div>';
+    
+    document.getElementById('scheduleContent').innerHTML = displayHtml;
   }
 
   // ==========================================

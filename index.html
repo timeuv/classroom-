@@ -10,51 +10,43 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #09090b; 
-    --ink: #fafafa; 
-    --paper: #18181b; 
-    --paper-solid: #151518;
-    --line: rgba(255, 255, 255, 0.1);
-    --line-focus: rgba(255, 255, 255, 0.2);
-    --accent: #6366f1; /* Indigo 500 */
-    --accent-hover: #4f46e5;
-    --accent-soft: rgba(99, 102, 241, 0.15);
-    --green: #10b981; 
-    --green-soft: rgba(16, 185, 129, 0.15);
-    --red: #f43f5e; 
-    --red-soft: rgba(244, 63, 94, 0.15);
-    --yellow: #f59e0b; 
-    --yellow-soft: rgba(245, 158, 11, 0.15);
-    --muted: #a1a1aa; 
+    --bg: #fcfbfa; 
+    --ink: #1c1c1c; 
+    --paper: #ffffff; 
+    --paper-solid: #f3f2ef;
+    --line: rgba(28, 28, 28, 0.15);
+    --line-focus: rgba(27, 54, 93, 0.4);
+    --accent: #1b365d;
+    --accent-hover: #142847;
+    --accent-soft: rgba(27, 54, 93, 0.12);
+    --green: #2e6f40; 
+    --green-soft: rgba(46, 111, 64, 0.12);
+    --red: #8b2635; 
+    --red-soft: rgba(139, 38, 53, 0.12);
+    --yellow: #d4af37; 
+    --yellow-soft: rgba(212, 175, 55, 0.12);
+    --muted: #6b7280; 
     
-    --alert-text: #C0392B;
-    --alert-bg: #FDECEC;
-    --warning-text: #D48806;
-    --warning-bg: #FFF4E5;
-    --custom-text: #D4622A;
-    --custom-neon: #FFD700;
+    --alert-text: #8b2635;
+    --alert-bg: rgba(139, 38, 53, 0.05);
+    --warning-text: #d4af37;
+    --warning-bg: rgba(212, 175, 55, 0.05);
+    --custom-text: #b85c38;
+    --custom-neon: #b85c38;
     
-    --shadow: 0 8px 32px rgba(0,0,0,0.4);
-    --shadow-sm: 0 4px 16px rgba(0,0,0,0.2);
-    --radius-lg: 20px;
-    --radius-md: 14px;
-    --radius-sm: 10px;
-    --font-main: 'Outfit', system-ui, -apple-system, sans-serif;
+    --shadow: none;
+    --shadow-sm: none;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+    --font-heading: 'Outfit', system-ui, -apple-system, sans-serif;
+    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
-  body[data-theme="dark"] {
-    --bg: #09090b; 
-    --ink: #fafafa; 
-    --paper: #18181b; 
-    --paper-solid: #151518;
-    --line: rgba(255, 255, 255, 0.1);
-    --accent-soft: rgba(99, 102, 241, 0.15);
-    --green-soft: rgba(16, 185, 129, 0.15);
-    --shadow: 0 8px 32px rgba(0,0,0,0.4);
-  }
+  
 
   * { 
     box-sizing: border-box; 
@@ -66,13 +58,15 @@
     font-family: var(--font-main);
     background: var(--bg);
     color: var(--ink);
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+
     background-attachment: fixed;
     min-height: 100vh;
     transition: background 0.3s, color 0.3s;
     padding-bottom: 80px;
+  }
+
+  h1, h2, h3, h4, h5, h6, .brand, .order-title, .modal-box h3, .config-box-title {
+    font-family: var(--font-heading);
   }
 
   .wrap { 
@@ -149,24 +143,12 @@
     gap: 10px; 
     overflow: hidden; 
     position: relative; 
-    animation: neonGlow 1s infinite alternate; 
-  }
-
-  @keyframes neonGlow { 
-    0% { box-shadow: 0 0 5px var(--custom-text), inset 0 0 5px var(--custom-text); border-color: var(--custom-text); } 
-    100% { box-shadow: 0 0 20px var(--custom-neon), inset 0 0 10px var(--custom-neon); border-color: var(--custom-neon); } 
   }
 
   .siren { 
     font-size: 18px; 
-    animation: sirenBlink 0.4s infinite alternate; 
     flex-shrink: 0; 
     z-index: 2; 
-  }
-
-  @keyframes sirenBlink { 
-    0% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 5px red); } 
-    100% { opacity: 0.6; transform: scale(1.2); } 
   }
 
   .marquee-wrapper { 
@@ -179,13 +161,7 @@
   .marquee-text { 
     display: inline-block; 
     padding-left: 100%; 
-    animation: marquee 12s linear infinite; 
     text-shadow: 0 0 5px var(--custom-neon); 
-  }
-
-  @keyframes marquee { 
-    0% { transform: translate(0, 0); } 
-    100% { transform: translate(-100%, 0); } 
   }
 
   .login-card { 
@@ -193,7 +169,7 @@
     border: 1px solid var(--line); 
     border-radius: 20px; 
     padding: 32px 24px; 
-    box-shadow: var(--shadow); 
+    box-shadow: none; 
     text-align: center; 
   }
 
@@ -258,7 +234,7 @@
     padding: 14px 16px; 
     border-radius: var(--radius-sm); 
     border: 1px solid var(--line); 
-    background: rgba(0,0,0,0.2); 
+    background: var(--paper-solid); 
     color: var(--ink); 
     font-size: 16px; 
     font-family: var(--font-main);
@@ -266,8 +242,8 @@
   }
   input:focus, textarea:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-soft);
-    background: rgba(0,0,0,0.3);
+    box-shadow: none;
+    background: var(--paper-solid);
   }
 
   .btn { 
@@ -283,7 +259,7 @@
   }
   .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--shadow-sm);
+    box-shadow: none;
   }
   .btn:active {
     transform: translateY(0);
@@ -295,7 +271,7 @@
   }
   .btn-primary:hover {
     background: var(--accent-hover);
-    box-shadow: 0 4px 12px var(--accent-soft);
+    box-shadow: none;
   }
 
   .btn-primary:disabled { 
@@ -306,16 +282,10 @@
 
   .screen { 
     display: none; 
-    animation: fadeIn 0.3s; 
   }
 
   .screen.active { 
     display: block; 
-  }
-
-  @keyframes fadeIn { 
-    from { opacity: 0; transform: translateY(10px); } 
-    to { opacity: 1; transform: translateY(0); } 
   }
 
   .bottom-nav { 
@@ -329,7 +299,7 @@
     justify-content: space-around; 
     padding: 10px 0 20px; 
     z-index: 40; 
-    box-shadow: 0 -4px 10px rgba(0,0,0,0.05); 
+    box-shadow: none; 
   }
 
   .nav-item { 
@@ -365,20 +335,13 @@
     border-radius: 12px; 
     padding: 12px 14px; 
     margin-bottom: 16px; 
-    box-shadow: 0 4px 12px rgba(192,57,43,0.15); 
-    animation: pulseBorder 2s infinite; 
+    box-shadow: none; 
+     
   }
 
   .capacity-box.full {
     border-color: var(--alert-text);
     background: var(--alert-bg);
-    animation: none;
-  }
-
-  @keyframes pulseBorder { 
-    0% { border-color: var(--alert-text); } 
-    50% { border-color: var(--custom-text); } 
-    100% { border-color: var(--alert-text); } 
   }
 
   .cap-header { 
@@ -424,22 +387,15 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    box-shadow: 0 4px 12px rgba(212, 98, 42, 0.15);
+    box-shadow: none;
   }
 
   .live-pulse {
     width: 12px; height: 12px;
     background: var(--accent);
     border-radius: 50%;
-    box-shadow: 0 0 0 0 rgba(212, 98, 42, 0.7);
-    animation: pulseLive 1.5s infinite;
+    box-shadow: none;
     flex-shrink: 0;
-  }
-
-  @keyframes pulseLive {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 98, 42, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(212, 98, 42, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 98, 42, 0); }
   }
 
   /* 🛡️ ศูนย์บัญชาการเอาตัวรอด */
@@ -449,7 +405,7 @@
     border-radius: 14px; 
     padding: 14px; 
     margin-bottom: 24px; 
-    box-shadow: var(--shadow); 
+    box-shadow: none; 
   }
 
   .survival-title { 
@@ -641,7 +597,7 @@
     border: 1.5px solid var(--line); 
     border-radius: 14px; 
     padding: 12px; 
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.15); 
+    box-shadow: none; 
     z-index: 10; 
     display: none; 
     flex-direction: column; 
@@ -650,7 +606,7 @@
 
   .gif-picker.show { 
     display: flex; 
-    animation: fadeIn 0.2s ease; 
+     
   }
 
   .gif-picker-header { 
@@ -797,7 +753,7 @@
     display: flex; 
     flex-direction: column; 
     gap: 8px; 
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5); 
+    box-shadow: none; 
     border: 2px solid var(--accent); 
     transition: all 0.3s ease; 
   }
@@ -851,7 +807,7 @@
     border: 1px solid var(--line); 
     border-radius: 14px; 
     padding: 16px; 
-    box-shadow: var(--shadow); 
+    box-shadow: none; 
     margin-bottom: 10px; 
     cursor: pointer; 
     border: 1px solid transparent; 
@@ -885,7 +841,7 @@
   .modal-backdrop { 
     position: fixed; 
     inset: 0; 
-    background: rgba(0,0,0,0.9); 
+    background: var(--paper-solid); 
     display: none; 
     align-items: flex-end; 
     justify-content: center; 
@@ -904,12 +860,9 @@
     max-width: 480px; 
     border-radius: 20px 20px 0 0; 
     padding: 24px 20px 28px; 
-    animation: slideUp 0.25s ease; 
+     
   }
 
-  @keyframes slideUp { 
-    from { transform: translateY(30px); opacity: 0; } 
-    to { transform: translateY(0); opacity: 1; } 
   }
 
   .modal-title { 
@@ -1108,7 +1061,7 @@
       </div>
 
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
-        <button style="background: var(--accent-soft); border: none; color: var(--accent); font-weight: bold; font-size: 13.5px; cursor: pointer; padding: 8px 14px; border-radius: 8px; box-shadow: 0 2px 4px rgba(212, 98, 42, 0.1);" onclick="openRequestModal()">➕ สั่งงานนอกระบบ</button>
+        <button style="background: var(--accent-soft); border: none; color: var(--accent); font-weight: bold; font-size: 13.5px; cursor: pointer; padding: 8px 14px; border-radius: 8px; box-shadow: none;" onclick="openRequestModal()">➕ สั่งงานนอกระบบ</button>
       </div>
       
       <div id="pendingSection">

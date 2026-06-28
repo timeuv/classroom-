@@ -26,169 +26,71 @@
     --shadow: 0 2px 14px rgba(0,0,0,0.3);
   }
   * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-  }
+  body { margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--ink); }
   .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 60px; }
 
   /* ---- gate ---- */
-  .gate-card {
-    background: var(--paper);
-    border-radius: 18px;
-    padding: 32px 24px;
-    margin-top: 18vh;
-    text-align: center;
-    box-shadow: var(--shadow);
-    max-width: 360px;
-    margin-inline: auto;
-  }
+  .gate-card { background: var(--paper); border-radius: 18px; padding: 32px 24px; margin-top: 18vh; text-align: center; box-shadow: var(--shadow); max-width: 360px; margin-inline: auto; }
   .gate-card h1 { font-size: 20px; margin: 0 0 18px; }
-  .gate-card input {
-    width: 100%;
-    padding: 13px 14px;
-    border-radius: 10px;
-    border: 1.5px solid var(--line);
-    background: var(--bg);
-    color: var(--ink);
-    font-size: 16px;
-    margin-bottom: 12px;
-  }
-  .gate-card button {
-    width: 100%;
-    padding: 13px;
-    border-radius: 10px;
-    border: none;
-    background: var(--accent);
-    color: white;
-    font-weight: 700;
-    font-size: 15px;
-    cursor: pointer;
-  }
+  .gate-card input { width: 100%; padding: 13px 14px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); font-size: 16px; margin-bottom: 12px; }
+  .gate-card button { width: 100%; padding: 13px; border-radius: 10px; border: none; background: var(--accent); color: white; font-weight: 700; font-size: 15px; cursor: pointer; }
   .gate-err { color: var(--red); font-size: 13px; margin-top: 10px; display: none; }
   .gate-err.show { display: block; }
 
   /* ---- header ---- */
-  .topbar {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 24px;
-  }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
   .brand { font-size: 19px; font-weight: 800; line-height: 1.2; }
   .brand span { color: var(--accent); }
   .brand-sub { font-size: 12px; color: var(--muted); font-weight: normal; display: block; }
-  
-  .stat-pill {
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 100px;
-    padding: 7px 14px;
-    font-size: 13px;
-    font-weight: 700;
-  }
+  .stat-pill { background: var(--paper); border: 1px solid var(--line); border-radius: 100px; padding: 7px 14px; font-size: 13px; font-weight: 700; }
 
-  /* ---- Notice Box ---- */
-  .notice-box {
-    background: #2A241D;
-    border-left: 4px solid var(--accent);
-    padding: 14px 16px;
-    border-radius: 8px;
-    margin-bottom: 24px;
-    font-size: 13.5px;
-    line-height: 1.5;
-    color: #E5E0D6;
-  }
-  .notice-box strong {
-    color: var(--accent);
-    display: block;
-    margin-bottom: 4px;
-    font-size: 14.5px;
-  }
+  .notice-box { background: #2A241D; border-left: 4px solid var(--accent); padding: 14px 16px; border-radius: 8px; margin-bottom: 24px; font-size: 13.5px; line-height: 1.5; color: #E5E0D6; }
+  .notice-box strong { color: var(--accent); display: block; margin-bottom: 4px; font-size: 14.5px; }
 
-  .action-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 22px;
-  }
-  .btn-secondary {
-    flex: 1;
-    background: var(--paper);
-    color: var(--ink);
-    border: 1.5px solid var(--line);
-    padding: 11px 10px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    white-space: nowrap;
-  }
+  /* ---- Config Block ---- */
+  .config-box { background: var(--paper); padding: 16px; border-radius: 14px; margin-bottom: 24px; border: 1.5px dashed var(--line); display: flex; gap: 8px; align-items: center; }
+  .config-box input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-size: 14px; }
+  .config-box button { padding: 10px 16px; border-radius: 8px; border: none; background: var(--accent); color: white; font-weight: bold; cursor: pointer; white-space: nowrap; }
+
+  .action-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+  .btn-secondary { flex: 1; background: var(--paper); color: var(--ink); border: 1.5px solid var(--line); padding: 11px 10px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
   .btn-secondary:hover { border-color: var(--accent); }
 
-  .field-label {
-    display: block;
-    text-align: left;
-    font-size: 12.5px;
-    color: var(--muted);
-    font-weight: 600;
-    margin-bottom: 6px;
-    margin-top: 12px;
-  }
+  .field-label { display: block; text-align: left; font-size: 12.5px; color: var(--muted); font-weight: 600; margin-bottom: 6px; margin-top: 12px; }
   .field-label:first-of-type { margin-top: 0; }
-
-  .modal-box textarea, .modal-box input[type="file"] {
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1.5px solid var(--line);
-    background: var(--bg);
-    color: var(--ink);
-    font-size: 14px;
-    font-family: inherit;
-    margin-bottom: 4px;
-  }
+  .modal-box textarea, .modal-box input[type="file"] { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); font-size: 14px; font-family: inherit; margin-bottom: 4px; }
   .modal-box textarea { resize: vertical; min-height: 70px; }
 
-  .section-label {
-    font-size: 13px; font-weight: 700; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.5px;
-    margin: 28px 0 10px 2px;
-  }
+  .section-label { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 28px 0 10px 2px; }
 
   /* ---- order cards ---- */
-  .order-card {
-    background: var(--paper);
-    border-radius: 14px;
-    padding: 16px;
-    margin-bottom: 10px;
-    box-shadow: var(--shadow);
-    border-left: 3px solid var(--line);
+  @keyframes rushBlink {
+    0% { border-color: #E8836A; box-shadow: 0 0 0px #E8836A; }
+    50% { border-color: #C0392B; box-shadow: 0 0 10px rgba(192,57,43,0.3); }
+    100% { border-color: #E8836A; box-shadow: 0 0 0px #E8836A; }
   }
+
+  .order-card { background: var(--paper); border-radius: 14px; padding: 16px; margin-bottom: 10px; box-shadow: var(--shadow); border-left: 3px solid var(--line); }
   .order-card.pending { border-left-color: var(--accent); }
   .order-card.done { border-left-color: var(--green); }
   .order-card.checking { border-left-color: var(--yellow); }
+  .order-card.rush { border-left-width: 4px; animation: rushBlink 1.5s infinite; }
 
   .order-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
   .order-title { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
   .order-who { font-size: 13px; color: var(--muted); }
   .order-time { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
 
-  .tag {
-    display: inline-block;
-    font-size: 11.5px; font-weight: 700;
-    padding: 3px 9px; border-radius: 100px;
-    margin-top: 8px;
-  }
+  .tag { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 100px; margin-top: 8px; }
   .tag.pending { background: var(--accent-soft); color: var(--accent); }
   .tag.done { background: var(--green-soft); color: var(--green); }
   .tag.checking { background: var(--yellow-soft); color: var(--yellow); }
+  .tag.rush { background: #C0392B; color: white; }
+
+  .vip-badge { color: #D48806; background: #FFF4E5; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 4px; }
 
   .order-actions { margin-top: 12px; display: flex; gap: 8px; }
-  .btn {
-    padding: 9px 14px; border-radius: 8px; border: none;
-    font-size: 13px; font-weight: 700; cursor: pointer;
-  }
+  .btn { padding: 9px 14px; border-radius: 8px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; }
   .btn-mark-done { background: var(--green-soft); color: var(--green); }
   .btn-mark-done:hover { background: #28402f; }
   .btn-pay { background: var(--accent); color: white; }
@@ -199,85 +101,27 @@
   .empty-state { text-align: center; padding: 30px; color: var(--muted); font-size: 14px; }
 
   /* ---- history & summary (read-only) ---- */
-  .history-card {
-    background: var(--paper);
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin-bottom: 8px;
-    box-shadow: var(--shadow);
-    border-left: 3px solid var(--green);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-  }
+  .history-card { background: var(--paper); border-radius: 14px; padding: 14px 16px; margin-bottom: 8px; box-shadow: var(--shadow); border-left: 3px solid var(--green); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
   .history-left .order-title { font-size: 14px; }
   .history-left .order-who { font-size: 12.5px; margin-top: 2px;}
-  .history-right {
-    text-align: right;
-    white-space: nowrap;
-  }
-  .history-amount {
-    font-size: 15px;
-    font-weight: 800;
-    color: var(--green);
-  }
-  .history-time {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 2px;
-  }
-  .btn-view-slip {
-    margin-top: 8px;
-    background: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: bold;
-    cursor: pointer;
-    display: inline-block;
-  }
+  .history-right { text-align: right; white-space: nowrap; }
+  .history-amount { font-size: 15px; font-weight: 800; color: var(--green); }
+  .history-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .btn-view-slip { margin-top: 8px; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; display: inline-block; }
   .btn-view-slip:hover { background: var(--accent-soft); }
 
   /* ---- history toggle ---- */
   .history-hidden { display: none !important; }
-  .btn-toggle-history {
-    width: 100%;
-    background: transparent;
-    color: var(--muted);
-    border: 1.5px dashed var(--line);
-    padding: 12px;
-    border-radius: 10px;
-    font-size: 13.5px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: 0.2s;
-  }
-  .btn-toggle-history:hover {
-    border-color: var(--muted);
-    color: var(--ink);
-  }
+  .btn-toggle-history { width: 100%; background: transparent; color: var(--muted); border: 1.5px dashed var(--line); padding: 12px; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; margin-top: 8px; transition: 0.2s; }
+  .btn-toggle-history:hover { border-color: var(--muted); color: var(--ink); }
 
   /* ---- modals ---- */
-  .modal-backdrop {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-    display: none; align-items: center; justify-content: center; z-index: 50;
-  }
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 50; }
   .modal-backdrop.show { display: flex; }
-  .modal-box {
-    background: var(--paper); border-radius: 16px; padding: 24px;
-    width: 90%; max-width: 380px; box-shadow: var(--shadow);
-  }
+  .modal-box { background: var(--paper); border-radius: 16px; padding: 24px; width: 90%; max-width: 380px; box-shadow: var(--shadow); }
   .modal-box h3 { margin: 0 0 4px; font-size: 17px; }
   .modal-box p { margin: 0 0 16px; color: var(--muted); font-size: 13px; }
-  .modal-box input[type="number"], .modal-box input[type="text"] {
-    width: 100%; padding: 13px 14px; border-radius: 10px;
-    border: 1.5px solid var(--line); background: var(--bg); color: var(--ink);
-    font-size: 18px; font-weight: 700; margin-bottom: 14px;
-  }
+  .modal-box input[type="number"], .modal-box input[type="text"] { width: 100%; padding: 13px 14px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); font-size: 18px; font-weight: 700; margin-bottom: 14px; }
   .modal-box .row { display: flex; gap: 8px; }
   .modal-box .row .btn { flex: 1; padding: 12px; }
   .btn-cancel2 { background: transparent; color: var(--muted); border: 1px solid var(--line); }
@@ -285,18 +129,12 @@
   .btn-confirm:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
 
   .hidden { display: none !important; }
-
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: var(--ink); color: var(--bg); padding: 12px 20px; border-radius: 100px;
-    font-size: 14px; font-weight: 600; opacity: 0; transition: 0.25s; pointer-events: none; z-index: 100;
-  }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #E5E0D6; color: #1E1B16; padding: 12px 20px; border-radius: 100px; font-size: 14px; font-weight: 600; opacity: 0; transition: 0.25s; pointer-events: none; z-index: 100; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
-<!-- ============ ADMIN GATE ============ -->
 <div id="gateScreen">
   <div class="gate-card">
     <h1>🔒 หน้า Admin</h1>
@@ -306,7 +144,6 @@
   </div>
 </div>
 
-<!-- ============ ADMIN DASHBOARD ============ -->
 <div class="wrap hidden" id="adminScreen">
   <div class="topbar">
     <div class="brand">
@@ -319,6 +156,13 @@
   <div class="notice-box">
     <strong>📢 หมายเหตุความโปร่งใส</strong>
     ข้อมูลประวัติและยอดเงินทั้งหมดที่เกิดขึ้น <b>ก่อนวันที่ 30 มิถุนายน</b> เป็นเพียงการ "ทดสอบระบบ" เท่านั้น เนื่องจากระบบถูกออกแบบมาให้อ่านได้อย่างเดียวและไม่สามารถแก้ไขประวัติย้อนหลังได้ เพื่อให้ตรวจสอบยอดเงินได้โปร่งใส 100%
+  </div>
+
+  <!-- โซนกระดานข่าวห้อง -->
+  <div class="config-box">
+    <span style="font-size: 18px;">📢</span>
+    <input type="text" id="adminAnnouncement" placeholder="พิมพ์กระดานข่าวแจ้งเตือนเพื่อนๆ ที่นี่...">
+    <button onclick="saveAnnouncement()">อัปเดต</button>
   </div>
 
   <div class="action-row">
@@ -345,7 +189,6 @@
 </div>
 
 <!-- ============ MODALS ============ -->
-<!-- เพิ่มงานเอง -->
 <div class="modal-backdrop" id="addTaskModal">
   <div class="modal-box">
     <h3>เพิ่มงานเอง</h3>
@@ -361,7 +204,6 @@
   </div>
 </div>
 
-<!-- ได้รับเพิ่มเติม -->
 <div class="modal-backdrop" id="extraIncomeModal">
   <div class="modal-box">
     <h3>ได้รับเพิ่มเติม</h3>
@@ -379,7 +221,6 @@
   </div>
 </div>
 
-<!-- รับเงินสด -->
 <div class="modal-backdrop" id="payModal">
   <div class="modal-box">
     <h3>บันทึกยอดเงิน (จ่ายสด)</h3>
@@ -396,7 +237,6 @@
   </div>
 </div>
 
-<!-- ตรวจสอบสลิป -->
 <div class="modal-backdrop" id="verifySlipModal">
   <div class="modal-box">
     <h3>ตรวจสอบสลิปการโอนเงิน</h3>
@@ -410,7 +250,6 @@
   </div>
 </div>
 
-<!-- ดูหลักฐานย้อนหลัง -->
 <div class="modal-backdrop" id="viewHistorySlipModal">
   <div class="modal-box">
     <h3>หลักฐานการชำระเงิน</h3>
@@ -420,7 +259,6 @@
   </div>
 </div>
 
-<!-- จัดการ/ลบงาน -->
 <div class="modal-backdrop" id="manageTasksModal">
   <div class="modal-box" style="max-height: 80vh; overflow-y: auto;">
     <h3>จัดการ/ลบงาน</h3>
@@ -439,92 +277,71 @@
   // ⚠️ เปลี่ยนรหัสแอดมินตรงนี้
   const ADMIN_PASSWORD = "changeme123";
 
-  let allOrders = [];
-  let allTasks = [];
-  let allIncomeLogs = [];
-  let activeOrderId = null;
-  let knownOrderIds = new Set();
-  let firstLoad = true;
-  let isHistoryExpanded = false;
+  let allOrders = []; let allTasks = []; let allIncomeLogs = []; let loyaltyData = {};
+  let activeOrderId = null; let firstLoad = true; let isHistoryExpanded = false;
 
   const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
   function checkAdminPw() {
     const val = document.getElementById('adminPw').value;
-    if (val === ADMIN_PASSWORD) {
-      sessionStorage.setItem('cr_admin_ok', '1');
-      enterAdmin();
-    } else {
-      document.getElementById('gateErr').classList.add('show');
-    }
+    if (val === ADMIN_PASSWORD) { sessionStorage.setItem('cr_admin_ok', '1'); enterAdmin(); } 
+    else { document.getElementById('gateErr').classList.add('show'); }
   }
   document.getElementById('adminPw').addEventListener('keydown', e => { if (e.key === 'Enter') checkAdminPw(); });
 
-  (function restoreAdmin() {
-    if (sessionStorage.getItem('cr_admin_ok') === '1') enterAdmin();
-  })();
+  (function restoreAdmin() { if (sessionStorage.getItem('cr_admin_ok') === '1') enterAdmin(); })();
 
   function enterAdmin() {
     document.getElementById('gateScreen').classList.add('hidden');
     document.getElementById('adminScreen').classList.remove('hidden');
-    listenToTasks();
-    listenToOrders();
-    listenToIncomeLogs();
+    listenToSettings(); listenToTasks(); listenToOrders(); listenToIncomeLogs();
   }
 
-  function listenToTasks() {
-    db.collection('assignments').onSnapshot(snap => {
-      allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderOrders();
+  function listenToSettings() {
+    db.collection('system_settings').doc('main').onSnapshot(snap => {
+      if(snap.exists && snap.data().announcement) {
+        document.getElementById('adminAnnouncement').value = snap.data().announcement;
+      }
     });
   }
+
+  async function saveAnnouncement() {
+    const txt = document.getElementById('adminAnnouncement').value.trim();
+    try {
+      await db.collection('system_settings').doc('main').set({ announcement: txt }, { merge: true });
+      showToast('อัปเดตกระดานข่าวให้เพื่อนๆ แล้ว! 📢');
+    } catch (e) { showToast('อัปเดตไม่สำเร็จ'); }
+  }
+
+  function listenToTasks() { db.collection('assignments').onSnapshot(snap => { allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderOrders(); }); }
 
   function listenToOrders() {
     db.collection('orders').orderBy('created_at', 'desc').onSnapshot(snap => {
       const newOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-      if (!firstLoad) {
-        newOrders.forEach(o => {
-          if (!knownOrderIds.has(o.id) && o.status === 'pending') {
-            showToast(`🔔 มีคนรับงานใหม่: ${o.student_name || 'เลขที่ ' + o.student_id}`);
-          }
-          if (!knownOrderIds.has(o.id + '_slip') && o.status === 'checking_slip') {
-            showToast(`🔎 ${o.student_name || 'เลขที่ ' + o.student_id} ส่งสลิปมาให้ตรวจแล้ว!`);
-            knownOrderIds.add(o.id + '_slip');
-          }
-        });
-      }
-      knownOrderIds = new Set(newOrders.map(o => o.id));
-      firstLoad = false;
-      allOrders = newOrders;
-      renderOrders();
+      
+      loyaltyData = {}; // ค้นหา VIP
+      newOrders.forEach(o => {
+        if (o.status === 'paid') {
+          loyaltyData[o.student_id] = (loyaltyData[o.student_id] || 0) + 1;
+        }
+      });
+      allOrders = newOrders; renderOrders();
     });
   }
 
-  function listenToIncomeLogs() {
-    db.collection('income_logs').onSnapshot(snap => {
-      allIncomeLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderOrders();
-    });
-  }
+  function listenToIncomeLogs() { db.collection('income_logs').onSnapshot(snap => { allIncomeLogs = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderOrders(); }); }
 
-  function taskTitle(taskId) {
-    const t = allTasks.find(x => x.id === taskId);
-    return t ? t.title : '(ไม่พบชื่องาน)';
-  }
-
-  function toggleHistory() {
-    isHistoryExpanded = !isHistoryExpanded;
-    renderOrders();
-  }
+  function taskTitle(taskId) { const t = allTasks.find(x => x.id === taskId); return t ? t.title : '(ไม่พบชื่องาน)'; }
+  function toggleHistory() { isHistoryExpanded = !isHistoryExpanded; renderOrders(); }
 
   function renderOrders() {
-    const pendingList = document.getElementById('pendingList');
-    const doneList = document.getElementById('doneList');
-    const historyList = document.getElementById('historyList');
-    const monthlySummaryList = document.getElementById('monthlySummaryList');
+    const pendingList = document.getElementById('pendingList'); const doneList = document.getElementById('doneList');
+    const historyList = document.getElementById('historyList'); const monthlySummaryList = document.getElementById('monthlySummaryList');
 
-    const pending = allOrders.filter(o => o.status === 'pending');
+    // จัดลำดับ: งานด่วนมาก่อน
+    let pending = allOrders.filter(o => o.status === 'pending');
+    pending.sort((a,b) => (b.is_rush ? 1 : 0) - (a.is_rush ? 1 : 0));
+
     const doneOrChecking = allOrders.filter(o => o.status === 'done' || o.status === 'checking_slip');
     const paid = allOrders.filter(o => o.status === 'paid');
 
@@ -534,18 +351,23 @@
     pendingList.innerHTML = pending.map(o => {
       const t = allTasks.find(x => x.id === o.task_id);
       const isCustom = t && t.source === 'friend_request';
+      const isVip = loyaltyData[o.student_id] >= 3;
+      
       const customBadge = isCustom ? '<span style="color:#D4622A; font-size:11px; background:#FBE9DD; padding:2px 6px; border-radius:4px; margin-left:4px;">งานสั่งพิเศษ</span>' : '';
+      const rushBadge = o.is_rush ? '<span class="tag rush">🔥 งานด่วนไฟลุก!</span>' : '';
+      const vipBadge = isVip ? '<span class="vip-badge">👑 ลูกค้าประจำ</span>' : '';
+      const cardClass = o.is_rush ? 'pending rush' : 'pending';
 
       return `
-      <div class="order-card pending">
+      <div class="order-card ${cardClass}">
         <div class="order-top">
           <div>
             <div class="order-title">${escapeHtml(taskTitle(o.task_id))} ${customBadge}</div>
-            <div class="order-who">${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))}</div>
+            <div class="order-who">${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))} ${vipBadge}</div>
           </div>
           <div class="order-time">${formatTime(o.created_at)}</div>
         </div>
-        <span class="tag pending">กำลังทำอยู่</span>
+        <span class="tag pending">กำลังทำอยู่</span> ${rushBadge}
         <div class="order-actions" style="display: flex; gap: 8px;">
           <button class="btn btn-mark-done" style="flex: 2;" onclick="markOrderDone('${o.id}')">ทำเสร็จแล้ว</button>
           <button class="btn" style="flex: 1; background: transparent; border: 1.5px solid var(--red); color: var(--red);" onclick="rejectOrder('${o.id}')">ปฏิเสธ</button>
@@ -556,16 +378,8 @@
 
     doneList.innerHTML = doneOrChecking.map(o => {
       let statusTag = ''; let actionBtn = ''; let cardClass = '';
-
-      if (o.status === 'done') {
-        cardClass = 'done';
-        statusTag = '<span class="tag done">รอเพื่อนโอนเงิน/จ่ายสด</span>';
-        actionBtn = `<button class="btn btn-pay" onclick="openPayModal('${o.id}')">กดรับเงิน (กรณีจ่ายสด)</button>`;
-      } else if (o.status === 'checking_slip') {
-        cardClass = 'checking';
-        statusTag = '<span class="tag checking">แนบสลิปแล้ว รอคุณตรวจสอบ</span>';
-        actionBtn = `<button class="btn btn-verify" onclick="openVerifyModal('${o.id}')">ตรวจสอบสลิป</button>`;
-      }
+      if (o.status === 'done') { cardClass = 'done'; statusTag = '<span class="tag done">รอเพื่อนโอนเงิน/จ่ายสด</span>'; actionBtn = `<button class="btn btn-pay" onclick="openPayModal('${o.id}')">กดรับเงิน (กรณีจ่ายสด)</button>`; } 
+      else if (o.status === 'checking_slip') { cardClass = 'checking'; statusTag = '<span class="tag checking">แนบสลิปแล้ว รอคุณตรวจสอบ</span>'; actionBtn = `<button class="btn btn-verify" onclick="openVerifyModal('${o.id}')">ตรวจสอบสลิป</button>`; }
 
       return `
         <div class="order-card ${cardClass}">
@@ -582,38 +396,16 @@
       `;
     }).join('');
 
-    // ประวัติทั้งหมด
     const historyItems = [
-      ...paid.map(o => ({
-        type: 'order',
-        title: taskTitle(o.task_id),
-        from: o.student_name || ('เลขที่ ' + o.student_id),
-        amount: o.price || 0,
-        time: o.paid_at || o.created_at,
-        slip_image: o.slip_image || null 
-      })),
-      ...allIncomeLogs.map(l => ({
-        type: 'manual',
-        title: l.reason || 'ได้รับเพิ่มเติม',
-        from: l.from_name || 'ไม่ระบุ',
-        amount: l.amount || 0,
-        time: l.logged_at,
-        slip_image: null
-      }))
+      ...paid.map(o => ({ type: 'order', title: taskTitle(o.task_id), from: o.student_name || ('เลขที่ ' + o.student_id), amount: o.price || 0, time: o.paid_at || o.created_at, slip_image: o.slip_image || null })),
+      ...allIncomeLogs.map(l => ({ type: 'manual', title: l.reason || 'ได้รับเพิ่มเติม', from: l.from_name || 'ไม่ระบุ', amount: l.amount || 0, time: l.logged_at, slip_image: null }))
     ].sort((a, b) => (b.time?.toMillis?.() || 0) - (a.time?.toMillis?.() || 0));
 
     document.getElementById('historyEmpty').classList.toggle('hidden', historyItems.length > 0);
-    
-    // โชว์ประวัติพร้อมสร้างปุ่มกดดูสลิป/หลักฐาน
     const MAX_HISTORY = 15;
     historyList.innerHTML = historyItems.map((item, index) => {
       const hideClass = (!isHistoryExpanded && index >= MAX_HISTORY) ? 'history-hidden' : '';
-      
-      let slipBtnHtml = '';
-      if (item.slip_image) {
-        slipBtnHtml = `<button class="btn-view-slip" onclick="viewHistorySlip('${item.slip_image}', '${escapeHtml(item.title)}', '${escapeHtml(item.from)}')">📄 ดูหลักฐาน</button>`;
-      }
-
+      let slipBtnHtml = item.slip_image ? `<button class="btn-view-slip" onclick="viewHistorySlip('${item.slip_image}', '${escapeHtml(item.title)}', '${escapeHtml(item.from)}')">📄 ดูหลักฐาน</button>` : '';
       return `
         <div class="history-card ${hideClass}">
           <div class="history-left">
@@ -630,286 +422,128 @@
     }).join('');
 
     const toggleBtn = document.getElementById('toggleHistoryBtn');
-    if (historyItems.length > MAX_HISTORY) {
-      toggleBtn.classList.remove('hidden');
-      toggleBtn.textContent = isHistoryExpanded 
-        ? 'ย่อประวัติ (แสดงแค่ 15 รายการล่าสุด)' 
-        : `ดูประวัติทั้งหมด (${historyItems.length} รายการ)`;
-    } else {
-      toggleBtn.classList.add('hidden');
-    }
+    if (historyItems.length > MAX_HISTORY) { toggleBtn.classList.remove('hidden'); toggleBtn.textContent = isHistoryExpanded ? 'ย่อประวัติ (แสดงแค่ 15 รายการล่าสุด)' : `ดูประวัติทั้งหมด (${historyItems.length} รายการ)`; } else { toggleBtn.classList.add('hidden'); }
 
-    // --- การคำนวณยอดรายเดือน ---
     const monthlyData = {};
     historyItems.forEach(item => {
-      if (!item.time) return;
-      const d = item.time.toDate ? item.time.toDate() : new Date(item.time);
+      if (!item.time) return; const d = item.time.toDate ? item.time.toDate() : new Date(item.time);
       const ymKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       monthlyData[ymKey] = (monthlyData[ymKey] || 0) + item.amount;
     });
 
-    const now = new Date();
-    const currentYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    
+    const now = new Date(); const currentYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     const currentEarn = monthlyData[currentYM] || 0;
     document.getElementById('totalEarn').textContent = currentEarn.toLocaleString('th-TH');
     document.getElementById('currentMonthLabel').textContent = `ยอดของเดือน ${monthNames[now.getMonth()]}`;
 
-    let summaryHtml = '';
-    const sortedMonths = Object.keys(monthlyData).sort().reverse();
-    
+    let summaryHtml = ''; const sortedMonths = Object.keys(monthlyData).sort().reverse();
     sortedMonths.forEach(ym => {
       if (ym === currentYM) return;
-
-      const [yearStr, monthStr] = ym.split('-');
-      const y = parseInt(yearStr);
-      const mIndex = parseInt(monthStr) - 1;
-      const total = monthlyData[ym];
-      
-      const daysInMonth = new Date(y, mIndex + 1, 0).getDate();
-      const avgPerDay = total / daysInMonth;
-      
-      const isPassed = avgPerDay >= 160;
-      const borderColor = isPassed ? 'var(--green)' : 'var(--red)';
-      const textColor = isPassed ? 'var(--green)' : 'var(--red)';
-      const statusText = isPassed ? '✅ ผ่านเป้า' : '❌ ไม่ถึงเป้า';
-
+      const [yearStr, monthStr] = ym.split('-'); const y = parseInt(yearStr); const mIndex = parseInt(monthStr) - 1; const total = monthlyData[ym];
+      const daysInMonth = new Date(y, mIndex + 1, 0).getDate(); const avgPerDay = total / daysInMonth;
+      const isPassed = avgPerDay >= 160; const borderColor = isPassed ? 'var(--green)' : 'var(--red)'; const textColor = isPassed ? 'var(--green)' : 'var(--red)'; const statusText = isPassed ? '✅ ผ่านเป้า' : '❌ ไม่ถึงเป้า';
       summaryHtml += `
         <div class="history-card" style="border-left-color: ${borderColor}">
-          <div class="history-left">
-            <div class="order-title">เดือน${monthNames[mIndex]} ${y}</div>
-            <div class="order-who">เฉลี่ย ${avgPerDay.toFixed(0)} บาท/วัน (เป้า 160)</div>
-          </div>
-          <div class="history-right">
-            <div class="history-amount" style="color: ${textColor}">${total.toLocaleString('th-TH')} บาท</div>
-            <div class="history-time">${statusText}</div>
-          </div>
+          <div class="history-left"><div class="order-title">เดือน${monthNames[mIndex]} ${y}</div><div class="order-who">เฉลี่ย ${avgPerDay.toFixed(0)} บาท/วัน (เป้า 160)</div></div>
+          <div class="history-right"><div class="history-amount" style="color: ${textColor}">${total.toLocaleString('th-TH')} บาท</div><div class="history-time">${statusText}</div></div>
         </div>
       `;
     });
-
-    if (summaryHtml === '') {
-      monthlySummaryList.innerHTML = '<div class="empty-state">ยังไม่มีข้อมูลของเดือนที่แล้ว</div>';
-    } else {
-      monthlySummaryList.innerHTML = summaryHtml;
-    }
+    if (summaryHtml === '') { monthlySummaryList.innerHTML = '<div class="empty-state">ยังไม่มีข้อมูลของเดือนที่แล้ว</div>'; } else { monthlySummaryList.innerHTML = summaryHtml; }
   }
 
-  // --- ฟังก์ชันดึงรูปสลิป/หลักฐานมาดู ---
   window.viewHistorySlip = function(imgSrc, title, from) {
     document.getElementById('historySlipContext').textContent = `${title} · ${from}`;
     document.getElementById('historySlipImage').src = imgSrc;
     document.getElementById('viewHistorySlipModal').classList.add('show');
   }
-  function closeHistorySlipModal() {
-    document.getElementById('viewHistorySlipModal').classList.remove('show');
-  }
+  function closeHistorySlipModal() { document.getElementById('viewHistorySlipModal').classList.remove('show'); }
 
-  // --- ฟังก์ชันลบงาน ---
   function openManageTasksModal() {
     const list = document.getElementById('manageTaskList');
-    list.innerHTML = allTasks.map(t => `
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1.5px solid var(--line); border-radius: 10px; margin-bottom: 8px;">
-        <div style="font-size: 14px; font-weight: 600; width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(t.title)}</div>
-        <button style="background: #E8836A; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;" onclick="deleteTask('${t.id}')">ลบทิ้ง</button>
-      </div>
-    `).join('');
-    
+    list.innerHTML = allTasks.map(t => `<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1.5px solid var(--line); border-radius: 10px; margin-bottom: 8px;"><div style="font-size: 14px; font-weight: 600; width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(t.title)}</div><button style="background: #E8836A; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;" onclick="deleteTask('${t.id}')">ลบทิ้ง</button></div>`).join('');
     if(allTasks.length === 0) list.innerHTML = '<div style="text-align: center; color: var(--muted); font-size: 13px; padding: 20px;">ไม่มีงานในระบบเลย</div>';
-    
     document.getElementById('manageTasksModal').classList.add('show');
   }
   function closeManageTasksModal() { document.getElementById('manageTasksModal').classList.remove('show'); }
 
   async function deleteTask(taskId) {
     if(!confirm('แน่ใจนะว่าจะลบงานนี้?')) return;
-    try {
-      await db.collection('assignments').doc(taskId).delete();
-      showToast('ลบงานออกจากระบบแล้ว 🗑️');
-      openManageTasksModal(); 
-    } catch (err) {
-      console.error(err);
-      showToast('ลบไม่สำเร็จ ลองใหม่อีกครั้ง');
-    }
+    try { await db.collection('assignments').doc(taskId).delete(); showToast('ลบงานออกจากระบบแล้ว 🗑️'); openManageTasksModal(); } catch (err) { showToast('ลบไม่สำเร็จ ลองใหม่อีกครั้ง'); }
   }
   
-  // --- ฟังก์ชันปฏิเสธงาน (ใหม่) ---
   async function rejectOrder(orderId) {
-    if(!confirm('คุณแน่ใจนะว่าจะปฏิเสธงานนี้? (เพื่อนจะเห็นว่าคุณปฏิเสธ)')) return;
-    try {
-      await db.collection('orders').doc(orderId).update({ status: 'rejected' });
-      showToast('ปฏิเสธงานเรียบร้อย ❌');
-    } catch (err) {
-      console.error(err);
-      showToast('เกิดข้อผิดพลาด ลองใหม่อีกครั้ง');
-    }
+    if(!confirm('คุณแน่ใจนะว่าจะปฏิเสธงานนี้?')) return;
+    try { await db.collection('orders').doc(orderId).update({ status: 'rejected' }); showToast('ปฏิเสธงานเรียบร้อย ❌'); } catch (err) { showToast('เกิดข้อผิดพลาด ลองใหม่อีกครั้ง'); }
   }
 
   async function markOrderDone(orderId) {
-    try {
-      await db.collection('orders').doc(orderId).update({ status: 'done' });
-      showToast('ส่งแจ้งเตือนให้เพื่อนโอนเงินแล้ว!');
-    } catch (err) { console.error(err); showToast('อัปเดตไม่สำเร็จ'); }
+    try { await db.collection('orders').doc(orderId).update({ status: 'done' }); showToast('ส่งแจ้งเตือนให้เพื่อนโอนเงินแล้ว!'); } catch (err) { showToast('อัปเดตไม่สำเร็จ'); }
   }
 
-  // --- Modal สำหรับรับเงินสด ---
   function openPayModal(orderId) {
-    activeOrderId = orderId;
-    const order = allOrders.find(o => o.id === orderId);
-    document.getElementById('payContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`;
-    document.getElementById('payAmount').value = '';
-    document.getElementById('cashImageInput').value = ''; 
-    document.getElementById('payModal').classList.add('show');
-    setTimeout(() => document.getElementById('payAmount').focus(), 100);
+    activeOrderId = orderId; const order = allOrders.find(o => o.id === orderId);
+    document.getElementById('payContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`; document.getElementById('payAmount').value = ''; document.getElementById('cashImageInput').value = ''; document.getElementById('payModal').classList.add('show'); setTimeout(() => document.getElementById('payAmount').focus(), 100);
   }
   function closePayModal() { document.getElementById('payModal').classList.remove('show'); activeOrderId = null; }
 
-  // --- ฟังก์ชันประทับลายน้ำลงรูปภาพ (Watermark) ---
   function processCashImageWithWatermark(file, amount, studentName) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 800; 
-          const scaleSize = MAX_WIDTH / img.width;
-          canvas.width = MAX_WIDTH;
-          canvas.height = img.height * scaleSize;
-          const ctx = canvas.getContext('2d');
-          
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; 
-          ctx.fillRect(0, canvas.height - 70, canvas.width, 70);
-
-          const now = new Date();
-          const timeStr = now.toLocaleString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-          ctx.fillStyle = "#4ade80"; 
-          ctx.font = "bold 22px sans-serif";
-          ctx.fillText(`✅ รับเงินสด ${amount} บาท | จาก: ${studentName}`, 20, canvas.height - 40);
-          
-          ctx.fillStyle = "white";
-          ctx.font = "16px sans-serif";
-          ctx.fillText(`บันทึกเข้าระบบเมื่อ: ${timeStr} (ไม่อนุญาตให้ใช้ซ้ำ)`, 20, canvas.height - 15);
-
-          resolve(canvas.toDataURL('image/jpeg', 0.7)); 
-        };
-        img.onerror = reject;
-        img.src = e.target.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+        const img = new Image(); img.onload = function() {
+          const canvas = document.createElement('canvas'); const MAX_WIDTH = 800; const scaleSize = MAX_WIDTH / img.width; canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize; const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height); ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; ctx.fillRect(0, canvas.height - 70, canvas.width, 70);
+          const now = new Date(); const timeStr = now.toLocaleString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          ctx.fillStyle = "#4ade80"; ctx.font = "bold 22px sans-serif"; ctx.fillText(`✅ รับเงินสด ${amount} บาท | จาก: ${studentName}`, 20, canvas.height - 40); ctx.fillStyle = "white"; ctx.font = "16px sans-serif"; ctx.fillText(`บันทึกเข้าระบบเมื่อ: ${timeStr} (ไม่อนุญาตให้ใช้ซ้ำ)`, 20, canvas.height - 15); resolve(canvas.toDataURL('image/jpeg', 0.7)); 
+        }; img.onerror = reject; img.src = e.target.result;
+      }; reader.onerror = reject; reader.readAsDataURL(file);
     });
   }
 
-  // --- อัปเดตฟังก์ชันยืนยันการรับเงินสด ---
   async function confirmPayment() {
-    const amount = parseFloat(document.getElementById('payAmount').value);
-    if (!activeOrderId || isNaN(amount) || amount <= 0) { showToast('กรอกจำนวนเงินให้ถูกต้อง'); return; }
-
-    const fileInput = document.getElementById('cashImageInput');
-    const btnConfirm = document.getElementById('btnConfirmCash');
-    btnConfirm.disabled = true;
-    btnConfirm.textContent = "กำลังบันทึกและประทับลายน้ำ...";
-
+    const amount = parseFloat(document.getElementById('payAmount').value); if (!activeOrderId || isNaN(amount) || amount <= 0) { showToast('กรอกจำนวนเงินให้ถูกต้อง'); return; }
+    const fileInput = document.getElementById('cashImageInput'); const btnConfirm = document.getElementById('btnConfirmCash'); btnConfirm.disabled = true; btnConfirm.textContent = "กำลังบันทึก...";
     try {
-      let base64String = null;
-      const order = allOrders.find(o => o.id === activeOrderId);
-      const studentName = order ? (order.student_name || 'เลขที่ ' + order.student_id) : '';
-
-      if (fileInput.files && fileInput.files.length > 0) {
-        base64String = await processCashImageWithWatermark(fileInput.files[0], amount, studentName);
-      }
-
-      const updateData = { 
-        status: 'paid', 
-        price: amount, 
-        paid_at: firebase.firestore.FieldValue.serverTimestamp() 
-      };
-
-      if (base64String) {
-        updateData.slip_image = base64String;
-      }
-
-      await db.collection('orders').doc(activeOrderId).update(updateData);
-      showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`);
-      closePayModal();
-    } catch (err) { 
-      console.error(err); 
-      showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); 
-    } finally {
-      btnConfirm.disabled = false;
-      btnConfirm.textContent = "ยืนยันรับเงินแล้ว";
-    }
+      let base64String = null; const order = allOrders.find(o => o.id === activeOrderId); const studentName = order ? (order.student_name || 'เลขที่ ' + order.student_id) : '';
+      if (fileInput.files && fileInput.files.length > 0) { base64String = await processCashImageWithWatermark(fileInput.files[0], amount, studentName); }
+      const updateData = { status: 'paid', price: amount, paid_at: firebase.firestore.FieldValue.serverTimestamp() };
+      if (base64String) { updateData.slip_image = base64String; }
+      await db.collection('orders').doc(activeOrderId).update(updateData); showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`); closePayModal();
+    } catch (err) { showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); } finally { btnConfirm.disabled = false; btnConfirm.textContent = "ยืนยันรับเงินแล้ว"; }
   }
 
-  // --- Modal สำหรับตรวจสอบสลิปที่เพิ่งส่ง ---
   function openVerifyModal(orderId) {
-    activeOrderId = orderId;
-    const order = allOrders.find(o => o.id === orderId);
-    document.getElementById('verifyContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`;
-    document.getElementById('slipImagePreview').src = order.slip_image || '';
-    document.getElementById('verifyAmount').value = '';
-    document.getElementById('verifySlipModal').classList.add('show');
-    setTimeout(() => document.getElementById('verifyAmount').focus(), 100);
+    activeOrderId = orderId; const order = allOrders.find(o => o.id === orderId); document.getElementById('verifyContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`; document.getElementById('slipImagePreview').src = order.slip_image || ''; document.getElementById('verifyAmount').value = ''; document.getElementById('verifySlipModal').classList.add('show'); setTimeout(() => document.getElementById('verifyAmount').focus(), 100);
   }
   function closeVerifyModal() { document.getElementById('verifySlipModal').classList.remove('show'); activeOrderId = null; }
 
   async function confirmVerifyPayment() {
-    const amount = parseFloat(document.getElementById('verifyAmount').value);
-    if (!activeOrderId || isNaN(amount) || amount <= 0) { showToast('กรอกจำนวนเงินให้ถูกต้อง'); return; }
-    try {
-      await db.collection('orders').doc(activeOrderId).update({ status: 'paid', price: amount, paid_at: firebase.firestore.FieldValue.serverTimestamp() });
-      showToast(`ตรวจสลิปเรียบร้อย +${amount.toLocaleString('th-TH')} บาท`);
-      closeVerifyModal();
-    } catch (err) { console.error(err); showToast('บันทึกไม่สำเร็จ'); }
+    const amount = parseFloat(document.getElementById('verifyAmount').value); if (!activeOrderId || isNaN(amount) || amount <= 0) { showToast('กรอกจำนวนเงินให้ถูกต้อง'); return; }
+    try { await db.collection('orders').doc(activeOrderId).update({ status: 'paid', price: amount, paid_at: firebase.firestore.FieldValue.serverTimestamp() }); showToast(`ตรวจสลิปเรียบร้อย +${amount.toLocaleString('th-TH')} บาท`); closeVerifyModal(); } catch (err) { showToast('บันทึกไม่สำเร็จ'); }
   }
 
-  function openAddTaskModal() {
-    document.getElementById('newTaskTitle').value = ''; document.getElementById('newTaskDesc').value = '';
-    document.getElementById('addTaskModal').classList.add('show');
-    setTimeout(() => document.getElementById('newTaskTitle').focus(), 100);
-  }
+  function openAddTaskModal() { document.getElementById('newTaskTitle').value = ''; document.getElementById('newTaskDesc').value = ''; document.getElementById('addTaskModal').classList.add('show'); setTimeout(() => document.getElementById('newTaskTitle').focus(), 100); }
   function closeAddTaskModal() { document.getElementById('addTaskModal').classList.remove('show'); }
 
   async function confirmAddTask() {
-    const title = document.getElementById('newTaskTitle').value.trim();
-    const desc = document.getElementById('newTaskDesc').value.trim();
-    if (!title) return showToast('กรอกชื่องานด้วย');
-    try {
-      await db.collection('assignments').add({ title: title, description: desc, due_date: null, created_at: firebase.firestore.FieldValue.serverTimestamp(), source: 'manual' });
-      showToast('เพิ่มงานแล้ว'); closeAddTaskModal();
-    } catch (err) { console.error(err); showToast('เพิ่มงานไม่สำเร็จ'); }
+    const title = document.getElementById('newTaskTitle').value.trim(); const desc = document.getElementById('newTaskDesc').value.trim(); if (!title) return showToast('กรอกชื่องานด้วย');
+    try { await db.collection('assignments').add({ title: title, description: desc, due_date: null, created_at: firebase.firestore.FieldValue.serverTimestamp(), source: 'manual' }); showToast('เพิ่มงานแล้ว'); closeAddTaskModal(); } catch (err) { showToast('เพิ่มงานไม่สำเร็จ'); }
   }
 
-  function openExtraIncomeModal() {
-    document.getElementById('extraFrom').value = ''; document.getElementById('extraReason').value = ''; document.getElementById('extraAmount').value = '';
-    document.getElementById('extraIncomeModal').classList.add('show');
-    setTimeout(() => document.getElementById('extraFrom').focus(), 100);
-  }
+  function openExtraIncomeModal() { document.getElementById('extraFrom').value = ''; document.getElementById('extraReason').value = ''; document.getElementById('extraAmount').value = ''; document.getElementById('extraIncomeModal').classList.add('show'); setTimeout(() => document.getElementById('extraFrom').focus(), 100); }
   function closeExtraIncomeModal() { document.getElementById('extraIncomeModal').classList.remove('show'); }
 
   async function confirmExtraIncome() {
     const from = document.getElementById('extraFrom').value.trim(); const reason = document.getElementById('extraReason').value.trim(); const amount = parseFloat(document.getElementById('extraAmount').value);
     if (!from || !reason || isNaN(amount) || amount <= 0) return showToast('กรอกข้อมูลให้ครบและถูกต้อง');
-    try {
-      await db.collection('income_logs').add({ from_name: from, reason: reason, amount: amount, logged_at: firebase.firestore.FieldValue.serverTimestamp() });
-      showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`); closeExtraIncomeModal();
-    } catch (err) { console.error(err); showToast('บันทึกไม่สำเร็จ'); }
+    try { await db.collection('income_logs').add({ from_name: from, reason: reason, amount: amount, logged_at: firebase.firestore.FieldValue.serverTimestamp() }); showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`); closeExtraIncomeModal(); } catch (err) { showToast('บันทึกไม่สำเร็จ'); }
   }
 
-  function formatTime(ts) {
-    if (!ts || !ts.toDate) return '';
-    return ts.toDate().toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-  }
-
+  function formatTime(ts) { if (!ts || !ts.toDate) return ''; return ts.toDate().toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
   function escapeHtml(str) { const div = document.createElement('div'); div.textContent = str || ''; return div.innerHTML; }
   function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
-
-  document.querySelectorAll('.modal-backdrop').forEach(el => {
-    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
-  });
+  document.querySelectorAll('.modal-backdrop').forEach(el => { el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); }); });
 </script>
 
 </body>

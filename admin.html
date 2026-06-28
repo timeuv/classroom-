@@ -83,6 +83,49 @@
     font-weight: 700;
   }
 
+  .action-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+  .btn-secondary {
+    flex: 1;
+    background: var(--paper);
+    color: var(--ink);
+    border: 1.5px solid var(--line);
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-secondary:hover { border-color: var(--accent); }
+
+  .field-label {
+    display: block;
+    text-align: left;
+    font-size: 12.5px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+    margin-top: 12px;
+  }
+  .field-label:first-of-type { margin-top: 0; }
+
+  .modal-box textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 70px;
+    margin-bottom: 4px;
+  }
+
   .section-label {
     font-size: 13px; font-weight: 700; color: var(--muted);
     text-transform: uppercase; letter-spacing: 0.5px;
@@ -215,6 +258,11 @@
     <div class="stat-pill">ยอดรวม <span id="totalEarn">0</span> / 5,000 บาท</div>
   </div>
 
+  <div class="action-row">
+    <button class="btn btn-secondary" onclick="openAddTaskModal()">➕ เพิ่มงานเอง</button>
+    <button class="btn btn-secondary" onclick="openExtraIncomeModal()">💵 ได้รับเพิ่มเติม</button>
+  </div>
+
   <p class="section-label">⏳ รอดำเนินการ / กำลังทำ</p>
   <div id="pendingList"></div>
   <div class="empty-state hidden" id="pendingEmpty">ยังไม่มีใครรับงานตอนนี้</div>
@@ -226,6 +274,40 @@
   <p class="section-label">💰 ประวัติการได้เงิน</p>
   <div id="historyList"></div>
   <div class="empty-state hidden" id="historyEmpty">ยังไม่มีประวัติการรับเงิน</div>
+</div>
+
+<!-- ============ ADD TASK MODAL ============ -->
+<div class="modal-backdrop" id="addTaskModal">
+  <div class="modal-box">
+    <h3>เพิ่มงานเอง</h3>
+    <p>สำหรับงานที่ไม่ได้มาจาก Google Classroom</p>
+    <label class="field-label">ชื่องาน</label>
+    <input type="text" id="newTaskTitle" placeholder="เช่น ช่วยพิมพ์รายงานวิชา...">
+    <label class="field-label">รายละเอียด (ใส่หรือไม่ใส่ก็ได้)</label>
+    <textarea id="newTaskDesc" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
+    <div class="row">
+      <button class="btn btn-cancel2" onclick="closeAddTaskModal()">ยกเลิก</button>
+      <button class="btn btn-confirm" onclick="confirmAddTask()">เพิ่มงาน</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ EXTRA INCOME MODAL ============ -->
+<div class="modal-backdrop" id="extraIncomeModal">
+  <div class="modal-box">
+    <h3>ได้รับเพิ่มเติม</h3>
+    <p>สำหรับเงินที่ได้นอกเหนือจากงานในระบบ</p>
+    <label class="field-label">ได้จากใคร</label>
+    <input type="text" id="extraFrom" placeholder="เช่น เลขที่ 5 หรือ ชื่อเพื่อน">
+    <label class="field-label">ได้เพราะอะไร</label>
+    <input type="text" id="extraReason" placeholder="เช่น ช่วยทำสไลด์, ค่าปริ้นงาน">
+    <label class="field-label">จำนวนเงิน (บาท)</label>
+    <input type="number" id="extraAmount" placeholder="0" inputmode="numeric">
+    <div class="row">
+      <button class="btn btn-cancel2" onclick="closeExtraIncomeModal()">ยกเลิก</button>
+      <button class="btn btn-confirm" onclick="confirmExtraIncome()">บันทึก</button>
+    </div>
+  </div>
 </div>
 
 <!-- ============ PAYMENT MODAL ============ -->
@@ -252,6 +334,7 @@
 
   let allOrders = [];
   let allTasks = [];
+  let allIncomeLogs = [];
   let activeOrderId = null;
   let knownOrderIds = new Set();
   let firstLoad = true;
@@ -277,6 +360,7 @@
     listenToTasks();
     listenToOrders();
     listenToStats();
+    listenToIncomeLogs();
   }
 
   function listenToTasks() {
@@ -313,6 +397,13 @@
     });
   }
 
+  function listenToIncomeLogs() {
+    db.collection('income_logs').onSnapshot(snap => {
+      allIncomeLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderOrders();
+    });
+  }
+
   function taskTitle(taskId) {
     const t = allTasks.find(x => x.id === taskId);
     return t ? t.title : '(ไม่พบชื่องาน)';
@@ -332,7 +423,6 @@
 
     pendingEmpty.classList.toggle('hidden', pending.length > 0);
     doneEmpty.classList.toggle('hidden', done.length > 0);
-    historyEmpty.classList.toggle('hidden', paid.length > 0);
 
     pendingList.innerHTML = pending.map(o => `
       <div class="order-card pending">
@@ -366,19 +456,35 @@
       </div>
     `).join('');
 
-    // ประวัติการได้เงิน — แสดงเฉยๆ ดูอย่างเดียว แก้ไขไม่ได้
-    historyList.innerHTML = paid
-      .slice()
-      .sort((a, b) => (b.paid_at?.toMillis?.() || 0) - (a.paid_at?.toMillis?.() || 0))
-      .map(o => `
+    // ประวัติการได้เงิน — รวมทั้งจากงานในระบบ และที่บันทึกเพิ่มเองทุกที่ ดูอย่างเดียว แก้ไขไม่ได้
+    const historyItems = [
+      ...paid.map(o => ({
+        type: 'order',
+        title: taskTitle(o.task_id),
+        from: o.student_name || ('เลขที่ ' + o.student_id),
+        amount: o.price || 0,
+        time: o.paid_at || o.created_at
+      })),
+      ...allIncomeLogs.map(l => ({
+        type: 'manual',
+        title: l.reason || 'ได้รับเพิ่มเติม',
+        from: l.from_name || 'ไม่ระบุ',
+        amount: l.amount || 0,
+        time: l.logged_at
+      }))
+    ].sort((a, b) => (b.time?.toMillis?.() || 0) - (a.time?.toMillis?.() || 0));
+
+    historyEmpty.classList.toggle('hidden', historyItems.length > 0);
+
+    historyList.innerHTML = historyItems.map(item => `
         <div class="history-card">
           <div class="history-left">
-            <div class="order-title">${escapeHtml(taskTitle(o.task_id))}</div>
-            <div class="order-who">ได้จาก ${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))}</div>
+            <div class="order-title">${escapeHtml(item.title)}</div>
+            <div class="order-who">ได้จาก ${escapeHtml(item.from)}</div>
           </div>
           <div class="history-right">
-            <div class="history-amount">+${(o.price || 0).toLocaleString('th-TH')} บาท</div>
-            <div class="history-time">${formatTime(o.paid_at || o.created_at)}</div>
+            <div class="history-amount">+${item.amount.toLocaleString('th-TH')} บาท</div>
+            <div class="history-time">${formatTime(item.time)}</div>
           </div>
         </div>
       `).join('');
@@ -441,6 +547,91 @@
     }
   }
 
+  // ---------------- Add task manually (งานนอกเหนือจาก Classroom) ----------------
+  function openAddTaskModal() {
+    document.getElementById('newTaskTitle').value = '';
+    document.getElementById('newTaskDesc').value = '';
+    document.getElementById('addTaskModal').classList.add('show');
+    setTimeout(() => document.getElementById('newTaskTitle').focus(), 100);
+  }
+
+  function closeAddTaskModal() {
+    document.getElementById('addTaskModal').classList.remove('show');
+  }
+
+  async function confirmAddTask() {
+    const title = document.getElementById('newTaskTitle').value.trim();
+    const desc = document.getElementById('newTaskDesc').value.trim();
+
+    if (!title) {
+      showToast('กรอกชื่องานด้วย');
+      return;
+    }
+
+    try {
+      await db.collection('assignments').add({
+        title: title,
+        description: desc,
+        due_date: null,
+        created_at: firebase.firestore.FieldValue.serverTimestamp(),
+        source: 'manual'
+      });
+      showToast('เพิ่มงานแล้ว');
+      closeAddTaskModal();
+    } catch (err) {
+      console.error(err);
+      showToast('เพิ่มงานไม่สำเร็จ ลองใหม่อีกครั้ง');
+    }
+  }
+
+  // ---------------- Extra income (ได้รับเพิ่มเติม นอกเหนือจากงานในระบบ) ----------------
+  function openExtraIncomeModal() {
+    document.getElementById('extraFrom').value = '';
+    document.getElementById('extraReason').value = '';
+    document.getElementById('extraAmount').value = '';
+    document.getElementById('extraIncomeModal').classList.add('show');
+    setTimeout(() => document.getElementById('extraFrom').focus(), 100);
+  }
+
+  function closeExtraIncomeModal() {
+    document.getElementById('extraIncomeModal').classList.remove('show');
+  }
+
+  async function confirmExtraIncome() {
+    const from = document.getElementById('extraFrom').value.trim();
+    const reason = document.getElementById('extraReason').value.trim();
+    const amount = parseFloat(document.getElementById('extraAmount').value);
+
+    if (!from || !reason || isNaN(amount) || amount <= 0) {
+      showToast('กรอกข้อมูลให้ครบและถูกต้อง');
+      return;
+    }
+
+    try {
+      // บันทึกประวัติ — เวลาที่บันทึกคือเวลาที่คีย์ข้อมูลตรงนี้ (serverTimestamp)
+      await db.collection('income_logs').add({
+        from_name: from,
+        reason: reason,
+        amount: amount,
+        logged_at: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      // บวกเข้ายอดรวม (ใช้ transaction กันยอดชนกัน)
+      const statsRef = db.collection('system_stats').doc('main');
+      await db.runTransaction(async (tx) => {
+        const snap = await tx.get(statsRef);
+        const current = snap.exists ? (snap.data().total_earnings || 0) : 0;
+        tx.set(statsRef, { total_earnings: current + amount }, { merge: true });
+      });
+
+      showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`);
+      closeExtraIncomeModal();
+    } catch (err) {
+      console.error(err);
+      showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง');
+    }
+  }
+
   function formatTime(ts) {
     if (!ts || !ts.toDate) return '';
     const d = ts.toDate();
@@ -462,6 +653,14 @@
 
   document.getElementById('payModal').addEventListener('click', e => {
     if (e.target.id === 'payModal') closePayModal();
+  });
+
+  document.getElementById('addTaskModal').addEventListener('click', e => {
+    if (e.target.id === 'addTaskModal') closeAddTaskModal();
+  });
+
+  document.getElementById('extraIncomeModal').addEventListener('click', e => {
+    if (e.target.id === 'extraIncomeModal') closeExtraIncomeModal();
   });
 </script>
 

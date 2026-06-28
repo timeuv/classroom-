@@ -203,6 +203,26 @@
     margin-top: 2px;
   }
 
+  /* ---- history toggle ---- */
+  .history-hidden { display: none !important; }
+  .btn-toggle-history {
+    width: 100%;
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px dashed var(--line);
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: 0.2s;
+  }
+  .btn-toggle-history:hover {
+    border-color: var(--muted);
+    color: var(--ink);
+  }
+
   /* ---- pay modal ---- */
   .modal-backdrop {
     position: fixed; inset: 0; background: rgba(0,0,0,0.6);
@@ -273,8 +293,9 @@
   <p class="section-label">📊 สรุปยอดรายเดือน (ย้อนหลัง)</p>
   <div id="monthlySummaryList"></div>
 
-  <p class="section-label">💰 ประวัติการได้เงิน (ล่าสุด)</p>
+  <p class="section-label">💰 ประวัติการได้เงินทั้งหมด</p>
   <div id="historyList"></div>
+  <button id="toggleHistoryBtn" class="btn-toggle-history hidden" onclick="toggleHistory()">ดูประวัติทั้งหมด</button>
   <div class="empty-state hidden" id="historyEmpty">ยังไม่มีประวัติการรับเงิน</div>
 </div>
 
@@ -341,6 +362,9 @@
   let activeOrderId = null;
   let knownOrderIds = new Set();
   let firstLoad = true;
+  
+  // สถานะการย่อ/ขยายประวัติ
+  let isHistoryExpanded = false;
 
   const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
@@ -402,6 +426,11 @@
   function taskTitle(taskId) {
     const t = allTasks.find(x => x.id === taskId);
     return t ? t.title : '(ไม่พบชื่องาน)';
+  }
+
+  function toggleHistory() {
+    isHistoryExpanded = !isHistoryExpanded;
+    renderOrders();
   }
 
   function renderOrders() {
@@ -470,19 +499,34 @@
 
     document.getElementById('historyEmpty').classList.toggle('hidden', historyItems.length > 0);
     
-    // โชว์แค่ประวัติ 15 รายการล่าสุดในหน้าหลัก
-    historyList.innerHTML = historyItems.slice(0, 15).map(item => `
-      <div class="history-card">
-        <div class="history-left">
-          <div class="order-title">${escapeHtml(item.title)}</div>
-          <div class="order-who">ได้จาก ${escapeHtml(item.from)}</div>
+    // โชว์ประวัติพร้อมเช็กสถานะการย่อ/ขยาย
+    const MAX_HISTORY = 15;
+    historyList.innerHTML = historyItems.map((item, index) => {
+      const hideClass = (!isHistoryExpanded && index >= MAX_HISTORY) ? 'history-hidden' : '';
+      return `
+        <div class="history-card ${hideClass}">
+          <div class="history-left">
+            <div class="order-title">${escapeHtml(item.title)}</div>
+            <div class="order-who">ได้จาก ${escapeHtml(item.from)}</div>
+          </div>
+          <div class="history-right">
+            <div class="history-amount">+${item.amount.toLocaleString('th-TH')} บาท</div>
+            <div class="history-time">${formatTime(item.time)}</div>
+          </div>
         </div>
-        <div class="history-right">
-          <div class="history-amount">+${item.amount.toLocaleString('th-TH')} บาท</div>
-          <div class="history-time">${formatTime(item.time)}</div>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
+
+    // อัปเดตปุ่มดูประวัติทั้งหมด
+    const toggleBtn = document.getElementById('toggleHistoryBtn');
+    if (historyItems.length > MAX_HISTORY) {
+      toggleBtn.classList.remove('hidden');
+      toggleBtn.textContent = isHistoryExpanded 
+        ? 'ย่อประวัติ (แสดงแค่ 15 รายการล่าสุด)' 
+        : `ดูประวัติทั้งหมด (${historyItems.length} รายการ)`;
+    } else {
+      toggleBtn.classList.add('hidden');
+    }
 
     // --- การคำนวณยอดรายเดือน ---
     const monthlyData = {};
@@ -506,18 +550,16 @@
     const sortedMonths = Object.keys(monthlyData).sort().reverse();
     
     sortedMonths.forEach(ym => {
-      if (ym === currentYM) return; // ข้ามเดือนปัจจุบันไป เพราะโชว์อยู่ข้างบนแล้ว
+      if (ym === currentYM) return;
 
       const [yearStr, monthStr] = ym.split('-');
       const y = parseInt(yearStr);
       const mIndex = parseInt(monthStr) - 1;
       const total = monthlyData[ym];
       
-      // หาจำนวนวันของเดือนนั้น (ใช้วันที่ 0 ของเดือนถัดไป)
       const daysInMonth = new Date(y, mIndex + 1, 0).getDate();
       const avgPerDay = total / daysInMonth;
       
-      // เช็กเป้า 160 บาท/วัน
       const isPassed = avgPerDay >= 160;
       const borderColor = isPassed ? 'var(--green)' : 'var(--red)';
       const textColor = isPassed ? 'var(--green)' : 'var(--red)';

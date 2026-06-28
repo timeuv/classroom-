@@ -127,6 +127,36 @@
 
   .empty-state { text-align: center; padding: 30px; color: var(--muted); font-size: 14px; }
 
+  /* ---- history (read-only) ---- */
+  .history-card {
+    background: var(--paper);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    box-shadow: var(--shadow);
+    border-left: 3px solid var(--green);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .history-left .order-title { font-size: 14px; }
+  .history-left .order-who { font-size: 12.5px; }
+  .history-right {
+    text-align: right;
+    white-space: nowrap;
+  }
+  .history-amount {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--green);
+  }
+  .history-time {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
   /* ---- new claim flash ---- */
   @keyframes flash {
     0% { background: var(--accent-soft); }
@@ -192,6 +222,10 @@
   <p class="section-label">✅ ทำเสร็จแล้ว รอส่ง/รอรับเงิน</p>
   <div id="doneList"></div>
   <div class="empty-state hidden" id="doneEmpty">ไม่มีงานที่ทำเสร็จรออยู่</div>
+
+  <p class="section-label">💰 ประวัติการได้เงิน</p>
+  <div id="historyList"></div>
+  <div class="empty-state hidden" id="historyEmpty">ยังไม่มีประวัติการรับเงิน</div>
 </div>
 
 <!-- ============ PAYMENT MODAL ============ -->
@@ -287,14 +321,18 @@
   function renderOrders() {
     const pendingList = document.getElementById('pendingList');
     const doneList = document.getElementById('doneList');
+    const historyList = document.getElementById('historyList');
     const pendingEmpty = document.getElementById('pendingEmpty');
     const doneEmpty = document.getElementById('doneEmpty');
+    const historyEmpty = document.getElementById('historyEmpty');
 
     const pending = allOrders.filter(o => o.status === 'pending');
     const done = allOrders.filter(o => o.status === 'done');
+    const paid = allOrders.filter(o => o.status === 'paid');
 
     pendingEmpty.classList.toggle('hidden', pending.length > 0);
     doneEmpty.classList.toggle('hidden', done.length > 0);
+    historyEmpty.classList.toggle('hidden', paid.length > 0);
 
     pendingList.innerHTML = pending.map(o => `
       <div class="order-card pending">
@@ -327,6 +365,23 @@
         </div>
       </div>
     `).join('');
+
+    // ประวัติการได้เงิน — แสดงเฉยๆ ดูอย่างเดียว แก้ไขไม่ได้
+    historyList.innerHTML = paid
+      .slice()
+      .sort((a, b) => (b.paid_at?.toMillis?.() || 0) - (a.paid_at?.toMillis?.() || 0))
+      .map(o => `
+        <div class="history-card">
+          <div class="history-left">
+            <div class="order-title">${escapeHtml(taskTitle(o.task_id))}</div>
+            <div class="order-who">ได้จาก ${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))}</div>
+          </div>
+          <div class="history-right">
+            <div class="history-amount">+${(o.price || 0).toLocaleString('th-TH')} บาท</div>
+            <div class="history-time">${formatTime(o.paid_at || o.created_at)}</div>
+          </div>
+        </div>
+      `).join('');
   }
 
   async function markOrderDone(orderId) {
@@ -363,10 +418,11 @@
     }
 
     try {
-      // อัปเดตสถานะออเดอร์ + ราคา
+      // อัปเดตสถานะออเดอร์ + ราคา + เวลาที่ได้รับเงิน
       await db.collection('orders').doc(activeOrderId).update({
         status: 'paid',
-        price: amount
+        price: amount,
+        paid_at: firebase.firestore.FieldValue.serverTimestamp()
       });
 
       // บวกเข้ายอดรวม (ใช้ transaction กันยอดชนกัน)

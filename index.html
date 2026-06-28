@@ -125,7 +125,7 @@
     margin-bottom: 6px;
   }
 
-  input[type="password"], input[type="text"], input[type="number"] {
+  input[type="password"], input[type="text"], input[type="number"], input[type="file"] {
     width: 100%;
     padding: 13px 14px;
     border: 1.5px solid var(--line);
@@ -254,7 +254,7 @@
     color: white;
   }
   .btn-claim:hover { background: #b8521f; }
-  .btn-claim:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+  .btn-claim:disabled { background: var(--line) !important; color: var(--muted) !important; cursor: not-allowed; }
 
   .btn-self {
     background: var(--paper);
@@ -262,6 +262,7 @@
     border: 1.5px solid var(--line);
   }
   .btn-self:hover { border-color: var(--muted); }
+  .btn-self:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .btn-done {
     background: var(--green-soft);
@@ -285,6 +286,7 @@
   .status-tag.claimed { background: var(--accent-soft); color: var(--accent); }
   .status-tag.mine { background: var(--green-soft); color: var(--green); }
   .status-tag.alert { background: #FDECEC; color: #C0392B; }
+  .status-tag.wait { background: #FFF4E5; color: #D48806; } /* สีเหลืองรอตรวจสอบ */
 
   .toast {
     position: fixed;
@@ -337,13 +339,11 @@
       <div class="who" id="whoLabel" onclick="logout()">เลขที่ — · ออกจากระบบ</div>
     </div>
 
-    <!-- หมวดงานที่ต้องทำ -->
     <div id="pendingSection">
       <p class="section-label">งานที่ต้องทำ</p>
       <div id="taskList"></div>
     </div>
 
-    <!-- หมวดงานที่เสร็จแล้ว (จะโชว์เมื่อมีงาน) -->
     <div id="completedSection" class="hidden" style="margin-top: 24px;">
       <p class="section-label">งานที่เสร็จเรียบร้อยแล้ว</p>
       <div id="completedList"></div>
@@ -361,11 +361,10 @@
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal-sheet">
     <span class="status-tag hidden" id="statusTag"></span>
-    <h2 class="modal-title" id="modalTitle"></h2>
+    <h2 class="modal-title" id="modalTitle" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;"></h2>
     <div class="modal-meta" id="modalMeta"></div>
     <div class="modal-desc" id="modalDesc"></div>
 
-    <!-- กล่องเลือกวิธีชำระเงิน (ซ่อนไว้ โชว์ตอน Admin กดทำเสร็จ) -->
     <div id="paymentSection" class="hidden" style="margin-top: 16px; padding-top: 16px; border-top: 1.5px dashed var(--line); margin-bottom: 16px;">
       <p style="font-size: 14px; font-weight: 700; margin: 0 0 10px; color: var(--accent);">งานเสร็จแล้ว! เลือกวิธีชำระเงินได้เลย 👇</p>
       <div style="display: flex; gap: 8px; margin-bottom: 12px;">
@@ -387,22 +386,18 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ---------------- Firebase init ----------------
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // ⚠️ ตั้งค่าบัญชีรับเงินของคุณตรงนี้
-  const MY_PROMPTPAY = "0963413738"; // ใส่เบอร์โทรศัพท์ที่ผูกพร้อมเพย์
-  const MY_NAME = "ณัฐพงศ์ เภกะนันทน์"; // ชื่อบัญชีธนาคาร 
+  const MY_PROMPTPAY = "0963413738";
+  const MY_NAME = "ณัฐพงศ์ เภกะนันทน์"; 
 
-  // ---------------- State ----------------
   let selectedNumber = null;
   let currentUser = null; 
   let allTasks = [];
   let allOrders = [];
   let activeTaskId = null;
 
-  // ---------------- Login screen: build number grid ----------------
   const numberGrid = document.getElementById('numberGrid');
   for (let i = 1; i <= 30; i++) {
     const b = document.createElement('button');
@@ -425,9 +420,7 @@
   }
 
   document.getElementById('loginBtn').onclick = doLogin;
-  document.getElementById('pwInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') doLogin();
-  });
+  document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
   async function doLogin() {
     const pw = document.getElementById('pwInput').value.trim();
@@ -447,13 +440,10 @@
         loginBtn.textContent = 'เข้าสู่ระบบ';
         return;
       }
-
       currentUser = { studentId: String(selectedNumber), name: docSnap.data().name || `เลขที่ ${selectedNumber}` };
       sessionStorage.setItem('cr_user', JSON.stringify(currentUser));
       enterDashboard();
-
     } catch (err) {
-      console.error(err);
       document.getElementById('loginError').textContent = 'เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง';
       document.getElementById('loginError').classList.add('show');
       loginBtn.disabled = false;
@@ -461,56 +451,44 @@
     }
   }
 
-  function logout() {
-    sessionStorage.removeItem('cr_user');
-    currentUser = null;
-    location.reload();
-  }
+  function logout() { sessionStorage.removeItem('cr_user'); location.reload(); }
 
-  // ---------------- Dashboard ----------------
   function enterDashboard() {
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('dashScreen').classList.remove('hidden');
     document.getElementById('whoLabel').textContent = `${currentUser.name} · ออกจากระบบ`;
-    listenToTasks();
-    listenToOrders();
+    listenToTasks(); listenToOrders();
   }
 
   (function restoreSession() {
     const saved = sessionStorage.getItem('cr_user');
-    if (saved) {
-      currentUser = JSON.parse(saved);
-      enterDashboard();
-    }
+    if (saved) { currentUser = JSON.parse(saved); enterDashboard(); }
   })();
 
-  // ---------------- Real-time listeners ----------------
   function listenToTasks() {
-    db.collection('assignments').orderBy('created_at', 'desc')
-      .onSnapshot(snap => {
-        allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderTasks();
-      }, err => console.error('tasks listener error', err));
+    db.collection('assignments').orderBy('created_at', 'desc').onSnapshot(snap => {
+      allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderTasks();
+    });
   }
 
   function listenToOrders() {
     db.collection('orders').onSnapshot(snap => {
-      allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderTasks();
-    }, err => console.error('orders listener error', err));
+      allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderTasks();
+    });
   }
 
-  // ---------------- Render task list ----------------
+  function checkIsTestTask(title) {
+    if (!title) return false;
+    return title.includes('ทดลอง') || title.includes('ห้ามกด') || title === 'งานวิทยาศาสตร์' || title === 'วิทยาศาสตร์';
+  }
+
   function renderTasks() {
     const list = document.getElementById('taskList');
     const compList = document.getElementById('completedList');
     const empty = document.getElementById('emptyState');
 
-    list.innerHTML = '';
-    compList.innerHTML = '';
-
-    let hasPending = false;
-    let hasCompleted = false;
+    list.innerHTML = ''; compList.innerHTML = '';
+    let hasPending = false; let hasCompleted = false;
 
     allTasks.forEach(t => {
       const order = allOrders.find(o => o.task_id === t.id && o.student_id === currentUser.studentId);
@@ -518,41 +496,30 @@
       card.className = 'task-card';
       card.onclick = () => openTask(t.id);
 
-      let badge = '';
-      let isCompleted = false;
+      let badge = ''; let isCompleted = false;
+      let isTest = checkIsTestTask(t.title);
+      let testBadgeHtml = isTest ? '<span style="color: #C0392B; font-size: 11px; font-weight: bold; background: #FDECEC; padding: 2px 6px; border-radius: 4px; display: inline-block;">⚠️ ทดลองระบบ</span>' : '';
 
       if (order) {
-        if (order.status === 'pending') {
-          badge = ' · ⏳ ไทม์กำลังทำ';
-        } else if (order.status === 'done') {
-          badge = ' · 🔴 เสร็จแล้ว! กดเพื่อดูวิธีจ่ายเงิน';
-          card.style.borderColor = '#E8836A'; 
-          card.style.borderWidth = '1.5px';
-        } else if (order.status === 'paid') {
-          badge = ' · ✅ ไทม์ทำเสร็จแล้ว';
-          isCompleted = true;
-        } else if (order.status === 'self_working') {
-          badge = ' · ✍️ กำลังทำเอง';
-        } else if (order.status === 'self_done') {
-          badge = ' · ✅ ทำเองเสร็จแล้ว';
-          isCompleted = true;
-        }
+        if (order.status === 'pending') badge = ' · ⏳ ไทม์กำลังทำ';
+        else if (order.status === 'done') { badge = ' · 🔴 เสร็จแล้ว! กดเพื่อดูวิธีจ่ายเงิน'; card.style.borderColor = '#E8836A'; card.style.borderWidth = '1.5px'; }
+        else if (order.status === 'checking_slip') { badge = ' · 🔎 ส่งสลิปแล้วรอตรวจสอบ'; card.style.borderColor = '#D48806'; card.style.borderWidth = '1.5px'; }
+        else if (order.status === 'paid') { badge = ' · ✅ ไทม์ทำเสร็จแล้ว'; isCompleted = true; }
+        else if (order.status === 'self_working') badge = ' · ✍️ กำลังทำเอง';
+        else if (order.status === 'self_done') { badge = ' · ✅ ทำเองเสร็จแล้ว'; isCompleted = true; }
       }
 
       if (isCompleted) card.classList.add('opacity');
 
       card.innerHTML = `
-        <div class="task-title">${escapeHtml(t.title)}</div>
+        <div class="task-title" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+          ${escapeHtml(t.title)} ${testBadgeHtml}
+        </div>
         <div class="task-meta">${formatDate(t.due_date)}${badge}</div>
       `;
 
-      if (isCompleted) {
-        compList.appendChild(card);
-        hasCompleted = true;
-      } else {
-        list.appendChild(card);
-        hasPending = true;
-      }
+      if (isCompleted) { compList.appendChild(card); hasCompleted = true; }
+      else { list.appendChild(card); hasPending = true; }
     });
 
     empty.classList.toggle('hidden', hasPending || hasCompleted);
@@ -560,42 +527,95 @@
     document.getElementById('completedSection').classList.toggle('hidden', !hasCompleted);
   }
 
-  // ---------------- Payment Options UI ----------------
   function showPromptPay() {
     const pd = document.getElementById('payDetails');
     const ppNumber = MY_PROMPTPAY.replace(/[^0-9]/g, ''); 
     pd.innerHTML = `
       <img src="https://promptpay.io/${ppNumber}" style="width: 160px; height: 160px; margin-bottom: 12px; border-radius: 8px;">
-      <div style="font-weight: 800; font-size: 16px; letter-spacing: 0.5px;">พร้อมเพย์: ${MY_PROMPTPAY}</div>
+      <div style="font-weight: 800; font-size: 16px;">พร้อมเพย์: ${MY_PROMPTPAY}</div>
       <div style="color: var(--muted); font-size: 13.5px; margin-bottom: 10px;">ชื่อบัญชี: ${MY_NAME}</div>
       <div style="font-size: 12.5px; color: var(--accent); background: var(--accent-soft); padding: 8px; border-radius: 8px;">
         * โอนตามยอดที่ตกลงกันไว้ แล้วทักบอกไทม์ได้เลย!
       </div>
-    `;
-    pd.classList.remove('hidden');
-  }
-
-  function showCash() {
-    const pd = document.getElementById('payDetails');
-    pd.innerHTML = `
-      <div style="font-size: 44px; margin-bottom: 8px;">💵</div>
-      <div style="font-weight: 800; font-size: 16px;">จ่ายด้วยเงินสด</div>
-      <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">
-        เตรียมเงินสดมาให้ไทม์ที่โรงเรียนได้เลยนะ!
+      <!-- เพิ่มช่องให้อัปโหลดสลิป -->
+      <div style="margin-top: 14px; border-top: 1px dashed var(--line); padding-top: 14px; text-align: left;">
+        <label style="font-size: 13px; font-weight: bold; margin-bottom: 6px; display: block; color: var(--ink);">แนบสลิปเพื่อยืนยันการโอน</label>
+        <input type="file" id="slipUploadInput" accept="image/*" style="font-size: 13px; margin-bottom: 8px; padding: 10px;">
+        <button class="btn btn-claim" style="width: 100%;" onclick="submitSlip()">ส่งสลิป</button>
       </div>
     `;
     pd.classList.remove('hidden');
   }
 
-  // ---------------- Task detail modal ----------------
+  // ฟังก์ชันสำหรับบีบอัดและส่งสลิปเป็นข้อความ (Base64) เซฟลง Firestore
+  async function submitSlip() {
+    const fileInput = document.getElementById('slipUploadInput');
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+      showToast('กรุณาเลือกรูปสลิปก่อนครับ');
+      return;
+    }
+    
+    // เปลี่ยนปุ่มเป็นกำลังโหลด
+    const btn = fileInput.nextElementSibling;
+    btn.disabled = true;
+    btn.textContent = "กำลังอัปโหลด...";
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = async function() {
+        // บีบอัดรูปภาพให้ขนาดไม่เกิน 600px เพื่อไม่ให้รก Database
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 600;
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        // แปลงเป็นข้อความเพื่อเซฟลง Firebase โดยตรง
+        const base64String = canvas.toDataURL('image/jpeg', 0.6); 
+
+        const order = allOrders.find(o => o.task_id === activeTaskId && o.student_id === currentUser.studentId);
+        if (order) {
+          try {
+            await db.collection('orders').doc(order.id).update({
+              status: 'checking_slip',
+              slip_image: base64String
+            });
+            showToast('ส่งสลิปเรียบร้อย รอไทม์ตรวจสอบนะครับ ⏳');
+            closeModal();
+          } catch (err) {
+            console.error(err);
+            showToast('ส่งไม่สำเร็จ ลองใหม่อีกครั้ง');
+            btn.disabled = false;
+            btn.textContent = "ส่งสลิป";
+          }
+        }
+      }
+      img.src = e.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
+
+  function showCash() {
+    const pd = document.getElementById('payDetails');
+    pd.innerHTML = `<div style="font-size: 44px; margin-bottom: 8px;">💵</div><div style="font-weight: 800; font-size: 16px;">จ่ายด้วยเงินสด</div><div style="color: var(--muted); font-size: 14px; margin-top: 4px;">เตรียมเงินสดมาให้ไทม์ที่โรงเรียนได้เลยนะ!</div>`;
+    pd.classList.remove('hidden');
+  }
+
   function openTask(taskId) {
     activeTaskId = taskId;
     const t = allTasks.find(x => x.id === taskId);
     if (!t) return;
-    
     const order = allOrders.find(o => o.task_id === taskId && o.student_id === currentUser.studentId);
 
-    document.getElementById('modalTitle').textContent = t.title;
+    let isTest = checkIsTestTask(t.title);
+    let testBadgeHtml = isTest ? '<span style="color: #C0392B; font-size: 12px; font-weight: bold; background: #FDECEC; padding: 2px 8px; border-radius: 4px;">⚠️ ทดลองระบบ (ห้ามกด)</span>' : '';
+
+    document.getElementById('modalTitle').innerHTML = `${escapeHtml(t.title)} ${testBadgeHtml}`;
     document.getElementById('modalMeta').textContent = formatDate(t.due_date);
     document.getElementById('modalDesc').textContent = t.description || 'ไม่มีรายละเอียดเพิ่มเติม';
 
@@ -606,140 +626,73 @@
     const paymentSection = document.getElementById('paymentSection');
     const payDetails = document.getElementById('payDetails');
 
-    // รีเซ็ตปุ่มและหน้าจอทั้งหมดก่อน
     statusTag.className = 'status-tag hidden';
-    claimBtn.classList.add('hidden');
-    selfBtn.classList.add('hidden');
-    selfDoneBtn.classList.add('hidden');
-    paymentSection.classList.add('hidden');
-    payDetails.classList.add('hidden');
-    claimBtn.disabled = false;
-    selfBtn.disabled = false;
+    claimBtn.classList.add('hidden'); selfBtn.classList.add('hidden'); selfDoneBtn.classList.add('hidden');
+    paymentSection.classList.add('hidden'); payDetails.classList.add('hidden');
+    claimBtn.disabled = false; selfBtn.disabled = false;
+    claimBtn.textContent = 'ให้ไทม์ทำงานนี้';
+
+    if (isTest) {
+      claimBtn.disabled = true; claimBtn.textContent = '⚠️ งานนี้ตั้งไว้ทดสอบระบบเท่านั้น'; selfBtn.disabled = true;
+    }
 
     if (!order) {
-      claimBtn.classList.remove('hidden');
-      selfBtn.classList.remove('hidden');
+      claimBtn.classList.remove('hidden'); selfBtn.classList.remove('hidden');
     } else if (order.status === 'pending') {
-      statusTag.textContent = 'ไทม์กำลังทำงานนี้ให้คุณอยู่ ⏳';
-      statusTag.className = 'status-tag claimed';
-      statusTag.classList.remove('hidden');
+      statusTag.textContent = 'ไทม์กำลังทำงานนี้ให้คุณอยู่ ⏳'; statusTag.className = 'status-tag claimed'; statusTag.classList.remove('hidden');
     } else if (order.status === 'done') {
-      statusTag.textContent = 'ไทม์ทำเสร็จแล้ว! รอชำระเงิน';
-      statusTag.className = 'status-tag alert';
-      statusTag.classList.remove('hidden');
+      statusTag.textContent = 'ไทม์ทำเสร็จแล้ว! รอชำระเงิน'; statusTag.className = 'status-tag alert'; statusTag.classList.remove('hidden');
       paymentSection.classList.remove('hidden');
+    } else if (order.status === 'checking_slip') {
+      statusTag.textContent = 'กำลังรอไทม์ตรวจสอบสลิป 🔎'; statusTag.className = 'status-tag wait'; statusTag.classList.remove('hidden');
     } else if (order.status === 'paid') {
-      statusTag.textContent = 'คุณชำระเงินและรับงานนี้เรียบร้อย ✅';
-      statusTag.className = 'status-tag mine';
-      statusTag.classList.remove('hidden');
+      statusTag.textContent = 'คุณชำระเงินและรับงานนี้เรียบร้อย ✅'; statusTag.className = 'status-tag mine'; statusTag.classList.remove('hidden');
     } else if (order.status === 'self_working') {
-      statusTag.textContent = 'คุณกำลังทำงานนี้เอง สู้ๆ ✌️';
-      statusTag.className = 'status-tag mine';
-      statusTag.classList.remove('hidden');
-      selfDoneBtn.classList.remove('hidden');
+      statusTag.textContent = 'คุณกำลังทำงานนี้เอง สู้ๆ ✌️'; statusTag.className = 'status-tag mine'; statusTag.classList.remove('hidden'); selfDoneBtn.classList.remove('hidden');
     } else if (order.status === 'self_done') {
-      statusTag.textContent = 'คุณทำเองเสร็จแล้ว (ส่งแล้ว) ✅';
-      statusTag.className = 'status-tag mine';
-      statusTag.classList.remove('hidden');
+      statusTag.textContent = 'คุณทำเองเสร็จแล้ว (ส่งแล้ว) ✅'; statusTag.className = 'status-tag mine'; statusTag.classList.remove('hidden');
     }
 
     document.getElementById('modalBackdrop').classList.add('show');
   }
 
-  function closeModal() {
-    document.getElementById('modalBackdrop').classList.remove('show');
-    activeTaskId = null;
-  }
+  function closeModal() { document.getElementById('modalBackdrop').classList.remove('show'); activeTaskId = null; }
 
   async function claimTask() {
     if (!activeTaskId) return;
-    const claimBtn = document.getElementById('claimBtn');
-    claimBtn.disabled = true;
-    claimBtn.textContent = 'กำลังบันทึก...';
-
+    const claimBtn = document.getElementById('claimBtn'); claimBtn.disabled = true; claimBtn.textContent = 'กำลังบันทึก...';
     try {
-      await db.collection('orders').add({
-        task_id: activeTaskId,
-        student_id: currentUser.studentId,
-        student_name: currentUser.name,
-        status: 'pending',
-        price: null,
-        created_at: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      showToast('สั่งงานให้ไทม์ทำเรียบร้อย เดี๋ยวรีบทำให้นะ 🙌');
-      closeModal();
-    } catch (err) {
-      console.error(err);
-      showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง');
-      claimBtn.disabled = false;
-      claimBtn.textContent = 'ให้ไทม์ทำงานนี้';
-    }
+      await db.collection('orders').add({ task_id: activeTaskId, student_id: currentUser.studentId, student_name: currentUser.name, status: 'pending', price: null, created_at: firebase.firestore.FieldValue.serverTimestamp() });
+      showToast('สั่งงานให้ไทม์ทำเรียบร้อย เดี๋ยวรีบทำให้นะ 🙌'); closeModal();
+    } catch (err) { showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); claimBtn.disabled = false; claimBtn.textContent = 'ให้ไทม์ทำงานนี้'; }
   }
 
   async function startSelfTask() {
     if (!activeTaskId) return;
-    const selfBtn = document.getElementById('selfBtn');
-    selfBtn.disabled = true;
-
+    const selfBtn = document.getElementById('selfBtn'); selfBtn.disabled = true;
     try {
-      await db.collection('orders').add({
-        task_id: activeTaskId,
-        student_id: currentUser.studentId,
-        student_name: currentUser.name,
-        status: 'self_working',
-        price: 0,
-        created_at: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      showToast('ใช้เว็บนี้จดไว้ได้เลย สู้ๆ นะ! ✍️');
-      closeModal();
-    } catch (err) {
-      console.error(err);
-      showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง');
-      selfBtn.disabled = false;
-    }
+      await db.collection('orders').add({ task_id: activeTaskId, student_id: currentUser.studentId, student_name: currentUser.name, status: 'self_working', price: 0, created_at: firebase.firestore.FieldValue.serverTimestamp() });
+      showToast('ใช้เว็บนี้จดไว้ได้เลย สู้ๆ นะ! ✍️'); closeModal();
+    } catch (err) { showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); selfBtn.disabled = false; }
   }
 
   async function finishSelfTask() {
     if (!activeTaskId) return;
-    const order = allOrders.find(o => o.task_id === activeTaskId && o.student_id === currentUser.studentId);
-    if (!order) return;
-
+    const order = allOrders.find(o => o.task_id === activeTaskId && o.student_id === currentUser.studentId); if (!order) return;
     try {
       await db.collection('orders').doc(order.id).update({ status: 'self_done' });
-      showToast('เก่งมาก! ทำเครื่องหมายว่าส่งงานแล้ว ✅');
-      closeModal();
-    } catch (err) {
-      console.error(err);
-      showToast('อัปเดตไม่สำเร็จ ลองใหม่อีกครั้ง');
-    }
+      showToast('เก่งมาก! ทำเครื่องหมายว่าส่งงานแล้ว ✅'); closeModal();
+    } catch (err) { showToast('อัปเดตไม่สำเร็จ ลองใหม่อีกครั้ง'); }
   }
 
-  // ---------------- Helpers ----------------
   function formatDate(ts) {
-    if (!ts) return 'ไม่ระบุวันส่ง';
-    let d;
-    if (ts.toDate) d = ts.toDate();
-    else d = new Date(ts);
-    if (isNaN(d.getTime())) return 'ไม่ระบุวันส่ง';
-    return 'ส่ง ' + d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+    if (!ts) return 'ไม่ระบุวันส่ง'; let d; if (ts.toDate) d = ts.toDate(); else d = new Date(ts);
+    if (isNaN(d.getTime())) return 'ไม่ระบุวันส่ง'; return 'ส่ง ' + d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str || '';
-    return div.innerHTML;
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2400);
-  }
-
-  document.getElementById('modalBackdrop').addEventListener('click', e => {
-    if (e.target.id === 'modalBackdrop') closeModal();
-  });
+  function escapeHtml(str) { const div = document.createElement('div'); div.textContent = str || ''; return div.innerHTML; }
+  function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2400); }
+  document.getElementById('modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalBackdrop') closeModal(); });
 </script>
 
 </body>

@@ -371,6 +371,34 @@
     font-weight: bold; 
   }
 
+  /* 📍 ฟีเจอร์ใหม่: Live Class Card (เรียนวิชาอะไรอยู่) */
+  .live-class-card {
+    background: var(--paper);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(212, 98, 42, 0.15);
+  }
+
+  .live-pulse {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(212, 98, 42, 0.7);
+    animation: pulseLive 1.5s infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulseLive {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 98, 42, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(212, 98, 42, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 98, 42, 0); }
+  }
+
   /* 🛡️ ศูนย์บัญชาการเอาตัวรอด */
   .survival-hub { 
     background: var(--paper); 
@@ -950,6 +978,15 @@
   <!-- ================= หน้าล็อกอิน (โชว์ข้อมูลล่อใจ) ================= -->
   <div id="loginScreen">
     
+    <!-- 📍 ป้าย Live Class (หน้าล็อกอิน) -->
+    <div id="loginLiveClassCard" class="live-class-card hidden">
+      <div class="live-pulse" id="loginLivePulse"></div>
+      <div>
+        <div style="font-size:11px; color:var(--muted); font-weight:bold; margin-bottom:2px;">📍 ตอนนี้กำลังเรียน...</div>
+        <div id="loginLiveClassText" style="font-size:15px; font-weight:800; color:var(--accent);">กำลังโหลด...</div>
+      </div>
+    </div>
+
     <!-- 🔥 หลอดพลังคิวงาน (โชว์คนนอก) -->
     <div id="loginCapacityContainer" class="capacity-box hidden"></div>
 
@@ -990,6 +1027,15 @@
     <!-- 📱 TAB 1: งาน (Tasks) -->
     <div id="tab-tasks" class="screen active">
       
+      <!-- 📍 ป้าย Live Class (หน้าแอปหลัก) -->
+      <div id="appLiveClassCard" class="live-class-card hidden">
+        <div class="live-pulse" id="appLivePulse"></div>
+        <div>
+          <div style="font-size:11px; color:var(--muted); font-weight:bold; margin-bottom:2px;">📍 ตอนนี้กำลังเรียน...</div>
+          <div id="appLiveClassText" style="font-size:15px; font-weight:800; color:var(--accent);">กำลังโหลด...</div>
+        </div>
+      </div>
+
       <!-- 🔥 หลอดพลังคิวงาน -->
       <div id="capacityContainer" class="capacity-box hidden"></div>
 
@@ -1332,6 +1378,7 @@
     listenToChats();
     listenToParties();
     listenToMusic();
+    updateLiveClassIndicator(); // โชว์ระบบ Live ทันทีที่เข้าหน้าจอหลัก
   }
 
   // โหลด Settings ให้โชว์หน้าแรกทันที (ไม่ต้องล็อกอินก็เห็นคิวงาน ตารางสอน และคลังชีท)
@@ -1441,21 +1488,141 @@
           document.getElementById('loginVaultContainer').classList.add('hidden');
         }
 
-        // 5. ตารางสอน (โหลดเก็บไว้ในตัวแปร รอเพื่อนกดเปิดดู)
+        // 5. ตารางสอน (โหลดเก็บไว้และแสดงระบบ Live ทันที)
         currentScheduleData = d.schedule || {};
+        updateLiveClassIndicator();
       }
     });
   }
 
-  // --- Modal ตารางเดินเรียน ---
+  // ==========================================
+  // 📍 ระบบเช็กคาบเรียนแบบ Real-time
+  // ==========================================
+  function updateLiveClassIndicator() {
+    // อัปเดตทั้งการ์ดหน้าล็อกอิน และหน้าหลัก
+    const loginCard = document.getElementById('loginLiveClassCard');
+    const loginText = document.getElementById('loginLiveClassText');
+    const loginPulse = document.getElementById('loginLivePulse');
+
+    const appCard = document.getElementById('appLiveClassCard');
+    const appText = document.getElementById('appLiveClassText');
+    const appPulse = document.getElementById('appLivePulse');
+
+    if (!currentScheduleData || Object.keys(currentScheduleData).length === 0) {
+      if(loginCard) loginCard.classList.add('hidden');
+      if(appCard) appCard.classList.add('hidden');
+      return;
+    }
+
+    const now = new Date();
+    const day = now.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+    const hour = now.getHours();
+    const min = now.getMinutes();
+    const currentMins = hour * 60 + min;
+
+    const dayMap = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
+    const todayKey = dayMap[day];
+
+    let statusText = "กำลังโหลด...";
+    let pulseColor = "var(--accent)";
+    let textColor = "var(--accent)";
+
+    if (!todayKey) {
+      statusText = "🥳 วันหยุด! พักผ่อนให้เต็มที่";
+      textColor = "var(--green)";
+      pulseColor = "var(--green)";
+    } else {
+      const scheduleText = currentScheduleData[todayKey];
+      if (!scheduleText) {
+        statusText = "😅 ยังไม่มีข้อมูลตารางเรียนวันนี้";
+        textColor = "var(--muted)";
+        pulseColor = "var(--muted)";
+      } else {
+        const lines = scheduleText.split('\n');
+        let activeClass = null;
+        let firstClassStart = 9999;
+        let lastClassEnd = 0;
+
+        for (let line of lines) {
+          // ดักจับรูปแบบ: 07:30 - 09:30 | 🎨 กราฟิกศิลป์
+          const match = line.match(/(\d{2})\s*:\s*(\d{2})\s*-\s*(\d{2})\s*:\s*(\d{2})\s*\|\s*(.+)/);
+          if (match) {
+            const startMin = parseInt(match[1]) * 60 + parseInt(match[2]);
+            const endMin = parseInt(match[3]) * 60 + parseInt(match[4]);
+            
+            if (startMin < firstClassStart) firstClassStart = startMin;
+            if (endMin > lastClassEnd) lastClassEnd = endMin;
+
+            if (currentMins >= startMin && currentMins < endMin) {
+               activeClass = match[5].trim();
+               // ตรวจจับคำว่า พัก หรือ คาบว่าง ในวิชา
+               if(activeClass.includes('พัก') || activeClass.includes('ว่าง') || activeClass.includes('💤') || activeClass.includes('⏸️')) {
+                 statusText = activeClass;
+                 textColor = "#D48806";
+                 pulseColor = "#D48806";
+                 activeClass = "BREAK"; // dummy value to bypass below if
+               }
+            }
+          }
+        }
+
+        if (activeClass && activeClass !== "BREAK") {
+          statusText = activeClass;
+          textColor = "var(--accent)";
+          pulseColor = "var(--accent)";
+        } else if (!activeClass) {
+          if (firstClassStart !== 9999 && currentMins < firstClassStart) {
+            statusText = "⏳ รอกริ่งเข้าเรียนคาบแรก...";
+            textColor = "var(--muted)";
+            pulseColor = "var(--muted)";
+          } else if (lastClassEnd !== 0 && currentMins >= lastClassEnd) {
+            statusText = "🎉 เลิกเรียนแล้ว! กลับบ้านกันเถอะ";
+            textColor = "var(--green)";
+            pulseColor = "var(--green)";
+          } else {
+            statusText = "🚶‍♂️ กำลังเปลี่ยนคาบ / พักเบรค";
+            textColor = "#D48806";
+            pulseColor = "#D48806";
+          }
+        }
+      }
+    }
+
+    // อัปเดต UI หน้าล็อกอิน
+    if(loginCard && loginText && loginPulse) {
+      loginCard.classList.remove('hidden');
+      loginText.textContent = statusText;
+      loginText.style.color = textColor;
+      loginPulse.style.background = pulseColor;
+      if(pulseColor === "var(--accent)") {
+        loginPulse.style.boxShadow = "0 0 0 0 rgba(212, 98, 42, 0.7)";
+      } else {
+        loginPulse.style.boxShadow = "none";
+      }
+    }
+
+    // อัปเดต UI หน้าหลัก
+    if(appCard && appText && appPulse) {
+      appCard.classList.remove('hidden');
+      appText.textContent = statusText;
+      appText.style.color = textColor;
+      appPulse.style.background = pulseColor;
+      if(pulseColor === "var(--accent)") {
+        appPulse.style.boxShadow = "0 0 0 0 rgba(212, 98, 42, 0.7)";
+      } else {
+        appPulse.style.boxShadow = "none";
+      }
+    }
+  }
+
+  // สั่งให้ระบบเช็กเวลาใหม่ทุกๆ 1 นาที
+  setInterval(updateLiveClassIndicator, 60000);
+
+  // --- Modal ตารางเดินเรียน (แบบดูเต็มๆ) ---
   function openScheduleModal() {
     document.getElementById('scheduleModal').classList.add('show');
-    
-    // หาวันปัจจุบัน (0=Sun, 1=Mon, ..., 6=Sat)
     let day = new Date().getDay();
     let dayMap = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
-    
-    // ถ้าเป็นเสาร์-อาทิตย์ ให้โชว์วันจันทร์เป็นค่าเริ่มต้น
     let todayKey = dayMap[day] || 'mon'; 
     showSchedule(todayKey);
   }
@@ -1465,13 +1632,11 @@
   }
 
   function showSchedule(dayKey) {
-    // ลบคลาส active จากปุ่มทั้งหมด
     document.querySelectorAll('.day-tab').forEach(btn => btn.classList.remove('active'));
     document.getElementById('tab_' + dayKey).classList.add('active');
     
-    // แสดงข้อความ
     let rawText = currentScheduleData[dayKey] || '';
-    let displayHtml = rawText ? escapeHtml(rawText) : '<div style="color:var(--muted); text-align:center;">ยังไม่ได้ลงตารางของวันนี้</div>';
+    let displayHtml = rawText ? escapeHtml(rawText) : '<div style="color:var(--muted); text-align:center; padding-top:20px;">ยังไม่ได้ลงตารางของวันนี้</div>';
     
     document.getElementById('scheduleContent').innerHTML = displayHtml;
   }

@@ -106,6 +106,7 @@
 
   .action-row {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 22px;
   }
@@ -114,11 +115,12 @@
     background: var(--paper);
     color: var(--ink);
     border: 1.5px solid var(--line);
-    padding: 11px 14px;
+    padding: 11px 10px;
     border-radius: 10px;
-    font-size: 13.5px;
+    font-size: 13px;
     font-weight: 700;
     cursor: pointer;
+    white-space: nowrap;
   }
   .btn-secondary:hover { border-color: var(--accent); }
 
@@ -241,7 +243,7 @@
     color: var(--ink);
   }
 
-  /* ---- pay modal ---- */
+  /* ---- modals ---- */
   .modal-backdrop {
     position: fixed; inset: 0; background: rgba(0,0,0,0.6);
     display: none; align-items: center; justify-content: center; z-index: 50;
@@ -295,15 +297,15 @@
     <div class="stat-pill">ได้แล้ว <span id="totalEarn">0</span> / 5,000</div>
   </div>
 
-  <!-- ป้ายประกาศความโปร่งใส -->
   <div class="notice-box">
     <strong>📢 หมายเหตุความโปร่งใส</strong>
-    ข้อมูลประวัติและยอดเงินทั้งหมดที่เกิดขึ้น <b>ก่อนวันที่ 30 มิถุนายน</b> เป็นเพียงการ "ทดสอบระบบ" เท่านั้น เนื่องจากระบบถูกออกแบบมาให้อ่านได้อย่างเดียวและไม่สามารถแก้ไขหรือลบประวัติย้อนหลังได้ เพื่อให้ตรวจสอบยอดเงินได้โปร่งใส 100%
+    ข้อมูลประวัติและยอดเงินทั้งหมดที่เกิดขึ้น <b>ก่อนวันที่ 30 มิถุนายน</b> เป็นเพียงการ "ทดสอบระบบ" เท่านั้น เนื่องจากระบบถูกออกแบบมาให้อ่านได้อย่างเดียวและไม่สามารถแก้ไขประวัติย้อนหลังได้ เพื่อให้ตรวจสอบยอดเงินได้โปร่งใส 100%
   </div>
 
   <div class="action-row">
     <button class="btn btn-secondary" onclick="openAddTaskModal()">➕ เพิ่มงานเอง</button>
     <button class="btn btn-secondary" onclick="openExtraIncomeModal()">💵 ได้รับเพิ่มเติม</button>
+    <button class="btn btn-secondary" onclick="openManageTasksModal()">🗑️ ลบงาน</button>
   </div>
 
   <p class="section-label">⏳ รอดำเนินการ / กำลังทำ</p>
@@ -371,6 +373,16 @@
   </div>
 </div>
 
+<!-- จัดการ/ลบงาน -->
+<div class="modal-backdrop" id="manageTasksModal">
+  <div class="modal-box" style="max-height: 80vh; overflow-y: auto;">
+    <h3>จัดการ/ลบงาน</h3>
+    <p>ลบงานทดลอง หรือ งานที่สร้างผิดออกจากระบบ</p>
+    <div id="manageTaskList" style="margin-bottom: 16px;"></div>
+    <button class="btn btn-cancel2" style="width: 100%;" onclick="closeManageTasksModal()">ปิดหน้าต่าง</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -386,8 +398,6 @@
   let activeOrderId = null;
   let knownOrderIds = new Set();
   let firstLoad = true;
-  
-  // สถานะการย่อ/ขยายประวัติ
   let isHistoryExpanded = false;
 
   const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
@@ -541,7 +551,6 @@
       `;
     }).join('');
 
-    // อัปเดตปุ่มดูประวัติทั้งหมด
     const toggleBtn = document.getElementById('toggleHistoryBtn');
     if (historyItems.length > MAX_HISTORY) {
       toggleBtn.classList.remove('hidden');
@@ -564,12 +573,10 @@
     const now = new Date();
     const currentYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     
-    // อัปเดตยอดของเดือนปัจจุบันด้านบนสุด
     const currentEarn = monthlyData[currentYM] || 0;
     document.getElementById('totalEarn').textContent = currentEarn.toLocaleString('th-TH');
     document.getElementById('currentMonthLabel').textContent = `ยอดของเดือน ${monthNames[now.getMonth()]}`;
 
-    // สร้างสรุปย้อนหลังของเดือนที่ผ่านๆ มา
     let summaryHtml = '';
     const sortedMonths = Object.keys(monthlyData).sort().reverse();
     
@@ -610,7 +617,35 @@
     }
   }
 
-  // Action Functions
+  // --- ฟังก์ชันลบงาน (ใหม่) ---
+  function openManageTasksModal() {
+    const list = document.getElementById('manageTaskList');
+    list.innerHTML = allTasks.map(t => `
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1.5px solid var(--line); border-radius: 10px; margin-bottom: 8px;">
+        <div style="font-size: 14px; font-weight: 600; width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(t.title)}</div>
+        <button style="background: #E8836A; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;" onclick="deleteTask('${t.id}')">ลบทิ้ง</button>
+      </div>
+    `).join('');
+    
+    if(allTasks.length === 0) list.innerHTML = '<div style="text-align: center; color: var(--muted); font-size: 13px; padding: 20px;">ไม่มีงานในระบบเลย</div>';
+    
+    document.getElementById('manageTasksModal').classList.add('show');
+  }
+  function closeManageTasksModal() { document.getElementById('manageTasksModal').classList.remove('show'); }
+
+  async function deleteTask(taskId) {
+    if(!confirm('แน่ใจนะว่าจะลบงานนี้?')) return;
+    try {
+      await db.collection('assignments').doc(taskId).delete();
+      showToast('ลบงานออกจากระบบแล้ว 🗑️');
+      openManageTasksModal(); // โหลดข้อมูลใหม่ในกล่องหลังลบ
+    } catch (err) {
+      console.error(err);
+      showToast('ลบไม่สำเร็จ ลองใหม่อีกครั้ง');
+    }
+  }
+  // -------------------------
+
   async function markOrderDone(orderId) {
     try {
       await db.collection('orders').doc(orderId).update({ status: 'done' });
@@ -627,31 +662,20 @@
     setTimeout(() => document.getElementById('payAmount').focus(), 100);
   }
 
-  function closePayModal() {
-    document.getElementById('payModal').classList.remove('show');
-    activeOrderId = null;
-  }
+  function closePayModal() { document.getElementById('payModal').classList.remove('show'); activeOrderId = null; }
 
   async function confirmPayment() {
     const amount = parseFloat(document.getElementById('payAmount').value);
-    if (!activeOrderId || isNaN(amount) || amount <= 0) {
-      showToast('กรอกจำนวนเงินให้ถูกต้อง');
-      return;
-    }
+    if (!activeOrderId || isNaN(amount) || amount <= 0) { showToast('กรอกจำนวนเงินให้ถูกต้อง'); return; }
     try {
-      await db.collection('orders').doc(activeOrderId).update({
-        status: 'paid',
-        price: amount,
-        paid_at: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      await db.collection('orders').doc(activeOrderId).update({ status: 'paid', price: amount, paid_at: firebase.firestore.FieldValue.serverTimestamp() });
       showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`);
       closePayModal();
     } catch (err) { console.error(err); showToast('บันทึกไม่สำเร็จ'); }
   }
 
   function openAddTaskModal() {
-    document.getElementById('newTaskTitle').value = '';
-    document.getElementById('newTaskDesc').value = '';
+    document.getElementById('newTaskTitle').value = ''; document.getElementById('newTaskDesc').value = '';
     document.getElementById('addTaskModal').classList.add('show');
     setTimeout(() => document.getElementById('newTaskTitle').focus(), 100);
   }
@@ -662,36 +686,24 @@
     const desc = document.getElementById('newTaskDesc').value.trim();
     if (!title) return showToast('กรอกชื่องานด้วย');
     try {
-      await db.collection('assignments').add({
-        title: title, description: desc, due_date: null,
-        created_at: firebase.firestore.FieldValue.serverTimestamp(), source: 'manual'
-      });
-      showToast('เพิ่มงานแล้ว');
-      closeAddTaskModal();
+      await db.collection('assignments').add({ title: title, description: desc, due_date: null, created_at: firebase.firestore.FieldValue.serverTimestamp(), source: 'manual' });
+      showToast('เพิ่มงานแล้ว'); closeAddTaskModal();
     } catch (err) { console.error(err); showToast('เพิ่มงานไม่สำเร็จ'); }
   }
 
   function openExtraIncomeModal() {
-    document.getElementById('extraFrom').value = '';
-    document.getElementById('extraReason').value = '';
-    document.getElementById('extraAmount').value = '';
+    document.getElementById('extraFrom').value = ''; document.getElementById('extraReason').value = ''; document.getElementById('extraAmount').value = '';
     document.getElementById('extraIncomeModal').classList.add('show');
     setTimeout(() => document.getElementById('extraFrom').focus(), 100);
   }
   function closeExtraIncomeModal() { document.getElementById('extraIncomeModal').classList.remove('show'); }
 
   async function confirmExtraIncome() {
-    const from = document.getElementById('extraFrom').value.trim();
-    const reason = document.getElementById('extraReason').value.trim();
-    const amount = parseFloat(document.getElementById('extraAmount').value);
+    const from = document.getElementById('extraFrom').value.trim(); const reason = document.getElementById('extraReason').value.trim(); const amount = parseFloat(document.getElementById('extraAmount').value);
     if (!from || !reason || isNaN(amount) || amount <= 0) return showToast('กรอกข้อมูลให้ครบและถูกต้อง');
     try {
-      await db.collection('income_logs').add({
-        from_name: from, reason: reason, amount: amount,
-        logged_at: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`);
-      closeExtraIncomeModal();
+      await db.collection('income_logs').add({ from_name: from, reason: reason, amount: amount, logged_at: firebase.firestore.FieldValue.serverTimestamp() });
+      showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`); closeExtraIncomeModal();
     } catch (err) { console.error(err); showToast('บันทึกไม่สำเร็จ'); }
   }
 
@@ -700,14 +712,8 @@
     return ts.toDate().toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   }
 
-  function escapeHtml(str) {
-    const div = document.createElement('div'); div.textContent = str || ''; return div.innerHTML;
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-  }
+  function escapeHtml(str) { const div = document.createElement('div'); div.textContent = str || ''; return div.innerHTML; }
+  function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
 
   document.querySelectorAll('.modal-backdrop').forEach(el => {
     el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });

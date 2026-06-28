@@ -9,10 +9,11 @@
 // ====================================================================
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAn_IXdhLbooJYGvXbCA1Azh-WonJ4kfYk",
+  authDomain: "classroom-helper-c0c0d.firebaseapp.com",
+  projectId: "classroom-helper-c0c0d",
+  storageBucket: "classroom-helper-c0c0d.firebasestorage.app",
+  messagingSenderId: "515888622811",
+  appId: "1:515888622811:web:56e85a2b4d886ee9c570fe",
+  measurementId: "G-ZF5RNH95TN"
 };

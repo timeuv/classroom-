@@ -30,8 +30,28 @@
   .theme-toggle { background: var(--paper); border: 1px solid var(--line); color: var(--ink); border-radius: 100px; padding: 6px 10px; cursor: pointer; font-size: 14px; transition: 0.2s; }
   .who { font-size: 13px; color: var(--muted); background: var(--paper); border: 1px solid var(--line); border-radius: 100px; padding: 6px 12px; cursor: pointer; }
   .vip-badge { color: #D48806; background: #FFF4E5; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 4px; }
-  .announcement-banner { background: var(--accent-soft); color: var(--accent); padding: 12px 14px; border-radius: 10px; margin-bottom: 20px; font-size: 13.5px; font-weight: bold; border: 1.5px solid var(--accent); display: flex; align-items: center; gap: 8px; line-height: 1.4; }
-  .login-card { background: var(--paper); border-radius: 20px; padding: 32px 24px; box-shadow: var(--shadow); margin-top: 12vh; text-align: center; transition: 0.3s; }
+  
+  /* 🔥 ป้ายประกาศวิบวับ เลื่อนได้ 🔥 */
+  .announcement-banner {
+    background: #14120F; color: #FFD700; padding: 12px 14px; border-radius: 10px; 
+    margin-bottom: 20px; font-size: 15px; font-weight: 800; border: 2px solid #D4622A; 
+    display: flex; align-items: center; gap: 10px; overflow: hidden; position: relative;
+    animation: neonGlow 1s infinite alternate;
+  }
+  @keyframes neonGlow {
+    0% { box-shadow: 0 0 5px #D4622A, inset 0 0 5px #D4622A; border-color: #D4622A; }
+    100% { box-shadow: 0 0 20px #FFD700, inset 0 0 10px #FFD700; border-color: #FFD700; }
+  }
+  .siren { font-size: 18px; animation: sirenBlink 0.4s infinite alternate; flex-shrink: 0; z-index: 2; }
+  @keyframes sirenBlink { 
+    0% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 5px red); } 
+    100% { opacity: 0.6; transform: scale(1.2); } 
+  }
+  .marquee-wrapper { flex: 1; overflow: hidden; white-space: nowrap; position: relative; }
+  .marquee-text { display: inline-block; padding-left: 100%; animation: marquee 12s linear infinite; text-shadow: 0 0 5px #FFD700; }
+  @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+  .login-card { background: var(--paper); border-radius: 20px; padding: 32px 24px; box-shadow: var(--shadow); margin-top: 4vh; text-align: center; transition: 0.3s; }
   .login-card h1 { font-size: 22px; margin: 0 0 6px; }
   .login-card p.sub { color: var(--muted); font-size: 14px; margin: 0 0 26px; }
   .number-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 22px; }
@@ -88,6 +108,16 @@
 <body>
 
 <div class="wrap">
+
+  <!-- 🔥 ย้ายกระดานข่าวห้องอัปเกรดใหม่ มาไว้บนสุดของจอ 🔥 -->
+  <div id="announcementBanner" class="announcement-banner hidden">
+    <span class="siren">🚨</span>
+    <div class="marquee-wrapper">
+      <span id="announcementText" class="marquee-text"></span>
+    </div>
+    <span class="siren">🚨</span>
+  </div>
+
   <div id="loginScreen">
     <div class="login-card">
       <h1>เลขที่เท่าไหร่ครับ/คะ?</h1>
@@ -109,10 +139,6 @@
         <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         <div class="who" id="whoLabel" onclick="logout()">เลขที่ —</div>
       </div>
-    </div>
-
-    <div id="announcementBanner" class="announcement-banner hidden">
-      <span style="font-size: 18px;">📢</span> <span id="announcementText"></span>
     </div>
 
     <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
@@ -189,6 +215,9 @@
   let allTasks = []; let allOrders = []; let activeTaskId = null;
   let isVip = false;
 
+  // 1. ดึงกระดานข่าวมาแสดงทันทีตั้งแต่โหลดเว็บ (ไม่ต้องรอล็อกอิน)
+  listenToSettings();
+
   if (localStorage.getItem('theme') === 'dark') { document.body.setAttribute('data-theme', 'dark'); document.getElementById('themeBtn').textContent = '☀️'; }
 
   function toggleTheme() {
@@ -237,7 +266,7 @@
 
   function enterDashboard() {
     document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('dashScreen').classList.remove('hidden');
-    listenToSettings(); listenToTasks(); listenToOrders();
+    listenToTasks(); listenToOrders();
   }
 
   (function restoreSession() { const saved = sessionStorage.getItem('cr_user'); if (saved) { currentUser = JSON.parse(saved); enterDashboard(); } })();
@@ -254,10 +283,11 @@
   function listenToOrders() {
     db.collection('orders').onSnapshot(snap => {
       allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() })); 
-      // 👑 เปลี่ยนจาก >= 3 เป็น >= 5 ตรงนี้ครับ
       const paidCount = allOrders.filter(o => o.student_id === currentUser.studentId && o.status === 'paid').length;
       isVip = paidCount >= 5;
-      document.getElementById('whoLabel').innerHTML = `${currentUser.name} ${isVip ? '<span class="vip-badge">👑 ลูกค้าประจำ</span>' : ''}`;
+      if(currentUser) {
+        document.getElementById('whoLabel').innerHTML = `${currentUser.name} ${isVip ? '<span class="vip-badge">👑 ลูกค้าประจำ</span>' : ''}`;
+      }
       renderTasks();
     });
   }

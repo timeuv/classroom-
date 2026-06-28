@@ -284,10 +284,23 @@
 
   function checkAdminPw() {
     const val = document.getElementById('adminPw').value;
-    if (val === ADMIN_PASSWORD) { sessionStorage.setItem('cr_admin_ok', '1'); enterAdmin(); } 
-    else { document.getElementById('gateErr').classList.add('show'); }
+    document.getElementById('gateErr').classList.remove('show'); // ล้างข้อความค้าง
+    
+    if (val === ADMIN_PASSWORD) { 
+      sessionStorage.setItem('cr_admin_ok', '1'); 
+      enterAdmin(); 
+    } else { 
+      document.getElementById('gateErr').textContent = 'รหัสไม่ถูกต้อง';
+      document.getElementById('gateErr').classList.add('show'); 
+    }
   }
+
   document.getElementById('adminPw').addEventListener('keydown', e => { if (e.key === 'Enter') checkAdminPw(); });
+  
+  // ซ่อนข้อความแจ้งเตือนทันทีที่เริ่มพิมพ์
+  document.getElementById('adminPw').addEventListener('input', () => {
+    document.getElementById('gateErr').classList.remove('show');
+  });
 
   (function restoreAdmin() { if (sessionStorage.getItem('cr_admin_ok') === '1') enterAdmin(); })();
 

@@ -15,31 +15,38 @@
   :root {
     --bg: #09090b; 
     --ink: #fafafa; 
-    --paper: rgba(24, 24, 27, 0.6); 
-    --paper-solid: #18181b;
-    --line: rgba(255, 255, 255, 0.1);
-    --line-focus: rgba(255, 255, 255, 0.2);
+    --paper: #18181b; 
+    --paper-solid: #151518;
+    --line: rgba(255, 255, 255, 0.08);
+    --line-focus: rgba(99, 102, 241, 0.4);
     --accent: #6366f1; /* Indigo 500 */
     --accent-hover: #4f46e5;
-    --accent-soft: rgba(99, 102, 241, 0.15);
+    --accent-soft: rgba(99, 102, 241, 0.12);
+    --accent-text: #a5b4fc;
     --green: #10b981; 
-    --green-soft: rgba(16, 185, 129, 0.15);
+    --green-soft: rgba(16, 185, 129, 0.12);
+    --green-text: #6ee7b7;
     --red: #f43f5e; 
-    --red-soft: rgba(244, 63, 94, 0.15);
+    --red-soft: rgba(244, 63, 94, 0.12);
+    --red-text: #fda4af;
     --yellow: #f59e0b; 
-    --yellow-soft: rgba(245, 158, 11, 0.15);
+    --yellow-soft: rgba(245, 158, 11, 0.12);
+    --yellow-text: #fcd34d;
     --muted: #a1a1aa; 
-    --shadow: 0 8px 32px rgba(0,0,0,0.4);
-    --shadow-sm: 0 4px 16px rgba(0,0,0,0.2);
-    --radius-lg: 20px;
-    --radius-md: 14px;
-    --radius-sm: 10px;
+    --shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+    --shadow-sm: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
     --font-main: 'Outfit', system-ui, -apple-system, sans-serif;
   }
 
   * { 
     box-sizing: border-box; 
-    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   body { 
@@ -48,94 +55,95 @@
     background: var(--bg); 
     color: var(--ink); 
     background-image: 
-      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
     background-attachment: fixed;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
   }
 
   .wrap { 
-    max-width: 720px; 
+    max-width: 680px; 
     margin: 0 auto; 
-    padding: 28px 20px 60px; 
+    padding: 40px 24px 80px; 
   }
 
   /* ---- gate ---- */
   .gate-card { 
     background: var(--paper); 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border-radius: var(--radius-lg); 
-    padding: 40px 32px; 
-    margin-top: 20vh; 
+    padding: 48px 36px; 
+    margin-top: 18vh; 
     text-align: center; 
     box-shadow: var(--shadow); 
-    max-width: 360px; 
+    max-width: 380px; 
     margin-inline: auto; 
     border: 1px solid var(--line);
   }
 
   .gate-card h1 { 
-    font-size: 24px; 
-    font-weight: 700;
-    margin: 0 0 24px; 
-    background: linear-gradient(135deg, #fff, #a1a1aa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 26px; 
+    font-weight: 800;
+    margin: 0 0 8px; 
+    color: var(--ink);
+    letter-spacing: -0.5px;
   }
 
   .gate-card input { 
     width: 100%; 
-    padding: 14px 16px; 
+    padding: 14px 18px; 
     border-radius: var(--radius-sm); 
     border: 1px solid var(--line); 
-    background: rgba(0,0,0,0.2); 
+    background: rgba(0, 0, 0, 0.4); 
     color: var(--ink); 
     font-size: 16px; 
     font-family: var(--font-main);
-    margin-bottom: 16px; 
+    margin-bottom: 20px; 
+    margin-top: 24px;
     outline: none;
+    text-align: center;
   }
   .gate-card input:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-soft);
+    background: rgba(0, 0, 0, 0.5);
   }
 
   .gate-card button { 
     width: 100%; 
-    padding: 14px; 
+    padding: 15px; 
     border-radius: var(--radius-sm); 
     border: none; 
     background: var(--accent); 
     color: white; 
-    font-weight: 600; 
+    font-weight: 700; 
     font-size: 16px; 
     font-family: var(--font-main);
     cursor: pointer; 
-    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.2);
   }
   .gate-card button:hover {
     background: var(--accent-hover);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--accent-soft);
+    box-shadow: 0 6px 24px rgba(99, 102, 241, 0.3);
   }
   .gate-card button:active {
-    transform: translateY(0);
+    transform: translateY(0.5px);
   }
 
   .gate-err { 
     color: var(--red); 
     font-size: 14px; 
-    margin-top: 12px; 
+    margin-top: 16px; 
     display: none; 
-    font-weight: 500;
+    font-weight: 600;
   }
   .gate-err.show { display: block; animation: shake 0.4s ease; }
 
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    75% { transform: translateX(4px); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
   }
 
   /* ---- header ---- */
@@ -143,14 +151,14 @@
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    margin-bottom: 32px; 
+    margin-bottom: 36px; 
   }
 
   .brand { 
-    font-size: 24px; 
+    font-size: 26px; 
     font-weight: 800; 
-    line-height: 1.2; 
-    letter-spacing: -0.5px;
+    line-height: 1.1; 
+    letter-spacing: -0.8px;
   }
 
   .brand span { 
@@ -160,29 +168,31 @@
   .brand-sub { 
     font-size: 13px; 
     color: var(--muted); 
-    font-weight: 500; 
+    font-weight: 600; 
     display: block; 
+    margin-top: 4px;
     letter-spacing: normal;
   }
 
   .stat-pill { 
     background: var(--paper); 
-    backdrop-filter: blur(8px);
     border: 1px solid var(--line); 
     border-radius: 100px; 
-    padding: 8px 16px; 
+    padding: 8px 18px; 
     font-size: 14px; 
     font-weight: 700; 
     box-shadow: var(--shadow-sm);
   }
+  .stat-pill span {
+    color: var(--accent);
+  }
 
   .notice-box { 
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(0,0,0,0));
-    border: 1px solid var(--accent-soft);
-    border-left: 4px solid var(--accent); 
-    padding: 16px 20px; 
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(0, 0, 0, 0));
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    padding: 18px 24px; 
     border-radius: var(--radius-md); 
-    margin-bottom: 24px; 
+    margin-bottom: 32px; 
     font-size: 14px; 
     line-height: 1.6; 
     color: var(--ink); 
@@ -193,27 +203,25 @@
     color: var(--accent); 
     display: flex; 
     align-items: center;
-    gap: 6px;
-    margin-bottom: 6px; 
+    gap: 8px;
+    margin-bottom: 8px; 
     font-size: 15px; 
   }
 
   /* ---- Config Block ---- */
   .config-box { 
     background: var(--paper); 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    padding: 20px; 
+    padding: 24px; 
     border-radius: var(--radius-lg); 
-    margin-bottom: 16px; 
+    margin-bottom: 20px; 
     border: 1px solid var(--line); 
     box-shadow: var(--shadow-sm);
   }
 
   .config-box-title {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 700;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     color: var(--ink);
     display: flex;
     align-items: center;
@@ -224,15 +232,18 @@
     display: flex;
     gap: 12px;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+  }
+  .config-row:last-of-type {
+    margin-bottom: 0;
   }
 
   .config-box input, .config-box select, .config-box textarea { 
     flex: 1; 
-    padding: 12px 14px; 
+    padding: 12px 16px; 
     border-radius: var(--radius-sm); 
     border: 1px solid var(--line); 
-    background: rgba(0,0,0,0.2); 
+    background: rgba(0, 0, 0, 0.3); 
     color: var(--ink); 
     font-size: 14px; 
     font-family: var(--font-main);
@@ -240,131 +251,145 @@
   }
   .config-box input:focus, .config-box select:focus, .config-box textarea:focus {
     border-color: var(--accent);
-    background: rgba(0,0,0,0.3);
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 3px var(--accent-soft);
   }
 
   .config-box button { 
-    padding: 12px 20px; 
+    padding: 12px 24px; 
     border-radius: var(--radius-sm); 
     border: none; 
     background: var(--accent); 
     color: white; 
-    font-weight: 600; 
+    font-weight: 700; 
     font-family: var(--font-main);
     cursor: pointer; 
     white-space: nowrap; 
-    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
   }
   .config-box button:hover {
     background: var(--accent-hover);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--accent-soft);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.25);
   }
   .config-box button:active {
-    transform: translateY(0);
+    transform: translateY(0.5px);
   }
 
   .admin-list-container {
-    margin-top: 12px;
+    margin-top: 16px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
 
   .admin-list-item {
-    background: rgba(0,0,0,0.2);
-    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 14px 18px;
     border-radius: var(--radius-sm);
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 14px;
-    border-left: 4px solid var(--line);
-    border-top: 1px solid var(--line);
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+    border: 1px solid var(--line);
   }
 
-  .admin-list-item.red { border-left-color: var(--red); background: linear-gradient(90deg, var(--red-soft), transparent); }
-  .admin-list-item.yellow { border-left-color: var(--yellow); background: linear-gradient(90deg, var(--yellow-soft), transparent); }
-  .admin-list-item.green { border-left-color: var(--green); background: linear-gradient(90deg, var(--green-soft), transparent); }
+  .admin-list-item.red { 
+    border-color: rgba(244, 63, 94, 0.3); 
+    background: linear-gradient(90deg, rgba(244, 63, 94, 0.06), transparent); 
+  }
+  .admin-list-item.yellow { 
+    border-color: rgba(245, 158, 11, 0.3); 
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.06), transparent); 
+  }
+  .admin-list-item.green { 
+    border-color: rgba(16, 185, 129, 0.3); 
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.06), transparent); 
+  }
 
   .btn-del {
     background: rgba(244, 63, 94, 0.1);
-    color: var(--red);
-    border: none;
+    color: var(--red-text);
+    border: 1px solid rgba(244, 63, 94, 0.2);
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 12px;
-    padding: 6px 10px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    padding: 6px 12px;
+    border-radius: 8px;
   }
   .btn-del:hover {
     background: var(--red);
     color: white;
+    border-color: transparent;
+    transform: translateY(-1.5px);
+  }
+  .btn-del:active {
+    transform: translateY(0.5px);
   }
 
   .schedule-grid {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
   }
 
   .schedule-row {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    background: rgba(0,0,0,0.2);
-    padding: 14px;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 16px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--line);
   }
 
   .schedule-row label {
-    font-weight: 600;
+    font-weight: 700;
     font-size: 14px;
     color: var(--accent);
   }
 
   .schedule-row textarea {
-    min-height: 70px;
+    min-height: 80px;
     resize: vertical;
-    padding: 10px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.25);
   }
 
   .action-row { 
     display: grid; 
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px; 
-    margin-bottom: 32px; 
-    margin-top: 32px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px; 
+    margin-bottom: 40px; 
+    margin-top: 40px;
   }
 
   .btn-secondary { 
     background: var(--paper);
-    backdrop-filter: blur(8px);
     color: var(--ink); 
     border: 1px solid var(--line); 
-    padding: 14px 12px; 
+    padding: 16px 14px; 
     border-radius: var(--radius-sm); 
     font-size: 14px; 
-    font-weight: 600; 
+    font-weight: 700; 
     font-family: var(--font-main);
     cursor: pointer; 
     white-space: nowrap; 
-    transition: all 0.2s ease;
     box-shadow: var(--shadow-sm);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
   }
 
   .btn-secondary:hover { 
     border-color: var(--accent); 
-    background: rgba(255,255,255,0.05);
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.04);
+    transform: translateY(-2.5px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.1);
+  }
+  .btn-secondary:active {
+    transform: translateY(0.5px);
   }
 
   .field-label { 
@@ -372,9 +397,9 @@
     text-align: left; 
     font-size: 13px; 
     color: var(--muted); 
-    font-weight: 600; 
+    font-weight: 700; 
     margin-bottom: 8px; 
-    margin-top: 16px; 
+    margin-top: 20px; 
   }
 
   .field-label:first-of-type { 
@@ -386,29 +411,31 @@
     padding: 14px 16px; 
     border-radius: var(--radius-sm); 
     border: 1px solid var(--line); 
-    background: rgba(0,0,0,0.2); 
+    background: rgba(0, 0, 0, 0.3); 
     color: var(--ink); 
     font-size: 14px; 
     font-family: var(--font-main); 
-    margin-bottom: 8px; 
+    margin-bottom: 12px; 
     outline: none;
   }
   .modal-box textarea:focus {
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    background: rgba(0, 0, 0, 0.4);
   }
 
   .modal-box textarea { 
     resize: vertical; 
-    min-height: 80px; 
+    min-height: 100px; 
   }
 
   .section-label { 
-    font-size: 14px; 
-    font-weight: 700; 
+    font-size: 13px; 
+    font-weight: 800; 
     color: var(--muted); 
     text-transform: uppercase; 
-    letter-spacing: 1px; 
-    margin: 32px 0 12px 4px; 
+    letter-spacing: 1.5px; 
+    margin: 48px 0 16px 4px; 
     display: flex;
     align-items: center;
     gap: 8px;
@@ -416,211 +443,249 @@
 
   /* ---- order cards ---- */
   @keyframes rushBlink {
-    0% { border-color: var(--red); box-shadow: 0 0 0px var(--red-soft); }
-    50% { border-color: #be123c; box-shadow: 0 0 12px var(--red-soft); }
-    100% { border-color: var(--red); box-shadow: 0 0 0px var(--red-soft); }
+    0% { border-color: rgba(244, 63, 94, 0.4); box-shadow: 0 0 0px var(--red-soft); }
+    50% { border-color: var(--red); box-shadow: 0 0 16px var(--red-soft); }
+    100% { border-color: rgba(244, 63, 94, 0.4); box-shadow: 0 0 0px var(--red-soft); }
   }
 
   .order-card { 
     background: var(--paper); 
-    backdrop-filter: blur(12px);
     border-radius: var(--radius-md); 
-    padding: 20px; 
-    margin-bottom: 12px; 
+    padding: 22px; 
+    margin-bottom: 14px; 
     box-shadow: var(--shadow-sm); 
-    border-left: 4px solid var(--line); 
-    border-top: 1px solid var(--line);
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--line);
   }
   .order-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2.5px);
     box-shadow: var(--shadow);
+    border-color: rgba(255, 255, 255, 0.15);
   }
 
-  .order-card.pending { border-left-color: var(--accent); }
-  .order-card.done { border-left-color: var(--green); }
-  .order-card.checking { border-left-color: var(--yellow); }
-  .order-card.rush { border-left-width: 5px; animation: rushBlink 2s infinite; }
+  .order-card.pending { border-color: rgba(99, 102, 241, 0.3); }
+  .order-card.done { border-color: rgba(16, 185, 129, 0.3); }
+  .order-card.checking { border-color: rgba(245, 158, 11, 0.3); }
+  .order-card.rush { animation: rushBlink 2s infinite; }
 
   .order-top { 
     display: flex; 
     justify-content: space-between; 
     align-items: flex-start; 
-    gap: 12px; 
+    gap: 16px; 
   }
 
   .order-title { 
-    font-size: 16px; 
+    font-size: 17px; 
     font-weight: 700; 
-    margin: 0 0 6px; 
-    line-height: 1.4;
+    margin: 0 0 8px; 
+    line-height: 1.35;
+    color: var(--ink);
   }
 
   .order-who { 
     font-size: 14px; 
     color: var(--muted); 
+    font-weight: 500;
   }
 
   .order-time { 
     font-size: 12px; 
     color: var(--muted); 
     white-space: nowrap; 
-    background: rgba(0,0,0,0.3);
-    padding: 4px 8px;
-    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: 1px solid var(--line);
   }
 
   .tag { 
     display: inline-block; 
     font-size: 12px; 
     font-weight: 700; 
-    padding: 4px 12px; 
+    padding: 5px 14px; 
     border-radius: 100px; 
-    margin-top: 12px; 
+    margin-top: 16px; 
+    letter-spacing: 0.2px;
   }
 
-  .tag.pending { background: var(--accent-soft); color: #a5b4fc; }
-  .tag.done { background: var(--green-soft); color: #6ee7b7; }
-  .tag.checking { background: var(--yellow-soft); color: #fcd34d; }
-  .tag.rush { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid var(--red-soft); }
+  .tag.pending { background: var(--accent-soft); color: var(--accent-text); border: 1px solid rgba(99, 102, 241, 0.2); }
+  .tag.done { background: var(--green-soft); color: var(--green-text); border: 1px solid rgba(16, 185, 129, 0.2); }
+  .tag.checking { background: var(--yellow-soft); color: var(--yellow-text); border: 1px solid rgba(245, 158, 11, 0.2); }
+  .tag.rush { background: rgba(244, 63, 94, 0.15); color: var(--red-text); border: 1px solid rgba(244, 63, 94, 0.25); }
 
   .vip-badge { 
-    color: #f59e0b; 
+    color: #fbbf24; 
     background: rgba(245, 158, 11, 0.1); 
     border: 1px solid rgba(245, 158, 11, 0.2);
-    padding: 2px 8px; 
+    padding: 3px 8px; 
     border-radius: 6px; 
     font-size: 11px; 
     font-weight: 800; 
-    margin-left: 6px; 
+    margin-left: 8px; 
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    display: inline-block;
+    vertical-align: middle;
   }
 
   .order-actions { 
-    margin-top: 16px; 
+    margin-top: 20px; 
     display: flex; 
-    gap: 10px; 
+    gap: 12px; 
   }
 
   .btn { 
-    padding: 10px 16px; 
+    padding: 12px 18px; 
     border-radius: var(--radius-sm); 
     border: none; 
     font-size: 14px; 
-    font-weight: 600; 
+    font-weight: 700; 
     font-family: var(--font-main);
     cursor: pointer; 
-    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
   }
 
-  .btn-mark-done { background: var(--green-soft); color: #6ee7b7; border: 1px solid transparent; }
-  .btn-mark-done:hover { background: rgba(16, 185, 129, 0.25); border-color: var(--green); }
-  .btn-pay { background: var(--accent); color: white; }
-  .btn-pay:hover { background: var(--accent-hover); box-shadow: 0 4px 12px var(--accent-soft); transform: translateY(-1px); }
-  .btn-verify { background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--line); }
-  .btn-verify:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
+  .btn-mark-done { 
+    background: var(--green-soft); 
+    color: #6ee7b7; 
+    border: 1px solid rgba(16, 185, 129, 0.2); 
+  }
+  .btn-mark-done:hover { 
+    background: rgba(16, 185, 129, 0.2); 
+    border-color: var(--green); 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+  }
+  .btn-mark-done:active {
+    transform: translateY(0.5px);
+  }
+
+  .btn-pay { 
+    background: var(--accent); 
+    color: white; 
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+  }
+  .btn-pay:hover { 
+    background: var(--accent-hover); 
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.25); 
+    transform: translateY(-2px); 
+  }
+  .btn-pay:active {
+    transform: translateY(0.5px);
+  }
+
+  .btn-verify { 
+    background: rgba(255, 255, 255, 0.08); 
+    color: white; 
+    border: 1px solid var(--line); 
+  }
+  .btn-verify:hover { 
+    background: rgba(255, 255, 255, 0.12); 
+    border-color: rgba(255, 255, 255, 0.25); 
+    transform: translateY(-2px);
+  }
+  .btn-verify:active {
+    transform: translateY(0.5px);
+  }
 
   .empty-state { 
     text-align: center; 
-    padding: 40px 20px; 
+    padding: 48px 24px; 
     color: var(--muted); 
     font-size: 15px; 
-    background: rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.15);
     border-radius: var(--radius-md);
-    border: 1px dashed var(--line);
+    border: 1.5px dashed var(--line);
   }
 
   /* ---- history & summary ---- */
   .history-card { 
     background: var(--paper); 
-    backdrop-filter: blur(8px);
     border-radius: var(--radius-md); 
-    padding: 16px 20px; 
-    margin-bottom: 10px; 
+    padding: 18px 22px; 
+    margin-bottom: 12px; 
     box-shadow: var(--shadow-sm); 
-    border-left: 4px solid var(--green); 
-    border-top: 1px solid var(--line);
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+    border: 1px solid var(--line);
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    gap: 16px; 
-    transition: transform 0.2s ease;
+    gap: 20px; 
   }
   .history-card:hover {
     transform: translateX(4px);
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
-  .history-left .order-title { font-size: 15px; font-weight: 600; }
-  .history-left .order-who { font-size: 13px; margin-top: 4px; color: var(--muted); }
+  .history-left .order-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .history-left .order-who { font-size: 13px; color: var(--muted); font-weight: 500; }
   .history-right { text-align: right; white-space: nowrap; }
-  .history-amount { font-size: 18px; font-weight: 800; color: #6ee7b7; }
-  .history-time { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .history-amount { font-size: 18px; font-weight: 800; color: var(--green-text); letter-spacing: -0.2px; }
+  .history-time { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 500; }
   
   .btn-view-slip { 
-    margin-top: 10px; 
+    margin-top: 12px; 
     background: transparent; 
     border: 1px solid var(--accent); 
-    color: #a5b4fc; 
-    padding: 6px 12px; 
+    color: var(--accent-text); 
+    padding: 6px 14px; 
     border-radius: var(--radius-sm); 
     font-size: 12px; 
-    font-weight: 600; 
+    font-weight: 700; 
     cursor: pointer; 
     display: inline-block; 
-    transition: all 0.2s ease;
   }
 
   .btn-view-slip:hover { 
     background: var(--accent-soft); 
     color: white;
+    transform: translateY(-1.5px);
+  }
+  .btn-view-slip:active {
+    transform: translateY(0.5px);
   }
 
   .history-hidden { display: none !important; }
   .btn-toggle-history { 
     width: 100%; 
-    background: rgba(0,0,0,0.2); 
+    background: rgba(0, 0, 0, 0.2); 
     color: var(--ink); 
-    border: 1px dashed var(--line); 
-    padding: 14px; 
+    border: 1.5px dashed var(--line); 
+    padding: 16px; 
     border-radius: var(--radius-sm); 
     font-size: 14px; 
-    font-weight: 600; 
+    font-weight: 700; 
     font-family: var(--font-main);
     cursor: pointer; 
-    margin-top: 12px; 
-    transition: all 0.2s ease; 
+    margin-top: 14px; 
   }
-
   .btn-toggle-history:hover { 
     border-color: var(--accent); 
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.03);
+    transform: translateY(-2px);
+  }
+  .btn-toggle-history:active {
+    transform: translateY(0.5px);
   }
 
   /* ---- modals ---- */
   .modal-backdrop { 
     position: fixed; 
     inset: 0; 
-    background: rgba(0,0,0,0.7); 
-    backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.9); 
     display: none; 
     align-items: center; 
     justify-content: center; 
-    z-index: 50; 
+    z-index: 100; 
     padding: 20px;
   }
 
   .modal-backdrop.show { 
     display: flex; 
-    animation: fadeIn 0.2s ease;
+    animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   @keyframes fadeIn {
@@ -631,58 +696,63 @@
   .modal-box { 
     background: var(--paper-solid); 
     border-radius: var(--radius-lg); 
-    padding: 28px; 
+    padding: 36px; 
     width: 100%; 
-    max-width: 400px; 
+    max-width: 440px; 
     box-shadow: var(--shadow); 
     border: 1px solid var(--line);
-    transform: scale(0.95);
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: scale(0.96);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .modal-backdrop.show .modal-box {
     transform: scale(1);
   }
 
-  .modal-box h3 { margin: 0 0 8px; font-size: 20px; font-weight: 700; color: var(--ink); }
-  .modal-box p { margin: 0 0 20px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .modal-box h3 { margin: 0 0 10px; font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.5px; }
+  .modal-box p { margin: 0 0 24px; color: var(--muted); font-size: 14px; line-height: 1.55; }
   
   .modal-box input[type="number"], 
   .modal-box input[type="text"] { 
     width: 100%; 
-    padding: 14px 16px; 
+    padding: 14px 18px; 
     border-radius: var(--radius-sm); 
     border: 1px solid var(--line); 
-    background: rgba(0,0,0,0.2); 
+    background: rgba(0, 0, 0, 0.4); 
     color: var(--ink); 
     font-size: 16px; 
     font-family: var(--font-main);
     font-weight: 600; 
-    margin-bottom: 16px; 
+    margin-bottom: 20px; 
     outline: none;
   }
   .modal-box input[type="number"]:focus, 
   .modal-box input[type="text"]:focus {
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
   }
 
   .modal-box .row { 
     display: flex; 
     gap: 12px; 
-    margin-top: 8px;
+    margin-top: 12px;
   }
 
   .modal-box .row .btn { 
     flex: 1; 
-    padding: 14px; 
+    padding: 15px; 
   }
 
   .btn-cancel2 { 
-    background: rgba(255,255,255,0.05); 
+    background: rgba(255, 255, 255, 0.05); 
     color: var(--ink); 
     border: 1px solid var(--line); 
   }
   .btn-cancel2:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+  .btn-cancel2:active {
+    transform: translateY(0.5px);
   }
 
   .btn-confirm { 
@@ -691,32 +761,40 @@
   }
   .btn-confirm:hover {
     background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2);
+  }
+  .btn-confirm:active {
+    transform: translateY(0.5px);
   }
 
   .btn-confirm:disabled { 
-    background: rgba(255,255,255,0.1); 
+    background: rgba(255, 255, 255, 0.05); 
     color: var(--muted); 
     cursor: not-allowed; 
+    border: 1px solid var(--line);
+    transform: none;
+    box-shadow: none;
   }
 
   .hidden { display: none !important; }
   
   .toast { 
     position: fixed; 
-    bottom: 32px; 
+    bottom: 36px; 
     left: 50%; 
-    transform: translateX(-50%) translateY(20px); 
+    transform: translateX(-50%) translateY(24px); 
     background: var(--ink); 
     color: var(--bg); 
-    padding: 14px 24px; 
+    padding: 16px 28px; 
     border-radius: 100px; 
     font-size: 14px; 
-    font-weight: 600; 
+    font-weight: 700; 
     box-shadow: var(--shadow);
     opacity: 0; 
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
     pointer-events: none; 
-    z-index: 100; 
+    z-index: 150; 
   }
 
   .toast.show { 
@@ -726,14 +804,15 @@
 
   /* Custom Scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
   }
   ::-webkit-scrollbar-track {
     background: var(--bg);
   }
   ::-webkit-scrollbar-thumb {
     background: var(--line-focus);
-    border-radius: 4px;
+    border-radius: 6px;
+    border: 2px solid var(--bg);
   }
   ::-webkit-scrollbar-thumb:hover {
     background: var(--muted);
@@ -745,20 +824,20 @@
 <div id="gateScreen">
   <div class="gate-card">
     <h1>🔒 หน้า Admin</h1>
-    <input type="password" id="adminPw" placeholder="รหัสแอดมิน">
+    <input type="password" id="adminPw" aria-label="รหัสแอดมิน" placeholder="รหัสแอดมิน">
     <button onclick="checkAdminPw()">เข้าสู่ระบบ</button>
     <div class="gate-err" id="gateErr">รหัสไม่ถูกต้อง</div>
   </div>
 </div>
 
-<div class="wrap hidden" id="adminScreen">
-  <div class="topbar">
+<main class="wrap hidden" id="adminScreen">
+  <header class="topbar">
     <div class="brand">
       Admin · ฝาก<span>งาน</span>
       <span class="brand-sub" id="currentMonthLabel">ยอดของเดือนนี้</span>
     </div>
     <div class="stat-pill">ได้แล้ว <span id="totalEarn">0</span> / 5,000</div>
-  </div>
+  </header>
 
   <div class="notice-box">
     <strong>📢 หมายเหตุความโปร่งใส</strong>
@@ -769,7 +848,7 @@
   <div class="config-box">
     <div class="config-box-title">📢 กระดานข่าวห้อง (ตัววิ่ง)</div>
     <div class="config-row">
-      <input type="text" id="adminAnnouncement" placeholder="พิมพ์แจ้งเตือนเพื่อนๆ ที่นี่...">
+      <input type="text" id="adminAnnouncement" aria-label="กระดานข่าวห้อง" placeholder="พิมพ์แจ้งเตือนเพื่อนๆ ที่นี่...">
       <button onclick="saveAnnouncement()">อัปเดต</button>
     </div>
   </div>
@@ -778,12 +857,12 @@
   <div class="config-box">
     <div class="config-box-title">🔥 ตั้งค่าคิวงานไทม์</div>
     <div class="config-row">
-      <input type="number" id="qCurrent" placeholder="คิวปัจจุบัน" title="คิวปัจจุบัน" style="flex:0.5;">
+      <input type="number" id="qCurrent" aria-label="คิวปัจจุบัน" placeholder="คิวปัจจุบัน" title="คิวปัจจุบัน" style="flex:0.5;">
       <span style="font-weight:bold;">/</span>
-      <input type="number" id="qMax" placeholder="รับได้สูงสุด" title="รับได้สูงสุด" style="flex:0.5;">
+      <input type="number" id="qMax" aria-label="รับได้สูงสุด" placeholder="รับได้สูงสุด" title="รับได้สูงสุด" style="flex:0.5;">
     </div>
     <div class="config-row">
-      <input type="text" id="qEta" placeholder="เช่น เสร็จประมาณตี 2 (ปล่อยว่างได้)">
+      <input type="text" id="qEta" aria-label="เวลาเสร็จประมาณ" placeholder="เช่น เสร็จประมาณตี 2 (ปล่อยว่างได้)">
       <button onclick="saveQueue()">อัปเดตคิว</button>
     </div>
   </div>
@@ -792,8 +871,8 @@
   <div class="config-box">
     <div class="config-box-title">🛡️ ศูนย์บัญชาการ (แจ้งเตือนสอบ/ส่งงาน)</div>
     <div class="config-row">
-      <input type="text" id="svText" placeholder="เช่น พรุ่งนี้: สอบคณิตศาสตร์" style="flex:2;">
-      <select id="svType" style="flex:1;">
+      <input type="text" id="svText" aria-label="ข้อความแจ้งเตือน" placeholder="เช่น พรุ่งนี้: สอบคณิตศาสตร์" style="flex:2;">
+      <select id="svType" aria-label="ระดับความสำคัญ" style="flex:1;">
         <option value="red">🔴 ด่วน/สำคัญ</option>
         <option value="yellow">🟡 ปานกลาง</option>
         <option value="green">🟢 ทั่วไป</option>
@@ -807,11 +886,11 @@
   <div class="config-box">
     <div class="config-box-title">📚 จัดการคลังชีทสรุป (อัปลิงก์)</div>
     <div class="config-row">
-      <input type="text" id="vaultTitle" placeholder="ชื่อชีท (เช่น สรุปวิทย์)">
-      <input type="text" id="vaultDesc" placeholder="คำอธิบาย (อ่าน 10 นาทีรอด)">
+      <input type="text" id="vaultTitle" aria-label="ชื่อชีท" placeholder="ชื่อชีท (เช่น สรุปวิทย์)">
+      <input type="text" id="vaultDesc" aria-label="คำอธิบาย" placeholder="คำอธิบาย (อ่าน 10 นาทีรอด)">
     </div>
     <div class="config-row">
-      <input type="url" id="vaultLink" placeholder="ลิงก์ไฟล์ (เช่น ลิงก์ Google Drive)">
+      <input type="url" id="vaultLink" aria-label="ลิงก์ไฟล์" placeholder="ลิงก์ไฟล์ (เช่น ลิงก์ Google Drive)">
       <button onclick="addVaultItem()">เพิ่มชีท</button>
     </div>
     <div class="admin-list-container" id="adminVaultList"></div>
@@ -826,23 +905,23 @@
     </div>
     <div class="schedule-grid">
       <div class="schedule-row">
-        <label>วันจันทร์</label>
+        <label for="sch_mon">วันจันทร์</label>
         <textarea id="sch_mon" placeholder="07:30 - 09:30 | 🎨 กราฟิกศิลป์ (ห้อง 421) ครูชาริกา"></textarea>
       </div>
       <div class="schedule-row">
-        <label>วันอังคาร</label>
+        <label for="sch_tue">วันอังคาร</label>
         <textarea id="sch_tue" placeholder="07:30 - 09:30 | 🇨🇳 จีน (ห้อง 235) ครูธัญชนก"></textarea>
       </div>
       <div class="schedule-row">
-        <label>วันพุธ</label>
+        <label for="sch_wed">วันพุธ</label>
         <textarea id="sch_wed" placeholder="09:30 - 11:30 | 🖥️ ระบบคอมฯ (ห้อง 444) ครูภุชงค์"></textarea>
       </div>
       <div class="schedule-row">
-        <label>วันพฤหัสบดี</label>
+        <label for="sch_thu">วันพฤหัสบดี</label>
         <textarea id="sch_thu" placeholder="08:30 - 10:30 | 📱 ดิจิทัลอาชีพ (ห้อง 444) ครูฐิติกัลยาพัชร"></textarea>
       </div>
       <div class="schedule-row">
-        <label>วันศุกร์</label>
+        <label for="sch_fri">วันศุกร์</label>
         <textarea id="sch_fri" placeholder="09:30 - 11:30 | 🔬 วิทย์อาชีพ (ห้อง 221) ครูสุภาวดี"></textarea>
       </div>
     </div>
@@ -870,16 +949,16 @@
   <div id="historyList"></div>
   <button id="toggleHistoryBtn" class="btn-toggle-history hidden" onclick="toggleHistory()">ดูประวัติทั้งหมด</button>
   <div class="empty-state hidden" id="historyEmpty">ยังไม่มีประวัติการรับเงิน</div>
-</div>
+</main>
 
 <!-- ============ MODALS ============ -->
 <div class="modal-backdrop" id="addTaskModal">
   <div class="modal-box">
     <h3>เพิ่มงานเอง</h3>
     <p>สำหรับงานที่ไม่ได้มาจาก Google Classroom</p>
-    <label class="field-label">ชื่องาน</label>
+    <label class="field-label" for="newTaskTitle">ชื่องาน</label>
     <input type="text" id="newTaskTitle" placeholder="เช่น ช่วยพิมพ์รายงานวิชา...">
-    <label class="field-label">รายละเอียด (ใส่หรือไม่ใส่ก็ได้)</label>
+    <label class="field-label" for="newTaskDesc">รายละเอียด (ใส่หรือไม่ใส่ก็ได้)</label>
     <textarea id="newTaskDesc" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
     <div class="row">
       <button class="btn btn-cancel2" onclick="closeAddTaskModal()">ยกเลิก</button>
@@ -892,11 +971,11 @@
   <div class="modal-box">
     <h3>ได้รับเพิ่มเติม</h3>
     <p>สำหรับเงินที่ได้นอกเหนือจากงานในระบบ</p>
-    <label class="field-label">ได้จากใคร</label>
+    <label class="field-label" for="extraFrom">ได้จากใคร</label>
     <input type="text" id="extraFrom" placeholder="เช่น เลขที่ 5 หรือ ชื่อเพื่อน">
-    <label class="field-label">ได้เพราะอะไร</label>
+    <label class="field-label" for="extraReason">ได้เพราะอะไร</label>
     <input type="text" id="extraReason" placeholder="เช่น ช่วยทำสไลด์, ค่าปริ้นงาน">
-    <label class="field-label">จำนวนเงิน (บาท)</label>
+    <label class="field-label" for="extraAmount">จำนวนเงิน (บาท)</label>
     <input type="number" id="extraAmount" placeholder="0" inputmode="numeric">
     <div class="row">
       <button class="btn btn-cancel2" onclick="closeExtraIncomeModal()">ยกเลิก</button>
@@ -909,9 +988,9 @@
   <div class="modal-box">
     <h3>บันทึกยอดเงิน (จ่ายสด)</h3>
     <p id="payContext"></p>
-    <input type="number" id="payAmount" placeholder="จำนวนเงิน (บาท)" inputmode="numeric">
+    <input type="number" id="payAmount" aria-label="จำนวนเงิน" placeholder="จำนวนเงิน (บาท)" inputmode="numeric">
     
-    <label class="field-label" style="margin-top: 10px;">📷 ถ่ายรูปเงินเป็นหลักฐาน (เปิดกล้องได้)</label>
+    <label class="field-label" style="margin-top: 10px;" for="cashImageInput">📷 ถ่ายรูปเงินเป็นหลักฐาน (เปิดกล้องได้)</label>
     <input type="file" id="cashImageInput" accept="image/*" capture="environment" style="margin-bottom: 16px;">
 
     <div class="row">
@@ -925,8 +1004,8 @@
   <div class="modal-box">
     <h3>ตรวจสอบสลิปการโอนเงิน</h3>
     <p id="verifyContext"></p>
-    <img id="slipImagePreview" src="" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-bottom: 12px; border: 1.5px solid var(--line);">
-    <input type="number" id="verifyAmount" placeholder="ยอดเงินตามสลิป (บาท)" inputmode="numeric">
+    <img id="slipImagePreview" src="" loading="lazy" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-bottom: 12px; border: 1.5px solid var(--line);">
+    <input type="number" id="verifyAmount" aria-label="ยอดเงินตามสลิป" placeholder="ยอดเงินตามสลิป (บาท)" inputmode="numeric">
     <div class="row">
       <button class="btn btn-cancel2" onclick="closeVerifyModal()">ปิด</button>
       <button class="btn btn-confirm" onclick="confirmVerifyPayment()">ยืนยันยอดนี้</button>

@@ -147,7 +147,7 @@
     font-size: 14.5px; 
   }
 
-  /* ---- Config Block (แผงควบคุมใหม่) ---- */
+  /* ---- Config Block ---- */
   .config-box { 
     background: var(--paper); 
     padding: 16px; 
@@ -173,7 +173,7 @@
     margin-bottom: 8px;
   }
 
-  .config-box input, .config-box select { 
+  .config-box input, .config-box select, .config-box textarea { 
     flex: 1; 
     padding: 10px; 
     border-radius: 8px; 
@@ -181,6 +181,7 @@
     background: var(--bg); 
     color: var(--ink); 
     font-size: 14px; 
+    font-family: inherit;
   }
 
   .config-box button { 
@@ -194,14 +195,14 @@
     white-space: nowrap; 
   }
 
-  .admin-sv-list {
+  .admin-list-container {
     margin-top: 10px;
     display: flex;
     flex-direction: column;
     gap: 6px;
   }
 
-  .admin-sv-item {
+  .admin-list-item {
     background: var(--bg);
     padding: 8px 12px;
     border-radius: 8px;
@@ -212,17 +213,44 @@
     border-left: 3px solid var(--line);
   }
 
-  .admin-sv-item.red { border-left-color: #C0392B; }
-  .admin-sv-item.yellow { border-left-color: #D48806; }
-  .admin-sv-item.green { border-left-color: var(--green); }
+  .admin-list-item.red { border-left-color: #C0392B; }
+  .admin-list-item.yellow { border-left-color: #D48806; }
+  .admin-list-item.green { border-left-color: var(--green); }
 
-  .btn-del-sv {
+  .btn-del {
     background: transparent;
     color: var(--red);
     border: none;
     cursor: pointer;
     font-weight: bold;
     font-size: 12px;
+  }
+
+  .schedule-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .schedule-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--bg);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+
+  .schedule-row label {
+    font-weight: bold;
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  .schedule-row textarea {
+    min-height: 60px;
+    resize: vertical;
   }
 
   .action-row { 
@@ -425,7 +453,6 @@
     background: var(--accent-soft); 
   }
 
-  /* ---- history toggle ---- */
   .history-hidden { display: none !important; }
   .btn-toggle-history { 
     width: 100%; 
@@ -558,11 +585,6 @@
     <div class="stat-pill">ได้แล้ว <span id="totalEarn">0</span> / 5,000</div>
   </div>
 
-  <div class="notice-box">
-    <strong>📢 หมายเหตุความโปร่งใส</strong>
-    ข้อมูลประวัติและยอดเงินทั้งหมดที่เกิดขึ้น <b>ก่อนวันที่ 30 มิถุนายน</b> เป็นเพียงการ "ทดสอบระบบ" เท่านั้น
-  </div>
-
   <!-- โซนที่ 1: กระดานข่าว -->
   <div class="config-box">
     <div class="config-box-title">📢 กระดานข่าวห้อง (ตัววิ่ง)</div>
@@ -586,9 +608,9 @@
     </div>
   </div>
 
-  <!-- โซนที่ 3: ศูนย์บัญชาการ (เตือนสอบ/ส่งงาน) -->
+  <!-- โซนที่ 3: ศูนย์บัญชาการเอาตัวรอด (แจ้งเตือนส่งงาน/สอบ) -->
   <div class="config-box">
-    <div class="config-box-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</div>
+    <div class="config-box-title">🛡️ ศูนย์บัญชาการ (แจ้งเตือนสอบ/ส่งงาน)</div>
     <div class="config-row">
       <input type="text" id="svText" placeholder="เช่น พรุ่งนี้: สอบคณิตศาสตร์" style="flex:2;">
       <select id="svType" style="flex:1;">
@@ -598,8 +620,50 @@
       </select>
       <button onclick="addSurvivalItem()">เพิ่ม</button>
     </div>
-    <!-- แสดงรายการที่เพิ่มไว้ -->
-    <div class="admin-sv-list" id="adminSurvivalList"></div>
+    <div class="admin-list-container" id="adminSurvivalList"></div>
+  </div>
+
+  <!-- โซนที่ 4: คลังชีทสรุป (ใช้ลิงก์ Google Drive) -->
+  <div class="config-box">
+    <div class="config-box-title">📚 จัดการคลังชีทสรุป (อัปลิงก์)</div>
+    <div class="config-row">
+      <input type="text" id="vaultTitle" placeholder="ชื่อชีท (เช่น สรุปวิทย์)">
+      <input type="text" id="vaultDesc" placeholder="คำอธิบาย (อ่าน 10 นาทีรอด)">
+    </div>
+    <div class="config-row">
+      <input type="url" id="vaultLink" placeholder="ลิงก์ไฟล์ (เช่น ลิงก์ Google Drive)">
+      <button onclick="addVaultItem()">เพิ่มชีท</button>
+    </div>
+    <div class="admin-list-container" id="adminVaultList"></div>
+  </div>
+
+  <!-- โซนที่ 5: ตารางสอนเดินเรียน -->
+  <div class="config-box">
+    <div class="config-box-title">📅 ตารางสอนเดินเรียน (อัปเดตรายสัปดาห์)</div>
+    <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">พิมพ์รายวิชาและห้องเรียนลงไปได้เลย ระบบจะแสดงผลให้เพื่อนเห็นตามวันจริง</div>
+    <div class="schedule-grid">
+      <div class="schedule-row">
+        <label>วันจันทร์</label>
+        <textarea id="sch_mon" placeholder="คาบ 1: 08:30 คณิต ห้อง 123..."></textarea>
+      </div>
+      <div class="schedule-row">
+        <label>วันอังคาร</label>
+        <textarea id="sch_tue" placeholder="คาบ 1: 08:30 คณิต ห้อง 123..."></textarea>
+      </div>
+      <div class="schedule-row">
+        <label>วันพุธ</label>
+        <textarea id="sch_wed" placeholder="คาบ 1: 08:30 คณิต ห้อง 123..."></textarea>
+      </div>
+      <div class="schedule-row">
+        <label>วันพฤหัสบดี</label>
+        <textarea id="sch_thu" placeholder="คาบ 1: 08:30 คณิต ห้อง 123..."></textarea>
+      </div>
+      <div class="schedule-row">
+        <label>วันศุกร์</label>
+        <textarea id="sch_fri" placeholder="คาบ 1: 08:30 คณิต ห้อง 123..."></textarea>
+      </div>
+    </div>
+    <button onclick="saveSchedule()" style="width:100%; margin-top:10px;">บันทึกตารางเรียน</button>
   </div>
 
   <div class="action-row">
@@ -663,10 +727,8 @@
     <h3>บันทึกยอดเงิน (จ่ายสด)</h3>
     <p id="payContext"></p>
     <input type="number" id="payAmount" placeholder="จำนวนเงิน (บาท)" inputmode="numeric">
-    
     <label class="field-label" style="margin-top: 10px;">📷 ถ่ายรูปเงินเป็นหลักฐาน (เปิดกล้องได้)</label>
     <input type="file" id="cashImageInput" accept="image/*" capture="environment" style="margin-bottom: 16px;">
-
     <div class="row">
       <button class="btn btn-cancel2" onclick="closePayModal()">ยกเลิก</button>
       <button class="btn btn-confirm" id="btnConfirmCash" onclick="confirmPayment()">ยืนยันรับเงินแล้ว</button>
@@ -721,8 +783,9 @@
   let activeOrderId = null; 
   let isHistoryExpanded = false;
   
-  // ตัวแปรเก็บข้อมูลศูนย์บัญชาการ
+  // ตัวแปรเก็บข้อมูลศูนย์บัญชาการและคลังชีท
   let currentSurvivalItems = [];
+  let currentVaultItems = [];
 
   const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
@@ -762,7 +825,7 @@
     listenToIncomeLogs();
   }
 
-  // ดึงการตั้งค่าระบบ (รวมถึงคิวงานและศูนย์บัญชาการ)
+  // ดึงการตั้งค่าระบบทั้งหมด
   function listenToSettings() {
     db.collection('system_settings').doc('main').onSnapshot(snap => {
       if(snap.exists && snap.data()) {
@@ -779,571 +842,236 @@
         // 3. ศูนย์บัญชาการ
         currentSurvivalItems = d.survival_items || [];
         renderAdminSurvivalList();
+
+        // 4. คลังชีท
+        currentVaultItems = d.vault_items || [];
+        renderAdminVaultList();
+
+        // 5. ตารางสอน
+        const sch = d.schedule || {};
+        document.getElementById('sch_mon').value = sch.mon || '';
+        document.getElementById('sch_tue').value = sch.tue || '';
+        document.getElementById('sch_wed').value = sch.wed || '';
+        document.getElementById('sch_thu').value = sch.thu || '';
+        document.getElementById('sch_fri').value = sch.fri || '';
       }
     });
   }
 
-  // เซฟกระดานข่าว
   async function saveAnnouncement() {
     const txt = document.getElementById('adminAnnouncement').value.trim();
     try {
       await db.collection('system_settings').doc('main').set({ announcement: txt }, { merge: true });
       showToast('อัปเดตกระดานข่าวให้เพื่อนๆ แล้ว! 📢');
-    } catch (e) { 
-      showToast('อัปเดตไม่สำเร็จ'); 
-    }
+    } catch (e) { showToast('อัปเดตไม่สำเร็จ'); }
   }
 
-  // เซฟคิวงาน
   async function saveQueue() {
     const curr = parseInt(document.getElementById('qCurrent').value) || 0;
     const max = parseInt(document.getElementById('qMax').value) || 5;
     const eta = document.getElementById('qEta').value.trim();
     try {
       await db.collection('system_settings').doc('main').set({ 
-        queue_current: curr, 
-        queue_max: max, 
-        queue_eta: eta 
+        queue_current: curr, queue_max: max, queue_eta: eta 
       }, { merge: true });
       showToast('อัปเดตคิวงานเรียบร้อย! 🔥');
-    } catch (e) {
-      showToast('อัปเดตคิวไม่สำเร็จ');
-    }
+    } catch (e) { showToast('อัปเดตคิวไม่สำเร็จ'); }
   }
 
-  // เพิ่มรายการศูนย์บัญชาการ
+  // --- จัดการศูนย์บัญชาการ ---
   async function addSurvivalItem() {
     const txt = document.getElementById('svText').value.trim();
     const type = document.getElementById('svType').value;
-    
     if(!txt) return;
-    
     currentSurvivalItems.push({ text: txt, type: type });
-    
     try {
-      await db.collection('system_settings').doc('main').set({ 
-        survival_items: currentSurvivalItems 
-      }, { merge: true });
-      
+      await db.collection('system_settings').doc('main').set({ survival_items: currentSurvivalItems }, { merge: true });
       document.getElementById('svText').value = '';
       showToast('เพิ่มรายการแจ้งเตือนแล้ว 🛡️');
-    } catch (e) {
-      showToast('เพิ่มไม่สำเร็จ');
-    }
+    } catch (e) { showToast('เพิ่มไม่สำเร็จ'); }
   }
 
-  // ลบรายการศูนย์บัญชาการ
   async function deleteSurvivalItem(index) {
     if(!confirm('ลบรายการนี้ใช่ไหม?')) return;
-    
     currentSurvivalItems.splice(index, 1);
-    
     try {
-      await db.collection('system_settings').doc('main').set({ 
-        survival_items: currentSurvivalItems 
-      }, { merge: true });
+      await db.collection('system_settings').doc('main').set({ survival_items: currentSurvivalItems }, { merge: true });
       showToast('ลบรายการแล้ว');
-    } catch (e) {
-      showToast('ลบไม่สำเร็จ');
-    }
+    } catch (e) { showToast('ลบไม่สำเร็จ'); }
   }
 
-  // แสดงรายการศูนย์บัญชาการในฝั่ง Admin
   function renderAdminSurvivalList() {
     const list = document.getElementById('adminSurvivalList');
     if(currentSurvivalItems.length === 0) {
       list.innerHTML = '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">ยังไม่มีแจ้งเตือน</div>';
       return;
     }
-    
     list.innerHTML = currentSurvivalItems.map((item, index) => {
-      let emoji = '🟢';
-      if(item.type === 'red') emoji = '🔴';
-      if(item.type === 'yellow') emoji = '🟡';
-      
-      return `
-        <div class="admin-sv-item ${item.type}">
-          <span>${emoji} ${escapeHtml(item.text)}</span>
-          <button class="btn-del-sv" onclick="deleteSurvivalItem(${index})">ลบ</button>
-        </div>
-      `;
+      let emoji = '🟢'; if(item.type === 'red') emoji = '🔴'; if(item.type === 'yellow') emoji = '🟡';
+      return `<div class="admin-list-item ${item.type}"><span>${emoji} ${escapeHtml(item.text)}</span><button class="btn-del" onclick="deleteSurvivalItem(${index})">ลบ</button></div>`;
     }).join('');
   }
 
-  function listenToTasks() { 
-    db.collection('assignments').onSnapshot(snap => { 
-      allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() })); 
-      renderOrders(); 
-    }); 
+  // --- จัดการคลังชีท ---
+  async function addVaultItem() {
+    const title = document.getElementById('vaultTitle').value.trim();
+    const desc = document.getElementById('vaultDesc').value.trim();
+    const link = document.getElementById('vaultLink').value.trim();
+    if(!title || !link) { showToast('ใส่ชื่อกับลิงก์ให้ครบด้วยครับ'); return; }
+    currentVaultItems.push({ title: title, desc: desc, link: link });
+    try {
+      await db.collection('system_settings').doc('main').set({ vault_items: currentVaultItems }, { merge: true });
+      document.getElementById('vaultTitle').value = ''; document.getElementById('vaultDesc').value = ''; document.getElementById('vaultLink').value = '';
+      showToast('เพิ่มไฟล์ลงคลังแสงแล้ว 📚');
+    } catch (e) { showToast('เพิ่มชีทไม่สำเร็จ'); }
   }
 
-  function listenToOrders() {
-    db.collection('orders').orderBy('created_at', 'desc').onSnapshot(snap => {
-      const newOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      
-      loyaltyData = {};
-      newOrders.forEach(o => {
-        if (o.status === 'paid') {
-          loyaltyData[o.student_id] = (loyaltyData[o.student_id] || 0) + 1;
-        }
-      });
-      allOrders = newOrders; 
-      renderOrders();
-    });
+  async function deleteVaultItem(index) {
+    if(!confirm('ลบชีทนี้ทิ้งใช่ไหม?')) return;
+    currentVaultItems.splice(index, 1);
+    try {
+      await db.collection('system_settings').doc('main').set({ vault_items: currentVaultItems }, { merge: true });
+      showToast('ลบชีทแล้ว');
+    } catch (e) { showToast('ลบไม่สำเร็จ'); }
   }
 
-  function listenToIncomeLogs() { 
-    db.collection('income_logs').onSnapshot(snap => { 
-      allIncomeLogs = snap.docs.map(d => ({ id: d.id, ...d.data() })); 
-      renderOrders(); 
-    }); 
+  function renderAdminVaultList() {
+    const list = document.getElementById('adminVaultList');
+    if(currentVaultItems.length === 0) {
+      list.innerHTML = '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">ยังไม่มีไฟล์ในคลัง</div>';
+      return;
+    }
+    list.innerHTML = currentVaultItems.map((item, index) => {
+      return `<div class="admin-list-item green"><div><strong>${escapeHtml(item.title)}</strong><br><span style="font-size:11px; color:var(--muted);">${escapeHtml(item.desc)}</span></div><button class="btn-del" onclick="deleteVaultItem(${index})">ลบ</button></div>`;
+    }).join('');
   }
 
-  function taskTitle(taskId) { 
-    const t = allTasks.find(x => x.id === taskId); 
-    return t ? t.title : '(ไม่พบชื่องาน)'; 
+  // --- จัดการตารางเรียน ---
+  async function saveSchedule() {
+    const sch = {
+      mon: document.getElementById('sch_mon').value.trim(),
+      tue: document.getElementById('sch_tue').value.trim(),
+      wed: document.getElementById('sch_wed').value.trim(),
+      thu: document.getElementById('sch_thu').value.trim(),
+      fri: document.getElementById('sch_fri').value.trim()
+    };
+    try {
+      await db.collection('system_settings').doc('main').set({ schedule: sch }, { merge: true });
+      showToast('บันทึกตารางเรียนแล้ว! 📅');
+    } catch (e) { showToast('บันทึกตารางเรียนไม่สำเร็จ'); }
   }
 
-  function toggleHistory() { 
-    isHistoryExpanded = !isHistoryExpanded; 
-    renderOrders(); 
-  }
+  function listenToTasks() { db.collection('assignments').onSnapshot(snap => { allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderOrders(); }); }
+  function listenToOrders() { db.collection('orders').orderBy('created_at', 'desc').onSnapshot(snap => { const newOrders = snap.docs.map(d => ({ id: d.id, ...d.data() })); loyaltyData = {}; newOrders.forEach(o => { if (o.status === 'paid') { loyaltyData[o.student_id] = (loyaltyData[o.student_id] || 0) + 1; } }); allOrders = newOrders; renderOrders(); }); }
+  function listenToIncomeLogs() { db.collection('income_logs').onSnapshot(snap => { allIncomeLogs = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderOrders(); }); }
+  function taskTitle(taskId) { const t = allTasks.find(x => x.id === taskId); return t ? t.title : '(ไม่พบชื่องาน)'; }
+  function toggleHistory() { isHistoryExpanded = !isHistoryExpanded; renderOrders(); }
 
   function renderOrders() {
-    const pendingList = document.getElementById('pendingList'); 
-    const doneList = document.getElementById('doneList');
-    const historyList = document.getElementById('historyList'); 
-    const monthlySummaryList = document.getElementById('monthlySummaryList');
-
-    let pending = allOrders.filter(o => o.status === 'pending');
-    pending.sort((a,b) => (b.is_rush ? 1 : 0) - (a.is_rush ? 1 : 0));
-
-    const doneOrChecking = allOrders.filter(o => o.status === 'done' || o.status === 'checking_slip');
-    const paid = allOrders.filter(o => o.status === 'paid');
-
-    document.getElementById('pendingEmpty').classList.toggle('hidden', pending.length > 0);
-    document.getElementById('doneEmpty').classList.toggle('hidden', doneOrChecking.length > 0);
-
+    const pendingList = document.getElementById('pendingList'); const doneList = document.getElementById('doneList'); const historyList = document.getElementById('historyList'); const monthlySummaryList = document.getElementById('monthlySummaryList');
+    let pending = allOrders.filter(o => o.status === 'pending'); pending.sort((a,b) => (b.is_rush ? 1 : 0) - (a.is_rush ? 1 : 0));
+    const doneOrChecking = allOrders.filter(o => o.status === 'done' || o.status === 'checking_slip'); const paid = allOrders.filter(o => o.status === 'paid');
+    document.getElementById('pendingEmpty').classList.toggle('hidden', pending.length > 0); document.getElementById('doneEmpty').classList.toggle('hidden', doneOrChecking.length > 0);
+    
     pendingList.innerHTML = pending.map(o => {
-      const t = allTasks.find(x => x.id === o.task_id);
-      const isCustom = t && t.source === 'friend_request';
-      const isVip = loyaltyData[o.student_id] >= 5;
-      
+      const t = allTasks.find(x => x.id === o.task_id); const isCustom = t && t.source === 'friend_request'; const isVip = loyaltyData[o.student_id] >= 5;
       const customBadge = isCustom ? '<span style="color:#D4622A; font-size:11px; background:#FBE9DD; padding:2px 6px; border-radius:4px; margin-left:4px;">งานสั่งพิเศษ</span>' : '';
       const rushBadge = o.is_rush ? '<span class="tag rush">🔥 งานด่วนไฟลุก!</span>' : '';
       const vipBadge = isVip ? '<span class="vip-badge">👑 ลูกค้าประจำ</span>' : '';
       const cardClass = o.is_rush ? 'pending rush' : 'pending';
-
-      return `
-      <div class="order-card ${cardClass}">
-        <div class="order-top">
-          <div>
-            <div class="order-title">${escapeHtml(taskTitle(o.task_id))} ${customBadge}</div>
-            <div class="order-who">${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))} ${vipBadge}</div>
-          </div>
-          <div class="order-time">${formatTime(o.created_at)}</div>
-        </div>
-        <span class="tag pending">กำลังทำอยู่</span> ${rushBadge}
-        <div class="order-actions" style="display: flex; gap: 8px;">
-          <button class="btn btn-mark-done" style="flex: 2;" onclick="markOrderDone('${o.id}')">ทำเสร็จแล้ว</button>
-          <button class="btn" style="flex: 1; background: transparent; border: 1.5px solid var(--red); color: var(--red);" onclick="rejectOrder('${o.id}')">ปฏิเสธ</button>
-        </div>
-      </div>
-      `;
+      return `<div class="order-card ${cardClass}"><div class="order-top"><div><div class="order-title">${escapeHtml(taskTitle(o.task_id))} ${customBadge}</div><div class="order-who">${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))} ${vipBadge}</div></div><div class="order-time">${formatTime(o.created_at)}</div></div><span class="tag pending">กำลังทำอยู่</span> ${rushBadge}<div class="order-actions" style="display: flex; gap: 8px;"><button class="btn btn-mark-done" style="flex: 2;" onclick="markOrderDone('${o.id}')">ทำเสร็จแล้ว</button><button class="btn" style="flex: 1; background: transparent; border: 1.5px solid var(--red); color: var(--red);" onclick="rejectOrder('${o.id}')">ปฏิเสธ</button></div></div>`;
     }).join('');
 
     doneList.innerHTML = doneOrChecking.map(o => {
-      let statusTag = ''; 
-      let actionBtn = ''; 
-      let cardClass = '';
-
-      if (o.status === 'done') { 
-        cardClass = 'done'; 
-        statusTag = '<span class="tag done">รอเพื่อนโอนเงิน/จ่ายสด</span>'; 
-        actionBtn = `<button class="btn btn-pay" onclick="openPayModal('${o.id}')">กดรับเงิน (กรณีจ่ายสด)</button>`; 
-      } else if (o.status === 'checking_slip') { 
-        cardClass = 'checking'; 
-        statusTag = '<span class="tag checking">แนบสลิปแล้ว รอคุณตรวจสอบ</span>'; 
-        actionBtn = `<button class="btn btn-verify" onclick="openVerifyModal('${o.id}')">ตรวจสอบสลิป</button>`; 
-      }
-
-      return `
-        <div class="order-card ${cardClass}">
-          <div class="order-top">
-            <div>
-              <div class="order-title">${escapeHtml(taskTitle(o.task_id))}</div>
-              <div class="order-who">${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))}</div>
-            </div>
-            <div class="order-time">${formatTime(o.created_at)}</div>
-          </div>
-          ${statusTag}
-          <div class="order-actions">${actionBtn}</div>
-        </div>
-      `;
+      let statusTag = ''; let actionBtn = ''; let cardClass = '';
+      if (o.status === 'done') { cardClass = 'done'; statusTag = '<span class="tag done">รอเพื่อนโอนเงิน/จ่ายสด</span>'; actionBtn = `<button class="btn btn-pay" onclick="openPayModal('${o.id}')">กดรับเงิน (กรณีจ่ายสด)</button>`; } 
+      else if (o.status === 'checking_slip') { cardClass = 'checking'; statusTag = '<span class="tag checking">แนบสลิปแล้ว รอคุณตรวจสอบ</span>'; actionBtn = `<button class="btn btn-verify" onclick="openVerifyModal('${o.id}')">ตรวจสอบสลิป</button>`; }
+      return `<div class="order-card ${cardClass}"><div class="order-top"><div><div class="order-title">${escapeHtml(taskTitle(o.task_id))}</div><div class="order-who">${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))}</div></div><div class="order-time">${formatTime(o.created_at)}</div></div>${statusTag}<div class="order-actions">${actionBtn}</div></div>`;
     }).join('');
 
-    const historyItems = [
-      ...paid.map(o => ({ 
-        type: 'order', 
-        title: taskTitle(o.task_id), 
-        from: o.student_name || ('เลขที่ ' + o.student_id), 
-        amount: o.price || 0, 
-        time: o.paid_at || o.created_at, 
-        slip_image: o.slip_image || null 
-      })),
-      ...allIncomeLogs.map(l => ({ 
-        type: 'manual', 
-        title: l.reason || 'ได้รับเพิ่มเติม', 
-        from: l.from_name || 'ไม่ระบุ', 
-        amount: l.amount || 0, 
-        time: l.logged_at, 
-        slip_image: null 
-      }))
-    ].sort((a, b) => (b.time?.toMillis?.() || 0) - (a.time?.toMillis?.() || 0));
-
+    const historyItems = [...paid.map(o => ({ type: 'order', title: taskTitle(o.task_id), from: o.student_name || ('เลขที่ ' + o.student_id), amount: o.price || 0, time: o.paid_at || o.created_at, slip_image: o.slip_image || null })), ...allIncomeLogs.map(l => ({ type: 'manual', title: l.reason || 'ได้รับเพิ่มเติม', from: l.from_name || 'ไม่ระบุ', amount: l.amount || 0, time: l.logged_at, slip_image: null }))].sort((a, b) => (b.time?.toMillis?.() || 0) - (a.time?.toMillis?.() || 0));
     document.getElementById('historyEmpty').classList.toggle('hidden', historyItems.length > 0);
     const MAX_HISTORY = 15;
-    
     historyList.innerHTML = historyItems.map((item, index) => {
       const hideClass = (!isHistoryExpanded && index >= MAX_HISTORY) ? 'history-hidden' : '';
       let slipBtnHtml = item.slip_image ? `<button class="btn-view-slip" onclick="viewHistorySlip('${item.slip_image}', '${escapeHtml(item.title)}', '${escapeHtml(item.from)}')">📄 ดูหลักฐาน</button>` : '';
-      return `
-        <div class="history-card ${hideClass}">
-          <div class="history-left">
-            <div class="order-title">${escapeHtml(item.title)}</div>
-            <div class="order-who">ได้จาก ${escapeHtml(item.from)}</div>
-            ${slipBtnHtml}
-          </div>
-          <div class="history-right">
-            <div class="history-amount">+${item.amount.toLocaleString('th-TH')} บาท</div>
-            <div class="history-time">${formatTime(item.time)}</div>
-          </div>
-        </div>
-      `;
+      return `<div class="history-card ${hideClass}"><div class="history-left"><div class="order-title">${escapeHtml(item.title)}</div><div class="order-who">ได้จาก ${escapeHtml(item.from)}</div>${slipBtnHtml}</div><div class="history-right"><div class="history-amount">+${item.amount.toLocaleString('th-TH')} บาท</div><div class="history-time">${formatTime(item.time)}</div></div></div>`;
     }).join('');
 
     const toggleBtn = document.getElementById('toggleHistoryBtn');
-    if (historyItems.length > MAX_HISTORY) { 
-      toggleBtn.classList.remove('hidden'); 
-      toggleBtn.textContent = isHistoryExpanded ? 'ย่อประวัติ (แสดงแค่ 15 รายการล่าสุด)' : `ดูประวัติทั้งหมด (${historyItems.length} รายการ)`; 
-    } else { 
-      toggleBtn.classList.add('hidden'); 
-    }
+    if (historyItems.length > MAX_HISTORY) { toggleBtn.classList.remove('hidden'); toggleBtn.textContent = isHistoryExpanded ? 'ย่อประวัติ (แสดงแค่ 15 รายการล่าสุด)' : `ดูประวัติทั้งหมด (${historyItems.length} รายการ)`; } else { toggleBtn.classList.add('hidden'); }
 
     const monthlyData = {};
-    historyItems.forEach(item => {
-      if (!item.time) return; 
-      const d = item.time.toDate ? item.time.toDate() : new Date(item.time);
-      const ymKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      monthlyData[ymKey] = (monthlyData[ymKey] || 0) + item.amount;
-    });
+    historyItems.forEach(item => { if (!item.time) return; const d = item.time.toDate ? item.time.toDate() : new Date(item.time); const ymKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; monthlyData[ymKey] = (monthlyData[ymKey] || 0) + item.amount; });
+    const now = new Date(); const currentYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; const currentEarn = monthlyData[currentYM] || 0;
+    document.getElementById('totalEarn').textContent = currentEarn.toLocaleString('th-TH'); document.getElementById('currentMonthLabel').textContent = `ยอดของเดือน ${monthNames[now.getMonth()]}`;
 
-    const now = new Date(); 
-    const currentYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    const currentEarn = monthlyData[currentYM] || 0;
-    
-    document.getElementById('totalEarn').textContent = currentEarn.toLocaleString('th-TH');
-    document.getElementById('currentMonthLabel').textContent = `ยอดของเดือน ${monthNames[now.getMonth()]}`;
-
-    let summaryHtml = ''; 
-    const sortedMonths = Object.keys(monthlyData).sort().reverse();
-    
+    let summaryHtml = ''; const sortedMonths = Object.keys(monthlyData).sort().reverse();
     sortedMonths.forEach(ym => {
       if (ym === currentYM) return;
-      const [yearStr, monthStr] = ym.split('-'); 
-      const y = parseInt(yearStr); 
-      const mIndex = parseInt(monthStr) - 1; 
-      const total = monthlyData[ym];
-      const daysInMonth = new Date(y, mIndex + 1, 0).getDate(); 
-      const avgPerDay = total / daysInMonth;
-      const isPassed = avgPerDay >= 160; 
-      const borderColor = isPassed ? 'var(--green)' : 'var(--red)'; 
-      const textColor = isPassed ? 'var(--green)' : 'var(--red)'; 
-      const statusText = isPassed ? '✅ ผ่านเป้า' : '❌ ไม่ถึงเป้า';
-      
-      summaryHtml += `
-        <div class="history-card" style="border-left-color: ${borderColor}">
-          <div class="history-left">
-            <div class="order-title">เดือน${monthNames[mIndex]} ${y}</div>
-            <div class="order-who">เฉลี่ย ${avgPerDay.toFixed(0)} บาท/วัน (เป้า 160)</div>
-          </div>
-          <div class="history-right">
-            <div class="history-amount" style="color: ${textColor}">${total.toLocaleString('th-TH')} บาท</div>
-            <div class="history-time">${statusText}</div>
-          </div>
-        </div>
-      `;
+      const [yearStr, monthStr] = ym.split('-'); const y = parseInt(yearStr); const mIndex = parseInt(monthStr) - 1; const total = monthlyData[ym]; const daysInMonth = new Date(y, mIndex + 1, 0).getDate(); const avgPerDay = total / daysInMonth; const isPassed = avgPerDay >= 160; const borderColor = isPassed ? 'var(--green)' : 'var(--red)'; const textColor = isPassed ? 'var(--green)' : 'var(--red)'; const statusText = isPassed ? '✅ ผ่านเป้า' : '❌ ไม่ถึงเป้า';
+      summaryHtml += `<div class="history-card" style="border-left-color: ${borderColor}"><div class="history-left"><div class="order-title">เดือน${monthNames[mIndex]} ${y}</div><div class="order-who">เฉลี่ย ${avgPerDay.toFixed(0)} บาท/วัน (เป้า 160)</div></div><div class="history-right"><div class="history-amount" style="color: ${textColor}">${total.toLocaleString('th-TH')} บาท</div><div class="history-time">${statusText}</div></div></div>`;
     });
-    
-    if (summaryHtml === '') { 
-      monthlySummaryList.innerHTML = '<div class="empty-state">ยังไม่มีข้อมูลของเดือนที่แล้ว</div>'; 
-    } else { 
-      monthlySummaryList.innerHTML = summaryHtml; 
-    }
+    if (summaryHtml === '') { monthlySummaryList.innerHTML = '<div class="empty-state">ยังไม่มีข้อมูลของเดือนที่แล้ว</div>'; } else { monthlySummaryList.innerHTML = summaryHtml; }
   }
 
-  window.viewHistorySlip = function(imgSrc, title, from) {
-    document.getElementById('historySlipContext').textContent = `${title} · ${from}`;
-    document.getElementById('historySlipImage').src = imgSrc;
-    document.getElementById('viewHistorySlipModal').classList.add('show');
-  }
-
-  function closeHistorySlipModal() { 
-    document.getElementById('viewHistorySlipModal').classList.remove('show'); 
-  }
+  window.viewHistorySlip = function(imgSrc, title, from) { document.getElementById('historySlipContext').textContent = `${title} · ${from}`; document.getElementById('historySlipImage').src = imgSrc; document.getElementById('viewHistorySlipModal').classList.add('show'); }
+  function closeHistorySlipModal() { document.getElementById('viewHistorySlipModal').classList.remove('show'); }
 
   function openManageTasksModal() {
     const list = document.getElementById('manageTaskList');
-    list.innerHTML = allTasks.map(t => `
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1.5px solid var(--line); border-radius: 10px; margin-bottom: 8px;">
-        <div style="font-size: 14px; font-weight: 600; width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(t.title)}</div>
-        <button style="background: #E8836A; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;" onclick="deleteTask('${t.id}')">ลบทิ้ง</button>
-      </div>
-    `).join('');
-    
-    if(allTasks.length === 0) {
-      list.innerHTML = '<div style="text-align: center; color: var(--muted); font-size: 13px; padding: 20px;">ไม่มีงานในระบบเลย</div>';
-    }
+    list.innerHTML = allTasks.map(t => `<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1.5px solid var(--line); border-radius: 10px; margin-bottom: 8px;"><div style="font-size: 14px; font-weight: 600; width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(t.title)}</div><button style="background: #E8836A; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;" onclick="deleteTask('${t.id}')">ลบทิ้ง</button></div>`).join('');
+    if(allTasks.length === 0) { list.innerHTML = '<div style="text-align: center; color: var(--muted); font-size: 13px; padding: 20px;">ไม่มีงานในระบบเลย</div>'; }
     document.getElementById('manageTasksModal').classList.add('show');
   }
+  function closeManageTasksModal() { document.getElementById('manageTasksModal').classList.remove('show'); }
 
-  function closeManageTasksModal() { 
-    document.getElementById('manageTasksModal').classList.remove('show'); 
-  }
+  async function deleteTask(taskId) { if(!confirm('แน่ใจนะว่าจะลบงานนี้?')) return; try { await db.collection('assignments').doc(taskId).delete(); showToast('ลบงานออกจากระบบแล้ว 🗑️'); openManageTasksModal(); } catch (err) { showToast('ลบไม่สำเร็จ ลองใหม่อีกครั้ง'); } }
+  async function rejectOrder(orderId) { if(!confirm('คุณแน่ใจนะว่าจะปฏิเสธงานนี้?')) return; try { await db.collection('orders').doc(orderId).update({ status: 'rejected' }); showToast('ปฏิเสธงานเรียบร้อย ❌'); } catch (err) { showToast('เกิดข้อผิดพลาด ลองใหม่อีกครั้ง'); } }
+  async function markOrderDone(orderId) { try { await db.collection('orders').doc(orderId).update({ status: 'done' }); showToast('ส่งแจ้งเตือนให้เพื่อนโอนเงินแล้ว!'); } catch (err) { showToast('อัปเดตไม่สำเร็จ'); } }
 
-  async function deleteTask(taskId) {
-    if(!confirm('แน่ใจนะว่าจะลบงานนี้?')) return;
-    try { 
-      await db.collection('assignments').doc(taskId).delete(); 
-      showToast('ลบงานออกจากระบบแล้ว 🗑️'); 
-      openManageTasksModal(); 
-    } catch (err) { 
-      showToast('ลบไม่สำเร็จ ลองใหม่อีกครั้ง'); 
-    }
-  }
+  function openPayModal(orderId) { activeOrderId = orderId; const order = allOrders.find(o => o.id === orderId); document.getElementById('payContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`; document.getElementById('payAmount').value = ''; document.getElementById('cashImageInput').value = ''; document.getElementById('payModal').classList.add('show'); setTimeout(() => document.getElementById('payAmount').focus(), 100); }
+  function closePayModal() { document.getElementById('payModal').classList.remove('show'); activeOrderId = null; }
   
-  async function rejectOrder(orderId) {
-    if(!confirm('คุณแน่ใจนะว่าจะปฏิเสธงานนี้?')) return;
-    try { 
-      await db.collection('orders').doc(orderId).update({ status: 'rejected' }); 
-      showToast('ปฏิเสธงานเรียบร้อย ❌'); 
-    } catch (err) { 
-      showToast('เกิดข้อผิดพลาด ลองใหม่อีกครั้ง'); 
-    }
-  }
-
-  async function markOrderDone(orderId) {
-    try { 
-      await db.collection('orders').doc(orderId).update({ status: 'done' }); 
-      showToast('ส่งแจ้งเตือนให้เพื่อนโอนเงินแล้ว!'); 
-    } catch (err) { 
-      showToast('อัปเดตไม่สำเร็จ'); 
-    }
-  }
-
-  function openPayModal(orderId) {
-    activeOrderId = orderId; 
-    const order = allOrders.find(o => o.id === orderId);
-    document.getElementById('payContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`; 
-    document.getElementById('payAmount').value = ''; 
-    document.getElementById('cashImageInput').value = ''; 
-    document.getElementById('payModal').classList.add('show'); 
-    setTimeout(() => document.getElementById('payAmount').focus(), 100);
-  }
-
-  function closePayModal() { 
-    document.getElementById('payModal').classList.remove('show'); 
-    activeOrderId = null; 
-  }
-
   function processCashImageWithWatermark(file, amount, studentName) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = function(e) {
-        const img = new Image(); 
-        img.onload = function() {
-          const canvas = document.createElement('canvas'); 
-          const MAX_WIDTH = 800; 
-          const scaleSize = MAX_WIDTH / img.width; 
-          canvas.width = MAX_WIDTH; 
-          canvas.height = img.height * scaleSize; 
-          
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height); 
-          
-          ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; 
-          ctx.fillRect(0, canvas.height - 70, canvas.width, 70);
-          
-          const now = new Date(); 
-          const timeStr = now.toLocaleString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-          
-          ctx.fillStyle = "#4ade80"; 
-          ctx.font = "bold 22px sans-serif"; 
-          ctx.fillText(`✅ รับเงินสด ${amount} บาท | จาก: ${studentName}`, 20, canvas.height - 40); 
-          ctx.fillStyle = "white"; 
-          ctx.font = "16px sans-serif"; 
-          ctx.fillText(`บันทึกเข้าระบบเมื่อ: ${timeStr} (ไม่อนุญาตให้ใช้ซ้ำ)`, 20, canvas.height - 15); 
-          
-          resolve(canvas.toDataURL('image/jpeg', 0.7)); 
-        }; 
-        img.onerror = reject; 
-        img.src = e.target.result;
-      }; 
-      reader.onerror = reject; 
-      reader.readAsDataURL(file);
+        const img = new Image(); img.onload = function() {
+          const canvas = document.createElement('canvas'); const MAX_WIDTH = 800; const scaleSize = MAX_WIDTH / img.width; canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize; const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height); ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; ctx.fillRect(0, canvas.height - 70, canvas.width, 70);
+          const now = new Date(); const timeStr = now.toLocaleString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          ctx.fillStyle = "#4ade80"; ctx.font = "bold 22px sans-serif"; ctx.fillText(`✅ รับเงินสด ${amount} บาท | จาก: ${studentName}`, 20, canvas.height - 40); ctx.fillStyle = "white"; ctx.font = "16px sans-serif"; ctx.fillText(`บันทึกเข้าระบบเมื่อ: ${timeStr} (ไม่อนุญาตให้ใช้ซ้ำ)`, 20, canvas.height - 15); resolve(canvas.toDataURL('image/jpeg', 0.7)); 
+        }; img.onerror = reject; img.src = e.target.result;
+      }; reader.onerror = reject; reader.readAsDataURL(file);
     });
   }
 
   async function confirmPayment() {
-    const amount = parseFloat(document.getElementById('payAmount').value); 
-    if (!activeOrderId || isNaN(amount) || amount <= 0) { 
-      showToast('กรอกจำนวนเงินให้ถูกต้อง'); 
-      return; 
-    }
-    
-    const fileInput = document.getElementById('cashImageInput'); 
-    const btnConfirm = document.getElementById('btnConfirmCash'); 
-    btnConfirm.disabled = true; 
-    btnConfirm.textContent = "กำลังบันทึก...";
-    
+    const amount = parseFloat(document.getElementById('payAmount').value); if (!activeOrderId || isNaN(amount) || amount <= 0) { showToast('กรอกจำนวนเงินให้ถูกต้อง'); return; }
+    const fileInput = document.getElementById('cashImageInput'); const btnConfirm = document.getElementById('btnConfirmCash'); btnConfirm.disabled = true; btnConfirm.textContent = "กำลังบันทึก...";
     try {
-      let base64String = null; 
-      const order = allOrders.find(o => o.id === activeOrderId); 
-      const studentName = order ? (order.student_name || 'เลขที่ ' + order.student_id) : '';
-      
-      if (fileInput.files && fileInput.files.length > 0) { 
-        base64String = await processCashImageWithWatermark(fileInput.files[0], amount, studentName); 
-      }
-      
+      let base64String = null; const order = allOrders.find(o => o.id === activeOrderId); const studentName = order ? (order.student_name || 'เลขที่ ' + order.student_id) : '';
+      if (fileInput.files && fileInput.files.length > 0) { base64String = await processCashImageWithWatermark(fileInput.files[0], amount, studentName); }
       const updateData = { status: 'paid', price: amount, paid_at: firebase.firestore.FieldValue.serverTimestamp() };
-      if (base64String) { 
-        updateData.slip_image = base64String; 
-      }
-      
-      await db.collection('orders').doc(activeOrderId).update(updateData); 
-      showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`); 
-      closePayModal();
-    } catch (err) { 
-      showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); 
-    } finally { 
-      btnConfirm.disabled = false; 
-      btnConfirm.textContent = "ยืนยันรับเงินแล้ว"; 
-    }
+      if (base64String) { updateData.slip_image = base64String; }
+      await db.collection('orders').doc(activeOrderId).update(updateData); showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`); closePayModal();
+    } catch (err) { showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); } finally { btnConfirm.disabled = false; btnConfirm.textContent = "ยืนยันรับเงินแล้ว"; }
   }
 
-  function openVerifyModal(orderId) {
-    activeOrderId = orderId; 
-    const order = allOrders.find(o => o.id === orderId); 
-    document.getElementById('verifyContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`; 
-    document.getElementById('slipImagePreview').src = order.slip_image || ''; 
-    document.getElementById('verifyAmount').value = ''; 
-    document.getElementById('verifySlipModal').classList.add('show'); 
-    setTimeout(() => document.getElementById('verifyAmount').focus(), 100);
-  }
-
-  function closeVerifyModal() { 
-    document.getElementById('verifySlipModal').classList.remove('show'); 
-    activeOrderId = null; 
-  }
-
-  async function confirmVerifyPayment() {
-    const amount = parseFloat(document.getElementById('verifyAmount').value); 
-    if (!activeOrderId || isNaN(amount) || amount <= 0) { 
-      showToast('กรอกจำนวนเงินให้ถูกต้อง'); 
-      return; 
-    }
-    
-    try { 
-      await db.collection('orders').doc(activeOrderId).update({ status: 'paid', price: amount, paid_at: firebase.firestore.FieldValue.serverTimestamp() }); 
-      showToast(`ตรวจสลิปเรียบร้อย +${amount.toLocaleString('th-TH')} บาท`); 
-      closeVerifyModal(); 
-    } catch (err) { 
-      showToast('บันทึกไม่สำเร็จ'); 
-    }
-  }
-
-  function openAddTaskModal() { 
-    document.getElementById('newTaskTitle').value = ''; 
-    document.getElementById('newTaskDesc').value = ''; 
-    document.getElementById('addTaskModal').classList.add('show'); 
-    setTimeout(() => document.getElementById('newTaskTitle').focus(), 100); 
-  }
-
-  function closeAddTaskModal() { 
-    document.getElementById('addTaskModal').classList.remove('show'); 
-  }
-
-  async function confirmAddTask() {
-    const title = document.getElementById('newTaskTitle').value.trim(); 
-    const desc = document.getElementById('newTaskDesc').value.trim(); 
-    if (!title) {
-      showToast('กรอกชื่องานด้วย');
-      return;
-    }
-    
-    try { 
-      await db.collection('assignments').add({ title: title, description: desc, due_date: null, created_at: firebase.firestore.FieldValue.serverTimestamp(), source: 'manual' }); 
-      showToast('เพิ่มงานแล้ว'); 
-      closeAddTaskModal(); 
-    } catch (err) { 
-      showToast('เพิ่มงานไม่สำเร็จ'); 
-    }
-  }
-
-  function openExtraIncomeModal() { 
-    document.getElementById('extraFrom').value = ''; 
-    document.getElementById('extraReason').value = ''; 
-    document.getElementById('extraAmount').value = ''; 
-    document.getElementById('extraIncomeModal').classList.add('show'); 
-    setTimeout(() => document.getElementById('extraFrom').focus(), 100); 
-  }
-
-  function closeExtraIncomeModal() { 
-    document.getElementById('extraIncomeModal').classList.remove('show'); 
-  }
-
-  async function confirmExtraIncome() {
-    const from = document.getElementById('extraFrom').value.trim(); 
-    const reason = document.getElementById('extraReason').value.trim(); 
-    const amount = parseFloat(document.getElementById('extraAmount').value);
-    
-    if (!from || !reason || isNaN(amount) || amount <= 0) {
-      showToast('กรอกข้อมูลให้ครบและถูกต้อง');
-      return;
-    }
-    
-    try { 
-      await db.collection('income_logs').add({ from_name: from, reason: reason, amount: amount, logged_at: firebase.firestore.FieldValue.serverTimestamp() }); 
-      showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`); 
-      closeExtraIncomeModal(); 
-    } catch (err) { 
-      showToast('บันทึกไม่สำเร็จ'); 
-    }
-  }
-
-  function formatTime(ts) { 
-    if (!ts || !ts.toDate) return ''; 
-    return ts.toDate().toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); 
-  }
-
-  function escapeHtml(str) { 
-    const div = document.createElement('div'); 
-    div.textContent = str || ''; 
-    return div.innerHTML; 
-  }
-
-  function showToast(msg) { 
-    const t = document.getElementById('toast'); 
-    t.textContent = msg; 
-    t.classList.add('show'); 
-    setTimeout(() => t.classList.remove('show'), 3000); 
-  }
-
-  document.querySelectorAll('.modal-backdrop').forEach(el => { 
-    el.addEventListener('click', e => { 
-      if (e.target === el) el.classList.remove('show'); 
-    }); 
-  });
+  function openVerifyModal(orderId) { activeOrderId = orderId; const order = allOrders.find(o => o.id === orderId); document.getElementById('verifyContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`; document.getElementById('slipImagePreview').src = order.slip_image || ''; document.getElementById('verifyAmount').value = ''; document.getElementById('verifySlipModal').classList.add('show'); setTimeout(() => document.getElementById('verifyAmount').focus(), 100); }
+  function closeVerifyModal() { document.getElementById('verifySlipModal').classList.remove('show'); activeOrderId = null; }
+  async function confirmVerifyPayment() { const amount = parseFloat(document.getElementById('verifyAmount').value); if (!activeOrderId || isNaN(amount) || amount <= 0) { showToast('กรอกจำนวนเงินให้ถูกต้อง'); return; } try { await db.collection('orders').doc(activeOrderId).update({ status: 'paid', price: amount, paid_at: firebase.firestore.FieldValue.serverTimestamp() }); showToast(`ตรวจสลิปเรียบร้อย +${amount.toLocaleString('th-TH')} บาท`); closeVerifyModal(); } catch (err) { showToast('บันทึกไม่สำเร็จ'); } }
+  function openAddTaskModal() { document.getElementById('newTaskTitle').value = ''; document.getElementById('newTaskDesc').value = ''; document.getElementById('addTaskModal').classList.add('show'); setTimeout(() => document.getElementById('newTaskTitle').focus(), 100); }
+  function closeAddTaskModal() { document.getElementById('addTaskModal').classList.remove('show'); }
+  async function confirmAddTask() { const title = document.getElementById('newTaskTitle').value.trim(); const desc = document.getElementById('newTaskDesc').value.trim(); if (!title) { showToast('กรอกชื่องานด้วย'); return; } try { await db.collection('assignments').add({ title: title, description: desc, due_date: null, created_at: firebase.firestore.FieldValue.serverTimestamp(), source: 'manual' }); showToast('เพิ่มงานแล้ว'); closeAddTaskModal(); } catch (err) { showToast('เพิ่มงานไม่สำเร็จ'); } }
+  function openExtraIncomeModal() { document.getElementById('extraFrom').value = ''; document.getElementById('extraReason').value = ''; document.getElementById('extraAmount').value = ''; document.getElementById('extraIncomeModal').classList.add('show'); setTimeout(() => document.getElementById('extraFrom').focus(), 100); }
+  function closeExtraIncomeModal() { document.getElementById('extraIncomeModal').classList.remove('show'); }
+  async function confirmExtraIncome() { const from = document.getElementById('extraFrom').value.trim(); const reason = document.getElementById('extraReason').value.trim(); const amount = parseFloat(document.getElementById('extraAmount').value); if (!from || !reason || isNaN(amount) || amount <= 0) { showToast('กรอกข้อมูลให้ครบและถูกต้อง'); return; } try { await db.collection('income_logs').add({ from_name: from, reason: reason, amount: amount, logged_at: firebase.firestore.FieldValue.serverTimestamp() }); showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`); closeExtraIncomeModal(); } catch (err) { showToast('บันทึกไม่สำเร็จ'); } }
+  function formatTime(ts) { if (!ts || !ts.toDate) return ''; return ts.toDate().toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+  function escapeHtml(str) { const div = document.createElement('div'); div.textContent = str || ''; return div.innerHTML; }
+  function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+  document.querySelectorAll('.modal-backdrop').forEach(el => { el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); }); });
 </script>
 
 </body>

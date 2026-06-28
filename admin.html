@@ -249,7 +249,7 @@
   }
 
   .schedule-row textarea {
-    min-height: 60px;
+    min-height: 80px;
     resize: vertical;
   }
 
@@ -585,6 +585,11 @@
     <div class="stat-pill">ได้แล้ว <span id="totalEarn">0</span> / 5,000</div>
   </div>
 
+  <div class="notice-box">
+    <strong>📢 หมายเหตุความโปร่งใส</strong>
+    ข้อมูลประวัติและยอดเงินทั้งหมดที่เกิดขึ้น <b>ก่อนวันที่ 30 มิถุนายน</b> เป็นเพียงการ "ทดสอบระบบ" เท่านั้น
+  </div>
+
   <!-- โซนที่ 1: กระดานข่าว -->
   <div class="config-box">
     <div class="config-box-title">📢 กระดานข่าวห้อง (ตัววิ่ง)</div>
@@ -637,30 +642,33 @@
     <div class="admin-list-container" id="adminVaultList"></div>
   </div>
 
-  <!-- โซนที่ 5: ตารางสอนเดินเรียน -->
+  <!-- โซนที่ 5: ตารางสอนเดินเรียน (พิมพ์ข้อความตามรูปแบบ) -->
   <div class="config-box">
     <div class="config-box-title">📅 ตารางสอนเดินเรียน (อัปเดตรายสัปดาห์)</div>
-    <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">พิมพ์รายวิชาและห้องเรียนลงไปได้เลย ระบบจะแสดงผลให้เพื่อนเห็นตามวันจริง</div>
+    <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">
+      พิมพ์รูปแบบ: <b>HH:MM - HH:MM | ชื่อวิชา (ห้อง) ครู</b><br>
+      (ระบบเรียลไทม์หน้าแรก จะอ่านเวลาจากรูปแบบนี้เพื่อบอกว่าตอนนี้เรียนวิชาอะไร)
+    </div>
     <div class="schedule-grid">
       <div class="schedule-row">
         <label>วันจันทร์</label>
-        <textarea id="sch_mon" placeholder="คาบ 1: 08:30 คณิต ห้อง 123..."></textarea>
+        <textarea id="sch_mon" placeholder="07:30 - 09:30 | 🎨 กราฟิกศิลป์ (ห้อง 421) ครูชาริกา"></textarea>
       </div>
       <div class="schedule-row">
         <label>วันอังคาร</label>
-        <textarea id="sch_tue" placeholder="คาบ 1: 08:30 คณิต ห้อง 123..."></textarea>
+        <textarea id="sch_tue" placeholder="07:30 - 09:30 | 🇨🇳 จีน (ห้อง 235) ครูธัญชนก"></textarea>
       </div>
       <div class="schedule-row">
         <label>วันพุธ</label>
-        <textarea id="sch_wed" placeholder="คาบ 1: 08:30 คณิต ห้อง 123..."></textarea>
+        <textarea id="sch_wed" placeholder="09:30 - 11:30 | 🖥️ ระบบคอมฯ (ห้อง 444) ครูภุชงค์"></textarea>
       </div>
       <div class="schedule-row">
         <label>วันพฤหัสบดี</label>
-        <textarea id="sch_thu" placeholder="คาบ 1: 08:30 คณิต ห้อง 123..."></textarea>
+        <textarea id="sch_thu" placeholder="08:30 - 10:30 | 📱 ดิจิทัลอาชีพ (ห้อง 444) ครูฐิติกัลยาพัชร"></textarea>
       </div>
       <div class="schedule-row">
         <label>วันศุกร์</label>
-        <textarea id="sch_fri" placeholder="คาบ 1: 08:30 คณิต ห้อง 123..."></textarea>
+        <textarea id="sch_fri" placeholder="09:30 - 11:30 | 🔬 วิทย์อาชีพ (ห้อง 221) ครูสุภาวดี"></textarea>
       </div>
     </div>
     <button onclick="saveSchedule()" style="width:100%; margin-top:10px;">บันทึกตารางเรียน</button>
@@ -727,8 +735,10 @@
     <h3>บันทึกยอดเงิน (จ่ายสด)</h3>
     <p id="payContext"></p>
     <input type="number" id="payAmount" placeholder="จำนวนเงิน (บาท)" inputmode="numeric">
+    
     <label class="field-label" style="margin-top: 10px;">📷 ถ่ายรูปเงินเป็นหลักฐาน (เปิดกล้องได้)</label>
     <input type="file" id="cashImageInput" accept="image/*" capture="environment" style="margin-bottom: 16px;">
+
     <div class="row">
       <button class="btn btn-cancel2" onclick="closePayModal()">ยกเลิก</button>
       <button class="btn btn-confirm" id="btnConfirmCash" onclick="confirmPayment()">ยืนยันรับเงินแล้ว</button>

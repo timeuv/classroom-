@@ -379,7 +379,7 @@
   </div>
 </div>
 
-<!-- รับเงินสด (อัปเดตเพิ่มอัปโหลดรูป) -->
+<!-- รับเงินสด -->
 <div class="modal-backdrop" id="payModal">
   <div class="modal-box">
     <h3>บันทึกยอดเงิน (จ่ายสด)</h3>
@@ -396,7 +396,7 @@
   </div>
 </div>
 
-<!-- ตรวจสอบสลิปที่เพื่อนเพิ่งส่งมา -->
+<!-- ตรวจสอบสลิป -->
 <div class="modal-backdrop" id="verifySlipModal">
   <div class="modal-box">
     <h3>ตรวจสอบสลิปการโอนเงิน</h3>
@@ -410,7 +410,7 @@
   </div>
 </div>
 
-<!-- ดูสลิป/หลักฐานย้อนหลังในหมวดประวัติ -->
+<!-- ดูหลักฐานย้อนหลัง -->
 <div class="modal-backdrop" id="viewHistorySlipModal">
   <div class="modal-box">
     <h3>หลักฐานการชำระเงิน</h3>
@@ -531,21 +531,28 @@
     document.getElementById('pendingEmpty').classList.toggle('hidden', pending.length > 0);
     document.getElementById('doneEmpty').classList.toggle('hidden', doneOrChecking.length > 0);
 
-    pendingList.innerHTML = pending.map(o => `
+    pendingList.innerHTML = pending.map(o => {
+      const t = allTasks.find(x => x.id === o.task_id);
+      const isCustom = t && t.source === 'friend_request';
+      const customBadge = isCustom ? '<span style="color:#D4622A; font-size:11px; background:#FBE9DD; padding:2px 6px; border-radius:4px; margin-left:4px;">งานสั่งพิเศษ</span>' : '';
+
+      return `
       <div class="order-card pending">
         <div class="order-top">
           <div>
-            <div class="order-title">${escapeHtml(taskTitle(o.task_id))}</div>
+            <div class="order-title">${escapeHtml(taskTitle(o.task_id))} ${customBadge}</div>
             <div class="order-who">${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))}</div>
           </div>
           <div class="order-time">${formatTime(o.created_at)}</div>
         </div>
         <span class="tag pending">กำลังทำอยู่</span>
-        <div class="order-actions">
-          <button class="btn btn-mark-done" onclick="markOrderDone('${o.id}')">ส่งงานแล้ว / ทำเสร็จแล้ว</button>
+        <div class="order-actions" style="display: flex; gap: 8px;">
+          <button class="btn btn-mark-done" style="flex: 2;" onclick="markOrderDone('${o.id}')">ทำเสร็จแล้ว</button>
+          <button class="btn" style="flex: 1; background: transparent; border: 1.5px solid var(--red); color: var(--red);" onclick="rejectOrder('${o.id}')">ปฏิเสธ</button>
         </div>
       </div>
-    `).join('');
+      `;
+    }).join('');
 
     doneList.innerHTML = doneOrChecking.map(o => {
       let statusTag = ''; let actionBtn = ''; let cardClass = '';
@@ -726,6 +733,18 @@
     }
   }
   
+  // --- ฟังก์ชันปฏิเสธงาน (ใหม่) ---
+  async function rejectOrder(orderId) {
+    if(!confirm('คุณแน่ใจนะว่าจะปฏิเสธงานนี้? (เพื่อนจะเห็นว่าคุณปฏิเสธ)')) return;
+    try {
+      await db.collection('orders').doc(orderId).update({ status: 'rejected' });
+      showToast('ปฏิเสธงานเรียบร้อย ❌');
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาด ลองใหม่อีกครั้ง');
+    }
+  }
+
   async function markOrderDone(orderId) {
     try {
       await db.collection('orders').doc(orderId).update({ status: 'done' });
@@ -739,7 +758,7 @@
     const order = allOrders.find(o => o.id === orderId);
     document.getElementById('payContext').textContent = `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`;
     document.getElementById('payAmount').value = '';
-    document.getElementById('cashImageInput').value = ''; // เคลียร์ไฟล์รูป
+    document.getElementById('cashImageInput').value = ''; 
     document.getElementById('payModal').classList.add('show');
     setTimeout(() => document.getElementById('payAmount').focus(), 100);
   }
@@ -753,25 +772,20 @@
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 800; // ขนาดพอดี ไม่เล็กไม่ใหญ่เกิน
+          const MAX_WIDTH = 800; 
           const scaleSize = MAX_WIDTH / img.width;
           canvas.width = MAX_WIDTH;
           canvas.height = img.height * scaleSize;
           const ctx = canvas.getContext('2d');
           
-          // วาดรูปต้นฉบับ
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-          // สร้างแถบสีดำโปร่งแสงด้านล่าง
           ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; 
           ctx.fillRect(0, canvas.height - 70, canvas.width, 70);
 
-          // ข้อมูลที่จะประทับ (วันและเวลาปัจจุบัน)
           const now = new Date();
           const timeStr = now.toLocaleString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-          // ประทับตัวหนังสือ
-          ctx.fillStyle = "#4ade80"; // สีเขียวสว่าง
+          ctx.fillStyle = "#4ade80"; 
           ctx.font = "bold 22px sans-serif";
           ctx.fillText(`✅ รับเงินสด ${amount} บาท | จาก: ${studentName}`, 20, canvas.height - 40);
           
@@ -779,7 +793,7 @@
           ctx.font = "16px sans-serif";
           ctx.fillText(`บันทึกเข้าระบบเมื่อ: ${timeStr} (ไม่อนุญาตให้ใช้ซ้ำ)`, 20, canvas.height - 15);
 
-          resolve(canvas.toDataURL('image/jpeg', 0.7)); // แปลงกลับเป็น Base64
+          resolve(canvas.toDataURL('image/jpeg', 0.7)); 
         };
         img.onerror = reject;
         img.src = e.target.result;
@@ -804,7 +818,6 @@
       const order = allOrders.find(o => o.id === activeOrderId);
       const studentName = order ? (order.student_name || 'เลขที่ ' + order.student_id) : '';
 
-      // ถ้าแอดมินแนบรูปเงินสดมาด้วย ให้เอาไปประทับลายน้ำก่อน
       if (fileInput.files && fileInput.files.length > 0) {
         base64String = await processCashImageWithWatermark(fileInput.files[0], amount, studentName);
       }
@@ -815,7 +828,6 @@
         paid_at: firebase.firestore.FieldValue.serverTimestamp() 
       };
 
-      // ถ้ามีรูป เซฟลงไปในฟิลด์ slip_image เลย เพื่อให้ปุ่มดูประวัติทำงานร่วมกันได้
       if (base64String) {
         updateData.slip_image = base64String;
       }

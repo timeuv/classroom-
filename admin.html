@@ -42,6 +42,15 @@
     --font-main: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
+  body[data-theme="dark"] {
+    --bg: #1a1a1a; 
+    --ink: #f0f0f0; 
+    --paper: #242424; 
+    --paper-solid: #2e2e2e;
+    --line: rgba(255, 255, 255, 0.15);
+    --line-focus: rgba(255, 255, 255, 0.3);
+  }
+
   * { 
     box-sizing: border-box; 
     transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
@@ -149,6 +158,23 @@
     justify-content: space-between; 
     align-items: center; 
     margin-bottom: 36px; 
+  }
+
+  .header-actions { 
+    display: flex; 
+    gap: 8px; 
+    align-items: center; 
+  }
+
+  .theme-toggle { 
+    background: var(--paper); 
+    border: 1px solid var(--line); 
+    color: var(--ink); 
+    border-radius: 100px; 
+    padding: 6px 10px; 
+    cursor: pointer; 
+    font-size: 14px; 
+    transition: 0.2s; 
   }
 
   .brand { 
@@ -822,7 +848,10 @@
       Admin · ฝาก<span>งาน</span>
       <span class="brand-sub" id="currentMonthLabel">ยอดของเดือนนี้</span>
     </div>
-    <div class="stat-pill">ได้แล้ว <span id="totalEarn">0</span> / 5,000</div>
+    <div class="header-actions">
+      <div class="stat-pill">ได้แล้ว <span id="totalEarn">0</span> / 5,000</div>
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" aria-label="สลับธีมสี">🌙</button>
+    </div>
   </header>
 
   <div class="notice-box">
@@ -1038,6 +1067,25 @@
   let currentVaultItems = [];
 
   const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    const tb = document.getElementById('themeBtn');
+    if (tb) tb.textContent = '☀️';
+  }
+
+  function toggleTheme() {
+    const tb = document.getElementById('themeBtn');
+    if (document.body.getAttribute('data-theme') === 'dark') {
+      document.body.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      if (tb) tb.textContent = '🌙';
+    } else {
+      document.body.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      if (tb) tb.textContent = '☀️';
+    }
+  }
 
   function checkAdminPw() {
     const val = document.getElementById('adminPw').value;

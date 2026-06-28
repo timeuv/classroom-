@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · ฝากงาน</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<style>
+  :root {
+    --bg: #14120F;
+    --ink: #F2EEE6;
+    --paper: #1D1A16;
+    --line: #3A352C;
+    --accent: #D4622A;
+    --accent-soft: #3A2A1E;
+    --green: #5FAE82;
+    --green-soft: #1E2E24;
+    --muted: #9A9286;
+    --shadow: 0 2px 14px rgba(0,0,0,0.3);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  /* ---- gate ---- */
+  .gate-card {
+    background: var(--paper);
+    border-radius: 18px;
+    padding: 32px 24px;
+    margin-top: 18vh;
+    text-align: center;
+    box-shadow: var(--shadow);
+    max-width: 360px;
+    margin-inline: auto;
+  }
+  .gate-card h1 { font-size: 20px; margin: 0 0 18px; }
+  .gate-card input {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  .gate-card button {
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .gate-err { color: #E8836A; font-size: 13px; margin-top: 10px; display: none; }
+  .gate-err.show { display: block; }
+
+  /* ---- header ---- */
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px;
+  }
+  .brand { font-size: 19px; font-weight: 800; }
+  .brand span { color: var(--accent); }
+  .stat-pill {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .section-label {
+    font-size: 13px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin: 28px 0 10px 2px;
+  }
+
+  /* ---- order cards ---- */
+  .order-card {
+    background: var(--paper);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow);
+    border-left: 3px solid var(--line);
+  }
+  .order-card.pending { border-left-color: var(--accent); }
+  .order-card.done { border-left-color: var(--green); }
+
+  .order-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .order-title { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
+  .order-who { font-size: 13px; color: var(--muted); }
+  .order-time { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+
+  .tag {
+    display: inline-block;
+    font-size: 11.5px; font-weight: 700;
+    padding: 3px 9px; border-radius: 100px;
+    margin-top: 8px;
+  }
+  .tag.pending { background: var(--accent-soft); color: var(--accent); }
+  .tag.done { background: var(--green-soft); color: var(--green); }
+
+  .order-actions { margin-top: 12px; display: flex; gap: 8px; }
+  .btn {
+    padding: 9px 14px; border-radius: 8px; border: none;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .btn-mark-done { background: var(--green-soft); color: var(--green); }
+  .btn-mark-done:hover { background: #28402f; }
+  .btn-pay { background: var(--accent); color: white; }
+  .btn-pay:hover { background: #b8521f; }
+
+  .empty-state { text-align: center; padding: 30px; color: var(--muted); font-size: 14px; }
+
+  /* ---- new claim flash ---- */
+  @keyframes flash {
+    0% { background: var(--accent-soft); }
+    100% { background: var(--paper); }
+  }
+  .flash { animation: flash 1.8s ease; }
+
+  /* ---- pay modal ---- */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    display: none; align-items: center; justify-content: center; z-index: 50;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal-box {
+    background: var(--paper); border-radius: 16px; padding: 24px;
+    width: 90%; max-width: 360px; box-shadow: var(--shadow);
+  }
+  .modal-box h3 { margin: 0 0 4px; font-size: 17px; }
+  .modal-box p { margin: 0 0 16px; color: var(--muted); font-size: 13px; }
+  .modal-box input {
+    width: 100%; padding: 13px 14px; border-radius: 10px;
+    border: 1.5px solid var(--line); background: var(--bg); color: var(--ink);
+    font-size: 18px; font-weight: 700; margin-bottom: 14px;
+  }
+  .modal-box .row { display: flex; gap: 8px; }
+  .modal-box .row .btn { flex: 1; padding: 12px; }
+  .btn-cancel2 { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+  .btn-confirm { background: var(--accent); color: white; }
+
+  .hidden { display: none !important; }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--bg); padding: 12px 20px; border-radius: 100px;
+    font-size: 14px; font-weight: 600; opacity: 0; transition: 0.25s; pointer-events: none; z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ============ ADMIN GATE ============ -->
+<div id="gateScreen">
+  <div class="gate-card">
+    <h1>🔒 หน้า Admin</h1>
+    <input type="password" id="adminPw" placeholder="รหัสแอดมิน">
+    <button onclick="checkAdminPw()">เข้าสู่ระบบ</button>
+    <div class="gate-err" id="gateErr">รหัสไม่ถูกต้อง</div>
+  </div>
+</div>
+
+<!-- ============ ADMIN DASHBOARD ============ -->
+<div class="wrap hidden" id="adminScreen">
+  <div class="topbar">
+    <div class="brand">Admin · ฝาก<span>งาน</span></div>
+    <div class="stat-pill">ยอดรวม <span id="totalEarn">0</span> / 5,000 บาท</div>
+  </div>
+
+  <p class="section-label">⏳ รอดำเนินการ / กำลังทำ</p>
+  <div id="pendingList"></div>
+  <div class="empty-state hidden" id="pendingEmpty">ยังไม่มีใครรับงานตอนนี้</div>
+
+  <p class="section-label">✅ ทำเสร็จแล้ว รอส่ง/รอรับเงิน</p>
+  <div id="doneList"></div>
+  <div class="empty-state hidden" id="doneEmpty">ไม่มีงานที่ทำเสร็จรออยู่</div>
+</div>
+
+<!-- ============ PAYMENT MODAL ============ -->
+<div class="modal-backdrop" id="payModal">
+  <div class="modal-box">
+    <h3>บันทึกยอดเงิน</h3>
+    <p id="payContext"></p>
+    <input type="number" id="payAmount" placeholder="จำนวนเงิน (บาท)" inputmode="numeric">
+    <div class="row">
+      <button class="btn btn-cancel2" onclick="closePayModal()">ยกเลิก</button>
+      <button class="btn btn-confirm" onclick="confirmPayment()">ยืนยันรับเงินแล้ว</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // ⚠️ เปลี่ยนรหัสแอดมินตรงนี้เป็นรหัสที่คุณต้องการ
+  const ADMIN_PASSWORD = "changeme123";
+
+  let allOrders = [];
+  let allTasks = [];
+  let activeOrderId = null;
+  let knownOrderIds = new Set();
+  let firstLoad = true;
+
+  function checkAdminPw() {
+    const val = document.getElementById('adminPw').value;
+    if (val === ADMIN_PASSWORD) {
+      sessionStorage.setItem('cr_admin_ok', '1');
+      enterAdmin();
+    } else {
+      document.getElementById('gateErr').classList.add('show');
+    }
+  }
+  document.getElementById('adminPw').addEventListener('keydown', e => { if (e.key === 'Enter') checkAdminPw(); });
+
+  (function restoreAdmin() {
+    if (sessionStorage.getItem('cr_admin_ok') === '1') enterAdmin();
+  })();
+
+  function enterAdmin() {
+    document.getElementById('gateScreen').classList.add('hidden');
+    document.getElementById('adminScreen').classList.remove('hidden');
+    listenToTasks();
+    listenToOrders();
+    listenToStats();
+  }
+
+  function listenToTasks() {
+    db.collection('assignments').onSnapshot(snap => {
+      allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderOrders();
+    });
+  }
+
+  function listenToOrders() {
+    db.collection('orders').orderBy('created_at', 'desc').onSnapshot(snap => {
+      const newOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      // ตรวจหาออเดอร์ใหม่ (คนกด "ให้ไทม์ทำงาน") เพื่อแจ้งเตือนในหน้านี้
+      if (!firstLoad) {
+        newOrders.forEach(o => {
+          if (!knownOrderIds.has(o.id) && o.status === 'pending') {
+            showToast(`🔔 มีคนรับงานใหม่: ${o.student_name || 'เลขที่ ' + o.student_id}`);
+          }
+        });
+      }
+      knownOrderIds = new Set(newOrders.map(o => o.id));
+      firstLoad = false;
+
+      allOrders = newOrders;
+      renderOrders();
+    });
+  }
+
+  function listenToStats() {
+    db.collection('system_stats').doc('main').onSnapshot(snap => {
+      const total = snap.exists ? (snap.data().total_earnings || 0) : 0;
+      document.getElementById('totalEarn').textContent = total.toLocaleString('th-TH');
+    });
+  }
+
+  function taskTitle(taskId) {
+    const t = allTasks.find(x => x.id === taskId);
+    return t ? t.title : '(ไม่พบชื่องาน)';
+  }
+
+  function renderOrders() {
+    const pendingList = document.getElementById('pendingList');
+    const doneList = document.getElementById('doneList');
+    const pendingEmpty = document.getElementById('pendingEmpty');
+    const doneEmpty = document.getElementById('doneEmpty');
+
+    const pending = allOrders.filter(o => o.status === 'pending');
+    const done = allOrders.filter(o => o.status === 'done');
+
+    pendingEmpty.classList.toggle('hidden', pending.length > 0);
+    doneEmpty.classList.toggle('hidden', done.length > 0);
+
+    pendingList.innerHTML = pending.map(o => `
+      <div class="order-card pending">
+        <div class="order-top">
+          <div>
+            <div class="order-title">${escapeHtml(taskTitle(o.task_id))}</div>
+            <div class="order-who">${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))}</div>
+          </div>
+          <div class="order-time">${formatTime(o.created_at)}</div>
+        </div>
+        <span class="tag pending">กำลังทำอยู่</span>
+        <div class="order-actions">
+          <button class="btn btn-mark-done" onclick="markOrderDone('${o.id}')">ส่งงานแล้ว / ทำเสร็จแล้ว</button>
+        </div>
+      </div>
+    `).join('');
+
+    doneList.innerHTML = done.map(o => `
+      <div class="order-card done">
+        <div class="order-top">
+          <div>
+            <div class="order-title">${escapeHtml(taskTitle(o.task_id))}</div>
+            <div class="order-who">${escapeHtml(o.student_name || ('เลขที่ ' + o.student_id))}</div>
+          </div>
+          <div class="order-time">${formatTime(o.created_at)}</div>
+        </div>
+        <span class="tag done">เสร็จแล้ว · รอรับเงิน</span>
+        <div class="order-actions">
+          <button class="btn btn-pay" onclick="openPayModal('${o.id}')">เพื่อนจ่ายเงินแล้ว</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function markOrderDone(orderId) {
+    try {
+      await db.collection('orders').doc(orderId).update({ status: 'done' });
+      showToast('อัปเดตเป็น "ทำเสร็จแล้ว" แล้ว');
+    } catch (err) {
+      console.error(err);
+      showToast('อัปเดตไม่สำเร็จ');
+    }
+  }
+
+  function openPayModal(orderId) {
+    activeOrderId = orderId;
+    const order = allOrders.find(o => o.id === orderId);
+    document.getElementById('payContext').textContent =
+      `${taskTitle(order.task_id)} · ${order.student_name || 'เลขที่ ' + order.student_id}`;
+    document.getElementById('payAmount').value = '';
+    document.getElementById('payModal').classList.add('show');
+    setTimeout(() => document.getElementById('payAmount').focus(), 100);
+  }
+
+  function closePayModal() {
+    document.getElementById('payModal').classList.remove('show');
+    activeOrderId = null;
+  }
+
+  async function confirmPayment() {
+    const amountStr = document.getElementById('payAmount').value;
+    const amount = parseFloat(amountStr);
+    if (!activeOrderId || isNaN(amount) || amount <= 0) {
+      showToast('กรอกจำนวนเงินให้ถูกต้อง');
+      return;
+    }
+
+    try {
+      // อัปเดตสถานะออเดอร์ + ราคา
+      await db.collection('orders').doc(activeOrderId).update({
+        status: 'paid',
+        price: amount
+      });
+
+      // บวกเข้ายอดรวม (ใช้ transaction กันยอดชนกัน)
+      const statsRef = db.collection('system_stats').doc('main');
+      await db.runTransaction(async (tx) => {
+        const snap = await tx.get(statsRef);
+        const current = snap.exists ? (snap.data().total_earnings || 0) : 0;
+        tx.set(statsRef, { total_earnings: current + amount }, { merge: true });
+      });
+
+      showToast(`บันทึกแล้ว +${amount.toLocaleString('th-TH')} บาท`);
+      closePayModal();
+    } catch (err) {
+      console.error(err);
+      showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง');
+    }
+  }
+
+  function formatTime(ts) {
+    if (!ts || !ts.toDate) return '';
+    const d = ts.toDate();
+    return d.toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str || '';
+    return div.innerHTML;
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  document.getElementById('payModal').addEventListener('click', e => {
+    if (e.target.id === 'payModal') closePayModal();
+  });
+</script>
+
+</body>
+</html>

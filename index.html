@@ -161,46 +161,6 @@
   }
   .error-msg.show { display: block; }
 
-  /* ---------- Progress bar ---------- */
-  .progress-card {
-    background: var(--paper);
-    border-radius: 16px;
-    padding: 18px 18px 16px;
-    box-shadow: var(--shadow);
-    margin-bottom: 20px;
-  }
-  .progress-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 10px;
-  }
-  .progress-label {
-    font-size: 13px;
-    color: var(--muted);
-    font-weight: 600;
-  }
-  .progress-amount {
-    font-size: 15px;
-    font-weight: 800;
-  }
-  .progress-amount .goal { color: var(--muted); font-weight: 600; }
-
-  .progress-track {
-    height: 14px;
-    background: var(--bg);
-    border-radius: 100px;
-    overflow: hidden;
-    border: 1px solid var(--line);
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), #E8915A);
-    border-radius: 100px;
-    transition: width 0.6s ease;
-    width: 0%;
-  }
-
   /* ---------- Task list ---------- */
   .section-label {
     font-size: 13px;
@@ -367,16 +327,6 @@
       <div class="who" id="whoLabel" onclick="logout()">เลขที่ — · ออกจากระบบ</div>
     </div>
 
-    <div class="progress-card">
-      <div class="progress-top">
-        <span class="progress-label">ยอดที่ได้แล้ว</span>
-        <span class="progress-amount"><span id="earnedAmount">0</span> / <span class="goal">5,000 บาท</span></span>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-    </div>
-
     <p class="section-label">งานที่ยังไม่เสร็จ</p>
     <div id="taskList"></div>
 
@@ -490,7 +440,6 @@
     document.getElementById('whoLabel').textContent = `${currentUser.name} · ออกจากระบบ`;
     listenToTasks();
     listenToOrders();
-    listenToStats();
   }
 
   // Restore session if already logged in
@@ -516,15 +465,6 @@
       allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderTasks();
     }, err => console.error('orders listener error', err));
-  }
-
-  function listenToStats() {
-    db.collection('system_stats').doc('main').onSnapshot(snap => {
-      const total = snap.exists ? (snap.data().total_earnings || 0) : 0;
-      const pct = Math.min(100, (total / 5000) * 100);
-      document.getElementById('earnedAmount').textContent = total.toLocaleString('th-TH');
-      document.getElementById('progressFill').style.width = pct + '%';
-    }, err => console.error('stats listener error', err));
   }
 
   // ---------------- Render task list ----------------

@@ -11,51 +11,26 @@
 
 <style>
   :root {
-    --bg: #FAF8F4;
-    --ink: #1E1B16;
-    --paper: #FFFFFF;
-    --line: #E5E0D6;
-    --accent: #D4622A;
-    --accent-soft: #FBE9DD;
-    --green: #3A7D5C;
-    --green-soft: #E4F0E9;
-    --muted: #8A8275;
-    --radius: 14px;
+    --bg: #FAF8F4; --ink: #1E1B16; --paper: #FFFFFF; --line: #E5E0D6;
+    --accent: #D4622A; --accent-soft: #FBE9DD; --green: #3A7D5C;
+    --green-soft: #E4F0E9; --muted: #8A8275; --radius: 14px;
     --shadow: 0 2px 10px rgba(30,27,22,0.06);
   }
-
-  /* 🌙 โหมดกลางคืน */
   body[data-theme="dark"] {
-    --bg: #14120F;
-    --ink: #F2EEE6;
-    --paper: #1D1A16;
-    --line: #3A352C;
-    --accent-soft: #3A2A1E;
-    --green-soft: #1E2E24;
-    --shadow: 0 2px 14px rgba(0,0,0,0.4);
+    --bg: #14120F; --ink: #F2EEE6; --paper: #1D1A16; --line: #3A352C;
+    --accent-soft: #3A2A1E; --green-soft: #1E2E24; --shadow: 0 2px 14px rgba(0,0,0,0.4);
   }
-
   * { box-sizing: border-box; }
-  body {
-    margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: var(--bg); color: var(--ink); min-height: 100vh;
-    transition: background 0.3s, color 0.3s;
-  }
+  body { margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; transition: background 0.3s, color 0.3s; }
   .wrap { max-width: 480px; margin: 0 auto; padding: 24px 18px 60px; min-height: 100vh; }
-
-  /* ---------- Header & Features ---------- */
   .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
   .brand { font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
   .brand span { color: var(--accent); }
-  
   .header-actions { display: flex; gap: 8px; align-items: center; }
   .theme-toggle { background: var(--paper); border: 1px solid var(--line); color: var(--ink); border-radius: 100px; padding: 6px 10px; cursor: pointer; font-size: 14px; transition: 0.2s; }
   .who { font-size: 13px; color: var(--muted); background: var(--paper); border: 1px solid var(--line); border-radius: 100px; padding: 6px 12px; cursor: pointer; }
   .vip-badge { color: #D48806; background: #FFF4E5; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 4px; }
-
   .announcement-banner { background: var(--accent-soft); color: var(--accent); padding: 12px 14px; border-radius: 10px; margin-bottom: 20px; font-size: 13.5px; font-weight: bold; border: 1.5px solid var(--accent); display: flex; align-items: center; gap: 8px; line-height: 1.4; }
-
-  /* ---------- Login screen ---------- */
   .login-card { background: var(--paper); border-radius: 20px; padding: 32px 24px; box-shadow: var(--shadow); margin-top: 12vh; text-align: center; transition: 0.3s; }
   .login-card h1 { font-size: 22px; margin: 0 0 6px; }
   .login-card p.sub { color: var(--muted); font-size: 14px; margin: 0 0 26px; }
@@ -66,18 +41,14 @@
   .pw-row { display: none; margin-bottom: 16px; }
   .pw-row.show { display: block; }
   .pw-row label { display: block; text-align: left; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
-
   input, textarea { width: 100%; padding: 13px 14px; border: 1.5px solid var(--line); border-radius: 10px; font-size: 16px; background: var(--bg); color: var(--ink); font-family: inherit; }
   input:focus, textarea:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
-  
   .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.15s; }
   .btn-primary { background: var(--accent); color: white; }
   .btn-primary:hover { background: #b8521f; }
   .btn-primary:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
   .error-msg { color: #C0392B; font-size: 13px; margin-top: 10px; display: none; }
   .error-msg.show { display: block; }
-
-  /* ---------- Task list ---------- */
   .section-label { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px 2px; }
   .task-card { background: var(--paper); border-radius: 14px; padding: 16px 16px; box-shadow: var(--shadow); margin-bottom: 10px; cursor: pointer; border: 1px solid transparent; transition: 0.15s; }
   .task-card:hover { border-color: var(--accent); }
@@ -86,8 +57,6 @@
   .task-meta { font-size: 12.5px; color: var(--muted); }
   .empty-state { text-align: center; padding: 30px 20px; color: var(--muted); }
   .empty-state .ic { font-size: 38px; margin-bottom: 10px; }
-
-  /* ---------- Modals ---------- */
   .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: flex-end; justify-content: center; z-index: 50; }
   .modal-backdrop.show { display: flex; }
   .modal-sheet { background: var(--paper); width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; padding: 24px 20px 28px; animation: slideUp 0.25s ease; }
@@ -104,16 +73,13 @@
   .btn-self:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-done { background: var(--green-soft); color: var(--green); }
   .btn-cancel { background: transparent; color: var(--muted); }
-  
   .status-tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 100px; margin-bottom: 12px; }
   .status-tag.claimed { background: var(--accent-soft); color: var(--accent); }
   .status-tag.mine { background: var(--green-soft); color: var(--green); }
   .status-tag.alert { background: #FDECEC; color: #C0392B; }
   .status-tag.wait { background: #FFF4E5; color: #D48806; }
-
   .checkbox-rush { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; color: #C0392B; background: #FDECEC; padding: 12px; border-radius: 10px; margin-bottom: 16px; cursor: pointer; border: 1px solid #C0392B; }
   .checkbox-rush input { width: 18px; height: 18px; cursor: pointer; }
-
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1E1B16; color: white; padding: 12px 20px; border-radius: 100px; font-size: 14px; font-weight: 600; opacity: 0; transition: 0.25s; pointer-events: none; z-index: 100; white-space: nowrap; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .hidden { display: none !important; }
@@ -122,7 +88,6 @@
 <body>
 
 <div class="wrap">
-
   <div id="loginScreen">
     <div class="login-card">
       <h1>เลขที่เท่าไหร่ครับ/คะ?</h1>
@@ -146,7 +111,6 @@
       </div>
     </div>
 
-    <!-- กระดานข่าวห้อง -->
     <div id="announcementBanner" class="announcement-banner hidden">
       <span style="font-size: 18px;">📢</span> <span id="announcementText"></span>
     </div>
@@ -170,10 +134,8 @@
       <div>ตอนนี้ยังไม่มีงานเลย สบายใจได้!<br><span style="font-size: 12px; color: var(--accent); margin-top: 8px; display: inline-block;">(หรือกดสั่งงานด่วนด้านบนได้เลย)</span></div>
     </div>
   </div>
-
 </div>
 
-<!-- Task Detail Modal -->
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal-sheet">
     <span class="status-tag hidden" id="statusTag"></span>
@@ -199,20 +161,13 @@
   </div>
 </div>
 
-<!-- Request Custom Task Modal -->
 <div class="modal-backdrop" id="reqModalBackdrop">
   <div class="modal-sheet">
     <h2 class="modal-title" style="margin-bottom: 8px;">➕ สั่งงานนอกระบบ</h2>
     <p style="font-size: 14px; color: var(--muted); margin: 0 0 16px;">มีงานอะไรที่อยากให้ไทม์ช่วย พิมพ์บอกตรงนี้ได้เลย</p>
-    
     <input type="text" id="reqTitle" placeholder="ชื่องาน (เช่น ช่วยสรุปวิชาสังคมให้หน่อย)" style="margin-bottom: 10px;">
     <textarea id="reqDesc" placeholder="รายละเอียดแบบจัดเต็ม..." style="margin-bottom: 16px; min-height: 80px;"></textarea>
-    
-    <label class="checkbox-rush">
-      <input type="checkbox" id="reqRush">
-      🔥 ขอคิวด่วนไฟลุก! (บวกราคาเพิ่มนิดหน่อย)
-    </label>
-
+    <label class="checkbox-rush"><input type="checkbox" id="reqRush"> 🔥 ขอคิวด่วนไฟลุก! (บวกราคาเพิ่มนิดหน่อย)</label>
     <div class="modal-actions" style="flex-direction: row; gap: 8px;">
       <button class="btn btn-cancel" style="flex: 1; border: 1.5px solid var(--line);" onclick="closeRequestModal()">ยกเลิก</button>
       <button class="btn btn-claim" style="flex: 1;" id="submitReqBtn" onclick="submitRequestTask()">ส่งให้ไทม์</button>
@@ -226,9 +181,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // ⚠️ ใส่ลิ้งก์ Discord Webhook ตรงนี้ เพื่อรับการแจ้งเตือน
   const DISCORD_WEBHOOK_URL = ""; 
-
   const MY_PROMPTPAY = "0963413738";
   const MY_NAME = "ณัฐพงศ์ เภกะนันทน์"; 
 
@@ -236,37 +189,22 @@
   let allTasks = []; let allOrders = []; let activeTaskId = null;
   let isVip = false;
 
-  // โหลด Theme สี
-  if (localStorage.getItem('theme') === 'dark') {
-    document.body.setAttribute('data-theme', 'dark');
-    document.getElementById('themeBtn').textContent = '☀️';
-  }
+  if (localStorage.getItem('theme') === 'dark') { document.body.setAttribute('data-theme', 'dark'); document.getElementById('themeBtn').textContent = '☀️'; }
 
   function toggleTheme() {
-    if (document.body.getAttribute('data-theme') === 'dark') {
-      document.body.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'light');
-      document.getElementById('themeBtn').textContent = '🌙';
-    } else {
-      document.body.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-      document.getElementById('themeBtn').textContent = '☀️';
-    }
+    if (document.body.getAttribute('data-theme') === 'dark') { document.body.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); document.getElementById('themeBtn').textContent = '🌙'; } 
+    else { document.body.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); document.getElementById('themeBtn').textContent = '☀️'; }
   }
 
-  // ส่งแจ้งเตือน Discord
   async function sendDiscordNotify(message) {
     if (!DISCORD_WEBHOOK_URL) return;
-    try { await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: message }) }); } 
-    catch (e) { console.error(e); }
+    try { await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: message }) }); } catch (e) {}
   }
 
   const numberGrid = document.getElementById('numberGrid');
   for (let i = 1; i <= 30; i++) {
-    const b = document.createElement('button');
-    b.className = 'num-btn'; b.textContent = i;
-    b.onclick = () => selectNumber(i, b);
-    numberGrid.appendChild(b);
+    const b = document.createElement('button'); b.className = 'num-btn'; b.textContent = i;
+    b.onclick = () => selectNumber(i, b); numberGrid.appendChild(b);
   }
 
   function selectNumber(n, btnEl) {
@@ -290,7 +228,7 @@
       currentUser = { studentId: String(selectedNumber), name: docSnap.data().name || `เลขที่ ${selectedNumber}` };
       sessionStorage.setItem('cr_user', JSON.stringify(currentUser)); enterDashboard();
     } catch (err) {
-      document.getElementById('loginError').textContent = 'เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง'; document.getElementById('loginError').classList.add('show');
+      document.getElementById('loginError').textContent = 'เชื่อมต่อไม่ได้'; document.getElementById('loginError').classList.add('show');
       loginBtn.disabled = false; loginBtn.textContent = 'เข้าสู่ระบบ';
     }
   }
@@ -298,49 +236,33 @@
   function logout() { sessionStorage.removeItem('cr_user'); location.reload(); }
 
   function enterDashboard() {
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('dashScreen').classList.remove('hidden');
+    document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('dashScreen').classList.remove('hidden');
     listenToSettings(); listenToTasks(); listenToOrders();
   }
 
-  (function restoreSession() {
-    const saved = sessionStorage.getItem('cr_user');
-    if (saved) { currentUser = JSON.parse(saved); enterDashboard(); }
-  })();
+  (function restoreSession() { const saved = sessionStorage.getItem('cr_user'); if (saved) { currentUser = JSON.parse(saved); enterDashboard(); } })();
 
   function listenToSettings() {
     db.collection('system_settings').doc('main').onSnapshot(snap => {
-      if (snap.exists && snap.data().announcement) {
-        document.getElementById('announcementText').textContent = snap.data().announcement;
-        document.getElementById('announcementBanner').classList.remove('hidden');
-      } else {
-        document.getElementById('announcementBanner').classList.add('hidden');
-      }
+      if (snap.exists && snap.data().announcement) { document.getElementById('announcementText').textContent = snap.data().announcement; document.getElementById('announcementBanner').classList.remove('hidden'); } 
+      else { document.getElementById('announcementBanner').classList.add('hidden'); }
     });
   }
 
-  function listenToTasks() {
-    db.collection('assignments').orderBy('created_at', 'desc').onSnapshot(snap => {
-      allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderTasks();
-    });
-  }
+  function listenToTasks() { db.collection('assignments').orderBy('created_at', 'desc').onSnapshot(snap => { allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderTasks(); }); }
 
   function listenToOrders() {
     db.collection('orders').onSnapshot(snap => {
       allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() })); 
-      
-      // คำนวณ VIP (จ่ายเงินครบ 3 ครั้ง)
+      // 👑 เปลี่ยนจาก >= 3 เป็น >= 5 ตรงนี้ครับ
       const paidCount = allOrders.filter(o => o.student_id === currentUser.studentId && o.status === 'paid').length;
-      isVip = paidCount >= 3;
-      document.getElementById('whoLabel').innerHTML = `${currentUser.name} ${isVip ? '<span class="vip-badge">👑 VIP</span>' : ''}`;
-      
+      isVip = paidCount >= 5;
+      document.getElementById('whoLabel').innerHTML = `${currentUser.name} ${isVip ? '<span class="vip-badge">👑 ลูกค้าประจำ</span>' : ''}`;
       renderTasks();
     });
   }
 
-  function checkIsTestTask(title) {
-    if (!title) return false; return title.includes('ทดลอง') || title.includes('ห้ามกด') || title === 'งานวิทยาศาสตร์' || title === 'วิทยาศาสตร์';
-  }
+  function checkIsTestTask(title) { if (!title) return false; return title.includes('ทดลอง') || title.includes('ห้ามกด') || title === 'งานวิทยาศาสตร์' || title === 'วิทยาศาสตร์'; }
 
   function renderTasks() {
     const list = document.getElementById('taskList'); const compList = document.getElementById('completedList'); const empty = document.getElementById('emptyState');
@@ -352,9 +274,7 @@
       const card = document.createElement('div'); card.className = 'task-card'; card.onclick = () => openTask(t.id);
 
       let badge = ''; let isCompleted = false;
-      let isTest = checkIsTestTask(t.title);
-      let isCustom = t.source === 'friend_request';
-      
+      let isTest = checkIsTestTask(t.title); let isCustom = t.source === 'friend_request';
       let testBadgeHtml = isTest ? '<span style="color: #C0392B; font-size: 11px; font-weight: bold; background: #FDECEC; padding: 2px 6px; border-radius: 4px; display: inline-block;">⚠️ ทดลองระบบ</span>' : '';
       let customBadgeHtml = isCustom ? '<span style="color: #D4622A; font-size: 11px; font-weight: bold; background: #FBE9DD; padding: 2px 6px; border-radius: 4px; display: inline-block;">ที่คุณเสนอ</span>' : '';
       let rushBadgeHtml = order && order.is_rush ? '<span style="color: #fff; font-size: 11px; font-weight: bold; background: #E8836A; padding: 2px 6px; border-radius: 4px; display: inline-block;">🔥 ด่วน!</span>' : '';
@@ -371,20 +291,11 @@
 
       if (isCompleted) card.classList.add('opacity');
 
-      card.innerHTML = `
-        <div class="task-title" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
-          ${escapeHtml(t.title)} ${testBadgeHtml} ${customBadgeHtml} ${rushBadgeHtml}
-        </div>
-        <div class="task-meta">${formatDate(t.due_date)}${badge}</div>
-      `;
-
-      if (isCompleted) { compList.appendChild(card); hasCompleted = true; }
-      else { list.appendChild(card); hasPending = true; }
+      card.innerHTML = `<div class="task-title" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">${escapeHtml(t.title)} ${testBadgeHtml} ${customBadgeHtml} ${rushBadgeHtml}</div><div class="task-meta">${formatDate(t.due_date)}${badge}</div>`;
+      if (isCompleted) { compList.appendChild(card); hasCompleted = true; } else { list.appendChild(card); hasPending = true; }
     });
 
-    empty.classList.toggle('hidden', hasPending || hasCompleted);
-    document.getElementById('pendingSection').classList.toggle('hidden', !hasPending);
-    document.getElementById('completedSection').classList.toggle('hidden', !hasCompleted);
+    empty.classList.toggle('hidden', hasPending || hasCompleted); document.getElementById('pendingSection').classList.toggle('hidden', !hasPending); document.getElementById('completedSection').classList.toggle('hidden', !hasCompleted);
   }
 
   function showPromptPay() {
@@ -393,47 +304,33 @@
       <img src="https://promptpay.io/${ppNumber}" style="width: 160px; height: 160px; margin-bottom: 12px; border-radius: 8px;">
       <div style="font-weight: 800; font-size: 16px;">พร้อมเพย์: ${MY_PROMPTPAY}</div>
       <div style="color: var(--muted); font-size: 13.5px; margin-bottom: 10px;">ชื่อบัญชี: ${MY_NAME}</div>
-      <div style="font-size: 12.5px; color: var(--accent); background: var(--accent-soft); padding: 8px; border-radius: 8px;">
-        * โอนตามยอดที่ตกลงกันไว้ แล้วทักบอกไทม์ได้เลย!
-      </div>
+      <div style="font-size: 12.5px; color: var(--accent); background: var(--accent-soft); padding: 8px; border-radius: 8px;">* โอนตามยอดที่ตกลงกันไว้ แล้วทักบอกไทม์ได้เลย!</div>
       <div style="margin-top: 14px; border-top: 1px dashed var(--line); padding-top: 14px; text-align: left;">
         <label style="font-size: 13px; font-weight: bold; margin-bottom: 6px; display: block; color: var(--ink);">แนบสลิปเพื่อยืนยันการโอน</label>
         <input type="file" id="slipUploadInput" accept="image/*" style="font-size: 13px; margin-bottom: 8px; padding: 10px;">
         <button class="btn btn-claim" style="width: 100%;" onclick="submitSlip()">ส่งสลิป</button>
-      </div>
-    `;
+      </div>`;
     pd.classList.remove('hidden');
   }
 
   async function submitSlip() {
-    const fileInput = document.getElementById('slipUploadInput');
-    if (!fileInput || !fileInput.files || fileInput.files.length === 0) { showToast('กรุณาเลือกรูปสลิปก่อนครับ'); return; }
-    
+    const fileInput = document.getElementById('slipUploadInput'); if (!fileInput || !fileInput.files || fileInput.files.length === 0) { showToast('กรุณาเลือกรูปสลิปก่อนครับ'); return; }
     const btn = fileInput.nextElementSibling; btn.disabled = true; btn.textContent = "กำลังอัปโหลด...";
     const file = fileInput.files[0]; const reader = new FileReader();
-    
     reader.onload = function(e) {
-      const img = new Image();
-      img.onload = async function() {
-        const canvas = document.createElement('canvas'); const MAX_WIDTH = 600; const scaleSize = MAX_WIDTH / img.width;
-        canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize;
-        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const base64String = canvas.toDataURL('image/jpeg', 0.6); 
-
+      const img = new Image(); img.onload = async function() {
+        const canvas = document.createElement('canvas'); const MAX_WIDTH = 600; const scaleSize = MAX_WIDTH / img.width; canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize;
+        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height); const base64String = canvas.toDataURL('image/jpeg', 0.6); 
         const order = allOrders.find(o => o.task_id === activeTaskId && o.student_id === currentUser.studentId);
         if (order) {
           try {
             await db.collection('orders').doc(order.id).update({ status: 'checking_slip', slip_image: base64String });
             sendDiscordNotify(`🔔 💸 **${currentUser.name}** ส่งสลิปโอนเงินมาให้ตรวจสอบแล้ว ไปดูที่หน้าเว็บเร็วเข้า!`);
             showToast('ส่งสลิปเรียบร้อย รอไทม์ตรวจสอบนะครับ ⏳'); closeModal();
-          } catch (err) {
-            console.error(err); showToast('ส่งไม่สำเร็จ ลองใหม่อีกครั้ง'); btn.disabled = false; btn.textContent = "ส่งสลิป";
-          }
+          } catch (err) { showToast('ส่งไม่สำเร็จ ลองใหม่อีกครั้ง'); btn.disabled = false; btn.textContent = "ส่งสลิป"; }
         }
-      }
-      img.src = e.target.result;
-    }
-    reader.readAsDataURL(file);
+      }; img.src = e.target.result;
+    }; reader.readAsDataURL(file);
   }
 
   function showCash() {
@@ -443,90 +340,57 @@
   }
 
   function openTask(taskId) {
-    activeTaskId = taskId;
-    const t = allTasks.find(x => x.id === taskId); if (!t) return;
+    activeTaskId = taskId; const t = allTasks.find(x => x.id === taskId); if (!t) return;
     const order = allOrders.find(o => o.task_id === taskId && o.student_id === currentUser.studentId);
-
-    let isTest = checkIsTestTask(t.title);
-    let testBadgeHtml = isTest ? '<span style="color: #C0392B; font-size: 12px; font-weight: bold; background: #FDECEC; padding: 2px 8px; border-radius: 4px;">⚠️ ทดลองระบบ (ห้ามกด)</span>' : '';
+    let isTest = checkIsTestTask(t.title); let testBadgeHtml = isTest ? '<span style="color: #C0392B; font-size: 12px; font-weight: bold; background: #FDECEC; padding: 2px 8px; border-radius: 4px;">⚠️ ทดลองระบบ (ห้ามกด)</span>' : '';
 
     document.getElementById('modalTitle').innerHTML = `${escapeHtml(t.title)} ${testBadgeHtml}`;
-    document.getElementById('modalMeta').textContent = formatDate(t.due_date);
-    document.getElementById('modalDesc').textContent = t.description || 'ไม่มีรายละเอียดเพิ่มเติม';
+    document.getElementById('modalMeta').textContent = formatDate(t.due_date); document.getElementById('modalDesc').textContent = t.description || 'ไม่มีรายละเอียดเพิ่มเติม';
 
     const statusTag = document.getElementById('statusTag'); const claimBtn = document.getElementById('claimBtn'); const selfBtn = document.getElementById('selfBtn'); const selfDoneBtn = document.getElementById('selfDoneBtn'); const paymentSection = document.getElementById('paymentSection'); const payDetails = document.getElementById('payDetails');
-
     statusTag.className = 'status-tag hidden'; claimBtn.classList.add('hidden'); selfBtn.classList.add('hidden'); selfDoneBtn.classList.add('hidden'); paymentSection.classList.add('hidden'); payDetails.classList.add('hidden'); claimBtn.disabled = false; selfBtn.disabled = false; claimBtn.textContent = 'ให้ไทม์ทำงานนี้';
 
     if (isTest) { claimBtn.disabled = true; claimBtn.textContent = '⚠️ งานนี้ตั้งไว้ทดสอบระบบเท่านั้น'; selfBtn.disabled = true; }
 
-    if (!order) {
-      claimBtn.classList.remove('hidden'); selfBtn.classList.remove('hidden');
-    } else if (order.status === 'pending') {
-      statusTag.textContent = 'ไทม์กำลังทำงานนี้ให้คุณอยู่ ⏳'; statusTag.className = 'status-tag claimed'; statusTag.classList.remove('hidden');
-    } else if (order.status === 'done') {
-      statusTag.textContent = 'ไทม์ทำเสร็จแล้ว! รอชำระเงิน'; statusTag.className = 'status-tag alert'; statusTag.classList.remove('hidden'); paymentSection.classList.remove('hidden');
-    } else if (order.status === 'checking_slip') {
-      statusTag.textContent = 'กำลังรอไทม์ตรวจสอบสลิป 🔎'; statusTag.className = 'status-tag wait'; statusTag.classList.remove('hidden');
-    } else if (order.status === 'paid') {
-      statusTag.textContent = 'คุณชำระเงินและรับงานนี้เรียบร้อย ✅'; statusTag.className = 'status-tag mine'; statusTag.classList.remove('hidden');
-    } else if (order.status === 'self_working') {
-      statusTag.textContent = 'คุณกำลังทำงานนี้เอง สู้ๆ ✌️'; statusTag.className = 'status-tag mine'; statusTag.classList.remove('hidden'); selfDoneBtn.classList.remove('hidden');
-    } else if (order.status === 'self_done') {
-      statusTag.textContent = 'คุณทำเองเสร็จแล้ว (ส่งแล้ว) ✅'; statusTag.className = 'status-tag mine'; statusTag.classList.remove('hidden');
-    } else if (order.status === 'rejected') {
-      statusTag.textContent = '❌ ไทม์ปฏิเสธรับงานนี้ (อาจจะยุ่งหรือคิวเต็ม 🙏)'; statusTag.className = 'status-tag alert'; statusTag.classList.remove('hidden');
-      claimBtn.disabled = true; claimBtn.textContent = 'โดนปฏิเสธแล้ว'; claimBtn.classList.remove('hidden'); selfBtn.classList.remove('hidden'); 
-    }
+    if (!order) { claimBtn.classList.remove('hidden'); selfBtn.classList.remove('hidden'); } 
+    else if (order.status === 'pending') { statusTag.textContent = 'ไทม์กำลังทำงานนี้ให้คุณอยู่ ⏳'; statusTag.className = 'status-tag claimed'; statusTag.classList.remove('hidden'); } 
+    else if (order.status === 'done') { statusTag.textContent = 'ไทม์ทำเสร็จแล้ว! รอชำระเงิน'; statusTag.className = 'status-tag alert'; statusTag.classList.remove('hidden'); paymentSection.classList.remove('hidden'); } 
+    else if (order.status === 'checking_slip') { statusTag.textContent = 'กำลังรอไทม์ตรวจสอบสลิป 🔎'; statusTag.className = 'status-tag wait'; statusTag.classList.remove('hidden'); } 
+    else if (order.status === 'paid') { statusTag.textContent = 'คุณชำระเงินและรับงานนี้เรียบร้อย ✅'; statusTag.className = 'status-tag mine'; statusTag.classList.remove('hidden'); } 
+    else if (order.status === 'self_working') { statusTag.textContent = 'คุณกำลังทำงานนี้เอง สู้ๆ ✌️'; statusTag.className = 'status-tag mine'; statusTag.classList.remove('hidden'); selfDoneBtn.classList.remove('hidden'); } 
+    else if (order.status === 'self_done') { statusTag.textContent = 'คุณทำเองเสร็จแล้ว (ส่งแล้ว) ✅'; statusTag.className = 'status-tag mine'; statusTag.classList.remove('hidden'); } 
+    else if (order.status === 'rejected') { statusTag.textContent = '❌ ไทม์ปฏิเสธรับงานนี้ (อาจจะยุ่งหรือคิวเต็ม 🙏)'; statusTag.className = 'status-tag alert'; statusTag.classList.remove('hidden'); claimBtn.disabled = true; claimBtn.textContent = 'โดนปฏิเสธแล้ว'; claimBtn.classList.remove('hidden'); selfBtn.classList.remove('hidden'); }
+    
     document.getElementById('modalBackdrop').classList.add('show');
   }
 
   function closeModal() { document.getElementById('modalBackdrop').classList.remove('show'); activeTaskId = null; }
 
-  function openRequestModal() {
-    document.getElementById('reqTitle').value = ''; document.getElementById('reqDesc').value = '';
-    document.getElementById('reqRush').checked = false;
-    document.getElementById('reqModalBackdrop').classList.add('show');
-    setTimeout(() => document.getElementById('reqTitle').focus(), 100);
-  }
+  function openRequestModal() { document.getElementById('reqTitle').value = ''; document.getElementById('reqDesc').value = ''; document.getElementById('reqRush').checked = false; document.getElementById('reqModalBackdrop').classList.add('show'); setTimeout(() => document.getElementById('reqTitle').focus(), 100); }
   function closeRequestModal() { document.getElementById('reqModalBackdrop').classList.remove('show'); }
   document.getElementById('reqModalBackdrop').addEventListener('click', e => { if (e.target.id === 'reqModalBackdrop') closeRequestModal(); });
 
   async function submitRequestTask() {
-    const title = document.getElementById('reqTitle').value.trim();
-    const desc = document.getElementById('reqDesc').value.trim();
-    const isRush = document.getElementById('reqRush').checked;
+    const title = document.getElementById('reqTitle').value.trim(); const desc = document.getElementById('reqDesc').value.trim(); const isRush = document.getElementById('reqRush').checked;
     if (!title) { showToast('ใส่ชื่องานให้หน่อยนะ!'); return; }
-
     const btn = document.getElementById('submitReqBtn'); btn.disabled = true; btn.textContent = 'กำลังส่ง...';
-
     try {
-      const docRef = await db.collection('assignments').add({
-        title: title, description: desc, due_date: null, created_at: firebase.firestore.FieldValue.serverTimestamp(), source: 'friend_request', requested_by: currentUser.studentId
-      });
-      await db.collection('orders').add({
-        task_id: docRef.id, student_id: currentUser.studentId, student_name: currentUser.name, status: 'pending', price: null, is_rush: isRush, created_at: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      const docRef = await db.collection('assignments').add({ title: title, description: desc, due_date: null, created_at: firebase.firestore.FieldValue.serverTimestamp(), source: 'friend_request', requested_by: currentUser.studentId });
+      await db.collection('orders').add({ task_id: docRef.id, student_id: currentUser.studentId, student_name: currentUser.name, status: 'pending', price: null, is_rush: isRush, created_at: firebase.firestore.FieldValue.serverTimestamp() });
       
-      let rushText = isRush ? "🔥 **(งานด่วนไฟลุก!)**" : "";
-      let vipText = isVip ? "👑 *(ลูกค้า VIP)*" : "";
+      let rushText = isRush ? "🔥 **(งานด่วนไฟลุก!)**" : ""; let vipText = isVip ? "👑 *(ลูกค้า VIP)*" : "";
       sendDiscordNotify(`🔔 **มีออเดอร์ใหม่!**\n> **${currentUser.name}** ${vipText} สั่งงานนอกระบบมา: "${title}" ${rushText}`);
-
       showToast('ส่งงานให้ไทม์แล้ว รอไทม์รับงานนะ 🙌'); closeRequestModal();
-    } catch (err) { console.error(err); showToast('ส่งไม่สำเร็จ ลองอีกครั้งนะ'); } 
-    finally { btn.disabled = false; btn.textContent = 'ส่งให้ไทม์'; }
+    } catch (err) { showToast('ส่งไม่สำเร็จ ลองอีกครั้งนะ'); } finally { btn.disabled = false; btn.textContent = 'ส่งให้ไทม์'; }
   }
 
   async function claimTask() {
-    if (!activeTaskId) return;
-    const claimBtn = document.getElementById('claimBtn'); claimBtn.disabled = true; claimBtn.textContent = 'กำลังบันทึก...';
+    if (!activeTaskId) return; const claimBtn = document.getElementById('claimBtn'); claimBtn.disabled = true; claimBtn.textContent = 'กำลังบันทึก...';
     try {
       const t = allTasks.find(x => x.id === activeTaskId);
       await db.collection('orders').add({ task_id: activeTaskId, student_id: currentUser.studentId, student_name: currentUser.name, status: 'pending', price: null, created_at: firebase.firestore.FieldValue.serverTimestamp() });
-      
       let vipText = isVip ? "👑 *(ลูกค้า VIP)*" : "";
       sendDiscordNotify(`🔔 **มีเพื่อนกดให้ทำงาน!**\n> **${currentUser.name}** ${vipText} ส่งงานห้องให้ไทม์ทำ: "${t ? t.title : 'งานจากระบบ'}"`);
-
       showToast('สั่งงานให้ไทม์ทำเรียบร้อย เดี๋ยวรีบทำให้นะ 🙌'); closeModal();
     } catch (err) { showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); claimBtn.disabled = false; claimBtn.textContent = 'ให้ไทม์ทำงานนี้'; }
   }
@@ -546,15 +410,10 @@
     try { await db.collection('orders').doc(order.id).update({ status: 'self_done' }); showToast('เก่งมาก! ทำเครื่องหมายว่าส่งงานแล้ว ✅'); closeModal(); } catch (err) { showToast('อัปเดตไม่สำเร็จ ลองใหม่อีกครั้ง'); }
   }
 
-  function formatDate(ts) {
-    if (!ts) return 'ไม่ระบุวันส่ง'; let d; if (ts.toDate) d = ts.toDate(); else d = new Date(ts);
-    if (isNaN(d.getTime())) return 'ไม่ระบุวันส่ง'; return 'ส่ง ' + d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
-  }
-
+  function formatDate(ts) { if (!ts) return 'ไม่ระบุวันส่ง'; let d; if (ts.toDate) d = ts.toDate(); else d = new Date(ts); if (isNaN(d.getTime())) return 'ไม่ระบุวันส่ง'; return 'ส่ง ' + d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }); }
   function escapeHtml(str) { const div = document.createElement('div'); div.textContent = str || ''; return div.innerHTML; }
   function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2400); }
   document.getElementById('modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalBackdrop') closeModal(); });
 </script>
-
 </body>
 </html>

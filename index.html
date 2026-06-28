@@ -47,7 +47,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 22px;
+    margin-bottom: 16px; /* ปรับ margin นิดหน่อยให้สวยขึ้น */
   }
 
   .brand {
@@ -168,6 +168,7 @@
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    margin: 0 0 10px 2px;
   }
 
   .task-card {
@@ -196,7 +197,7 @@
 
   .empty-state {
     text-align: center;
-    padding: 50px 20px;
+    padding: 30px 20px;
     color: var(--muted);
   }
   .empty-state .ic { font-size: 38px; margin-bottom: 10px; }
@@ -338,22 +339,25 @@
       <div class="who" id="whoLabel" onclick="logout()">เลขที่ — · ออกจากระบบ</div>
     </div>
 
+    <!-- ย้ายปุ่มสั่งงานมาไว้ตรงนี้ เพื่อให้เห็นเสมอ ไม่ว่าจะซ่อนหมวดหมู่งานไหนไป -->
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+      <button style="background: var(--accent-soft); border: none; color: var(--accent); font-weight: bold; font-size: 13.5px; cursor: pointer; padding: 8px 14px; border-radius: 8px; box-shadow: 0 2px 4px rgba(212, 98, 42, 0.1);" onclick="openRequestModal()">➕ สั่งงานนอกระบบ</button>
+    </div>
+
     <div id="pendingSection">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin: 0 0 10px 2px;">
-        <p class="section-label" style="margin: 0;">งานที่ต้องทำ</p>
-        <button style="background: transparent; border: none; color: var(--accent); font-weight: bold; font-size: 13px; cursor: pointer; padding: 4px 8px; border-radius: 6px; background: var(--accent-soft);" onclick="openRequestModal()">+ สั่งงานนอกระบบ</button>
-      </div>
+      <p class="section-label">งานที่ต้องทำ</p>
       <div id="taskList"></div>
     </div>
 
     <div id="completedSection" class="hidden" style="margin-top: 24px;">
-      <p class="section-label" style="margin: 0 0 10px 2px;">งานที่เสร็จเรียบร้อยแล้ว</p>
+      <p class="section-label">งานที่เสร็จเรียบร้อยแล้ว</p>
       <div id="completedList"></div>
     </div>
 
-    <div class="empty-state hidden" id="emptyState">
+    <!-- ย้าย empty state ให้ขยับขึ้นมาหน่อยเมื่อไม่มีงานค้าง -->
+    <div class="empty-state hidden" id="emptyState" style="padding-top: 10px;">
       <div class="ic">📭</div>
-      <div>ตอนนี้ยังไม่มีงานเลย สบายใจได้!</div>
+      <div>ตอนนี้ยังไม่มีงานเลย สบายใจได้!<br><span style="font-size: 12px; color: var(--accent); margin-top: 8px; display: inline-block;">(หรือกดสั่งงานนอกระบบด้านบนได้เลย)</span></div>
     </div>
   </div>
 
@@ -511,7 +515,7 @@
     let hasPending = false; let hasCompleted = false;
 
     allTasks.forEach(t => {
-      // ซ่อนงานที่เพื่อนคนอื่นเป็นคนสั่งทำพิเศษ (เห็นเฉพาะเจ้าของงานกับแอดมิน)
+      // ซ่อนงานที่เพื่อนคนอื่นเป็นคนสั่งทำพิเศษ
       if (t.requested_by && t.requested_by !== currentUser.studentId) return;
 
       const order = allOrders.find(o => o.task_id === t.id && o.student_id === currentUser.studentId);
@@ -657,7 +661,7 @@
     } else if (order.status === 'rejected') {
       statusTag.textContent = '❌ ไทม์ปฏิเสธรับงานนี้ (อาจจะยุ่งหรือคิวเต็ม 🙏)'; statusTag.className = 'status-tag alert'; statusTag.classList.remove('hidden');
       claimBtn.disabled = true; claimBtn.textContent = 'โดนปฏิเสธแล้ว'; claimBtn.classList.remove('hidden');
-      selfBtn.classList.remove('hidden'); // ให้โอกาสเพื่อนทำเองต่อ
+      selfBtn.classList.remove('hidden'); 
     }
 
     document.getElementById('modalBackdrop').classList.add('show');
@@ -684,7 +688,6 @@
     btn.disabled = true; btn.textContent = 'กำลังส่ง...';
 
     try {
-      // สร้างตารางงานก่อน (ระบุว่าเป็นงานที่เพื่อนสั่ง + บันทึกรหัสคนสั่ง)
       const docRef = await db.collection('assignments').add({
         title: title,
         description: desc,
@@ -694,7 +697,6 @@
         requested_by: currentUser.studentId
       });
       
-      // สร้าง Order ให้ไทม์รับรู้ทันที
       await db.collection('orders').add({
         task_id: docRef.id,
         student_id: currentUser.studentId,
@@ -730,7 +732,6 @@
     try {
       const existingOrder = allOrders.find(o => o.task_id === activeTaskId && o.student_id === currentUser.studentId);
       if (existingOrder) {
-        // กรณีถ้าเคยสั่งแล้วไทม์ปฏิเสธ แล้วอยากเปลี่ยนมาทำเอง
         await db.collection('orders').doc(existingOrder.id).update({ status: 'self_working' });
       } else {
         await db.collection('orders').add({ task_id: activeTaskId, student_id: currentUser.studentId, student_name: currentUser.name, status: 'self_working', price: 0, created_at: firebase.firestore.FieldValue.serverTimestamp() });

@@ -284,6 +284,7 @@
   }
   .status-tag.claimed { background: var(--accent-soft); color: var(--accent); }
   .status-tag.mine { background: var(--green-soft); color: var(--green); }
+  .status-tag.alert { background: #FDECEC; color: #C0392B; }
 
   .toast {
     position: fixed;
@@ -364,6 +365,16 @@
     <div class="modal-meta" id="modalMeta"></div>
     <div class="modal-desc" id="modalDesc"></div>
 
+    <!-- กล่องเลือกวิธีชำระเงิน (ซ่อนไว้ โชว์ตอน Admin กดทำเสร็จ) -->
+    <div id="paymentSection" class="hidden" style="margin-top: 16px; padding-top: 16px; border-top: 1.5px dashed var(--line); margin-bottom: 16px;">
+      <p style="font-size: 14px; font-weight: 700; margin: 0 0 10px; color: var(--accent);">งานเสร็จแล้ว! เลือกวิธีชำระเงินได้เลย 👇</p>
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+         <button class="btn" style="flex: 1; background: #003D6B; color: white;" onclick="showPromptPay()">📲 โอนเงิน (QR)</button>
+         <button class="btn btn-self" style="flex: 1;" onclick="showCash()">💵 จ่ายเงินสด</button>
+      </div>
+      <div id="payDetails" class="hidden" style="background: var(--bg); padding: 16px; border-radius: 10px; font-size: 14px; text-align: center; border: 1.5px solid var(--line);"></div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn btn-claim" id="claimBtn" onclick="claimTask()">ให้ไทม์ทำงานนี้</button>
       <button class="btn btn-self" id="selfBtn" onclick="startSelfTask()">งานนี้ขอทำเอง</button>
@@ -379,6 +390,10 @@
   // ---------------- Firebase init ----------------
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
+
+  // ⚠️ ตั้งค่าบัญชีรับเงินของคุณตรงนี้
+  const MY_PROMPTPAY = "0963413738"; // ใส่เบอร์โทรศัพท์ที่ผูกพร้อมเพย์
+  const MY_NAME = "ณัฐพงศ์ เภกะนันทน์"; // ชื่อบัญชีธนาคาร 
 
   // ---------------- State ----------------
   let selectedNumber = null;
@@ -498,9 +513,7 @@
     let hasCompleted = false;
 
     allTasks.forEach(t => {
-      // ค้นหาเฉพาะ Order ของเลขที่ที่ล็อกอินอยู่เท่านั้น (แก้ปัญหางานหายรวม)
       const order = allOrders.find(o => o.task_id === t.id && o.student_id === currentUser.studentId);
-      
       const card = document.createElement('div');
       card.className = 'task-card';
       card.onclick = () => openTask(t.id);
@@ -508,12 +521,13 @@
       let badge = '';
       let isCompleted = false;
 
-      // จัดการสถานะและป้ายกำกับ
       if (order) {
         if (order.status === 'pending') {
           badge = ' · ⏳ ไทม์กำลังทำ';
         } else if (order.status === 'done') {
-          badge = ' · 💳 เสร็จแล้ว รอชำระเงิน';
+          badge = ' · 🔴 เสร็จแล้ว! กดเพื่อดูวิธีจ่ายเงิน';
+          card.style.borderColor = '#E8836A'; 
+          card.style.borderWidth = '1.5px';
         } else if (order.status === 'paid') {
           badge = ' · ✅ ไทม์ทำเสร็จแล้ว';
           isCompleted = true;
@@ -546,13 +560,39 @@
     document.getElementById('completedSection').classList.toggle('hidden', !hasCompleted);
   }
 
+  // ---------------- Payment Options UI ----------------
+  function showPromptPay() {
+    const pd = document.getElementById('payDetails');
+    const ppNumber = MY_PROMPTPAY.replace(/[^0-9]/g, ''); 
+    pd.innerHTML = `
+      <img src="https://promptpay.io/${ppNumber}" style="width: 160px; height: 160px; margin-bottom: 12px; border-radius: 8px;">
+      <div style="font-weight: 800; font-size: 16px; letter-spacing: 0.5px;">พร้อมเพย์: ${MY_PROMPTPAY}</div>
+      <div style="color: var(--muted); font-size: 13.5px; margin-bottom: 10px;">ชื่อบัญชี: ${MY_NAME}</div>
+      <div style="font-size: 12.5px; color: var(--accent); background: var(--accent-soft); padding: 8px; border-radius: 8px;">
+        * โอนตามยอดที่ตกลงกันไว้ แล้วทักบอกไทม์ได้เลย!
+      </div>
+    `;
+    pd.classList.remove('hidden');
+  }
+
+  function showCash() {
+    const pd = document.getElementById('payDetails');
+    pd.innerHTML = `
+      <div style="font-size: 44px; margin-bottom: 8px;">💵</div>
+      <div style="font-weight: 800; font-size: 16px;">จ่ายด้วยเงินสด</div>
+      <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">
+        เตรียมเงินสดมาให้ไทม์ที่โรงเรียนได้เลยนะ!
+      </div>
+    `;
+    pd.classList.remove('hidden');
+  }
+
   // ---------------- Task detail modal ----------------
   function openTask(taskId) {
     activeTaskId = taskId;
     const t = allTasks.find(x => x.id === taskId);
     if (!t) return;
     
-    // ดึงสถานะของเลขที่นั้นๆ
     const order = allOrders.find(o => o.task_id === taskId && o.student_id === currentUser.studentId);
 
     document.getElementById('modalTitle').textContent = t.title;
@@ -563,17 +603,20 @@
     const claimBtn = document.getElementById('claimBtn');
     const selfBtn = document.getElementById('selfBtn');
     const selfDoneBtn = document.getElementById('selfDoneBtn');
+    const paymentSection = document.getElementById('paymentSection');
+    const payDetails = document.getElementById('payDetails');
 
-    // ซ่อนปุ่มและ Tag สถานะทั้งหมดก่อน
+    // รีเซ็ตปุ่มและหน้าจอทั้งหมดก่อน
     statusTag.className = 'status-tag hidden';
     claimBtn.classList.add('hidden');
     selfBtn.classList.add('hidden');
     selfDoneBtn.classList.add('hidden');
+    paymentSection.classList.add('hidden');
+    payDetails.classList.add('hidden');
     claimBtn.disabled = false;
     selfBtn.disabled = false;
 
     if (!order) {
-      // กรณียังไม่ได้เลือกอะไรเลย ให้โชว์ปุ่มทั้งคู่
       claimBtn.classList.remove('hidden');
       selfBtn.classList.remove('hidden');
     } else if (order.status === 'pending') {
@@ -581,9 +624,10 @@
       statusTag.className = 'status-tag claimed';
       statusTag.classList.remove('hidden');
     } else if (order.status === 'done') {
-      statusTag.textContent = 'ไทม์ทำเสร็จแล้ว รอชำระเงิน 💳';
-      statusTag.className = 'status-tag claimed';
+      statusTag.textContent = 'ไทม์ทำเสร็จแล้ว! รอชำระเงิน';
+      statusTag.className = 'status-tag alert';
       statusTag.classList.remove('hidden');
+      paymentSection.classList.remove('hidden');
     } else if (order.status === 'paid') {
       statusTag.textContent = 'คุณชำระเงินและรับงานนี้เรียบร้อย ✅';
       statusTag.className = 'status-tag mine';
@@ -607,7 +651,6 @@
     activeTaskId = null;
   }
 
-  // แอคชั่น: ฝากไทม์ทำ
   async function claimTask() {
     if (!activeTaskId) return;
     const claimBtn = document.getElementById('claimBtn');
@@ -633,7 +676,6 @@
     }
   }
 
-  // แอคชั่น: งานนี้ขอทำเอง
   async function startSelfTask() {
     if (!activeTaskId) return;
     const selfBtn = document.getElementById('selfBtn');
@@ -657,7 +699,6 @@
     }
   }
 
-  // แอคชั่น: ทำเองเสร็จแล้วติ๊กออก
   async function finishSelfTask() {
     if (!activeTaskId) return;
     const order = allOrders.find(o => o.task_id === activeTaskId && o.student_id === currentUser.studentId);

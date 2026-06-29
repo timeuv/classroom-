@@ -10,178 +10,103 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #fcfbfa; 
-    --ink: #1c1c1c; 
-    --paper: #ffffff; 
-    --paper-solid: #f3f2ef;
-    --line: rgba(28, 28, 28, 0.15);
-    --line-focus: rgba(27, 54, 93, 0.4);
-    --accent: #1b365d;
-    --accent-hover: #142847;
-    --accent-soft: rgba(27, 54, 93, 0.12);
-    --accent-text: #1b365d;
-    --green: #2e6f40; 
-    --green-soft: rgba(46, 111, 64, 0.12);
-    --green-text: #2e6f40;
-    --red: #8b2635; 
-    --red-soft: rgba(139, 38, 53, 0.12);
-    --red-text: #8b2635;
-    --yellow: #d4af37; 
-    --yellow-soft: rgba(212, 175, 55, 0.12);
-    --yellow-text: #d4af37;
-    --muted: #6b7280; 
-    --shadow: none;
-    --shadow-sm: none;
-    --radius-lg: 16px;
-    --radius-md: 12px;
-    --radius-sm: 8px;
-    --font-heading: 'Outfit', system-ui, -apple-system, sans-serif;
-    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
-  }
-
-  body[data-theme="dark"] {
-    --bg: #1a1a1a; 
-    --ink: #f0f0f0; 
-    --paper: #242424; 
-    --paper-solid: #2e2e2e;
-    --line: rgba(255, 255, 255, 0.15);
-    --line-focus: rgba(255, 255, 255, 0.3);
+    --bg: #14120F;
+    --ink: #F2EEE6;
+    --paper: #1D1A16;
+    --line: #3A352C;
+    --accent: #D4622A;
+    --accent-soft: #3A2A1E;
+    --green: #5FAE82;
+    --green-soft: #1E2E24;
+    --red: #E8836A;
+    --yellow: #D48806;
+    --yellow-soft: #2B2111;
+    --muted: #9A9286;
+    --shadow: 0 2px 14px rgba(0,0,0,0.3);
   }
 
   * { 
     box-sizing: border-box; 
-    transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
-                border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
-                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
-                transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   body { 
     margin: 0; 
-    font-family: var(--font-main); 
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
     background: var(--bg); 
     color: var(--ink); 
-
-    background-attachment: fixed;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  h1, h2, h3, h4, h5, h6, .brand, .order-title, .modal-box h3, .config-box-title {
-    font-family: var(--font-heading);
   }
 
   .wrap { 
-    max-width: 680px; 
+    max-width: 720px; 
     margin: 0 auto; 
-    padding: 40px 24px 80px; 
+    padding: 28px 20px 60px; 
   }
 
   /* ---- gate ---- */
   .gate-card { 
     background: var(--paper); 
-    border-radius: var(--radius-lg); 
-    padding: 48px 36px; 
+    border-radius: 18px; 
+    padding: 32px 24px; 
     margin-top: 18vh; 
     text-align: center; 
-    box-shadow: none; 
-    max-width: 380px; 
+    box-shadow: var(--shadow); 
+    max-width: 360px; 
     margin-inline: auto; 
-    border: 1px solid var(--line);
   }
 
   .gate-card h1 { 
-    font-size: 26px; 
-    font-weight: 800;
-    margin: 0 0 8px; 
-    color: var(--ink);
-    letter-spacing: -0.5px;
+    font-size: 20px; 
+    margin: 0 0 18px; 
   }
 
   .gate-card input { 
     width: 100%; 
-    padding: 14px 18px; 
-    border-radius: var(--radius-sm); 
-    border: 1px solid var(--line); 
-    background: var(--paper-solid); 
+    padding: 13px 14px; 
+    border-radius: 10px; 
+    border: 1.5px solid var(--line); 
+    background: var(--bg); 
     color: var(--ink); 
     font-size: 16px; 
-    font-family: var(--font-main);
-    margin-bottom: 20px; 
-    margin-top: 24px;
-    outline: none;
-    text-align: center;
-  }
-  .gate-card input:focus {
-    border-color: var(--accent);
-    box-shadow: none;
-    background: var(--paper-solid);
+    margin-bottom: 12px; 
   }
 
   .gate-card button { 
     width: 100%; 
-    padding: 15px; 
-    border-radius: var(--radius-sm); 
+    padding: 13px; 
+    border-radius: 10px; 
     border: none; 
     background: var(--accent); 
     color: white; 
     font-weight: 700; 
-    font-size: 16px; 
-    font-family: var(--font-main);
+    font-size: 15px; 
     cursor: pointer; 
-    box-shadow: none;
-  }
-  .gate-card button:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: none;
-  }
-  .gate-card button:active {
-    transform: translateY(0.5px);
   }
 
   .gate-err { 
     color: var(--red); 
-    font-size: 14px; 
-    margin-top: 16px; 
+    font-size: 13px; 
+    margin-top: 10px; 
     display: none; 
-    font-weight: 600;
   }
-  .gate-err.show { display: block; }
+
+  .gate-err.show { 
+    display: block; 
+  }
 
   /* ---- header ---- */
   .topbar { 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    margin-bottom: 36px; 
-  }
-
-  .header-actions { 
-    display: flex; 
-    gap: 8px; 
-    align-items: center; 
-  }
-
-  .theme-toggle { 
-    background: var(--paper); 
-    border: 1px solid var(--line); 
-    color: var(--ink); 
-    border-radius: 100px; 
-    padding: 6px 10px; 
-    cursor: pointer; 
-    font-size: 14px; 
-    transition: 0.2s; 
+    margin-bottom: 24px; 
   }
 
   .brand { 
-    font-size: 26px; 
+    font-size: 19px; 
     font-weight: 800; 
-    line-height: 1.1; 
-    letter-spacing: -0.8px;
+    line-height: 1.2; 
   }
 
   .brand span { 
@@ -189,240 +114,179 @@
   }
 
   .brand-sub { 
-    font-size: 13px; 
+    font-size: 12px; 
     color: var(--muted); 
-    font-weight: 600; 
+    font-weight: normal; 
     display: block; 
-    margin-top: 4px;
-    letter-spacing: normal;
   }
 
   .stat-pill { 
     background: var(--paper); 
     border: 1px solid var(--line); 
     border-radius: 100px; 
-    padding: 8px 18px; 
-    font-size: 14px; 
+    padding: 7px 14px; 
+    font-size: 13px; 
     font-weight: 700; 
-    box-shadow: none;
-  }
-  .stat-pill span {
-    color: var(--accent);
   }
 
   .notice-box { 
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(0, 0, 0, 0));
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    padding: 18px 24px; 
-    border-radius: var(--radius-md); 
-    margin-bottom: 32px; 
-    font-size: 14px; 
-    line-height: 1.6; 
-    color: var(--ink); 
-    box-shadow: none;
+    background: #2A241D; 
+    border-left: 4px solid var(--accent); 
+    padding: 14px 16px; 
+    border-radius: 8px; 
+    margin-bottom: 24px; 
+    font-size: 13.5px; 
+    line-height: 1.5; 
+    color: #E5E0D6; 
   }
 
   .notice-box strong { 
     color: var(--accent); 
-    display: flex; 
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px; 
-    font-size: 15px; 
+    display: block; 
+    margin-bottom: 4px; 
+    font-size: 14.5px; 
   }
 
   /* ---- Config Block ---- */
   .config-box { 
     background: var(--paper); 
-    padding: 24px; 
-    border-radius: var(--radius-lg); 
-    margin-bottom: 20px; 
-    border: 1px solid var(--line); 
-    box-shadow: none;
+    padding: 16px; 
+    border-radius: 14px; 
+    margin-bottom: 12px; 
+    border: 1.5px solid var(--line); 
   }
 
   .config-box-title {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: var(--ink);
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: var(--accent);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
 
   .config-row {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     align-items: center;
-    margin-bottom: 14px;
-  }
-  .config-row:last-of-type {
-    margin-bottom: 0;
+    margin-bottom: 8px;
   }
 
   .config-box input, .config-box select, .config-box textarea { 
     flex: 1; 
-    padding: 12px 16px; 
-    border-radius: var(--radius-sm); 
+    padding: 10px; 
+    border-radius: 8px; 
     border: 1px solid var(--line); 
-    background: var(--paper-solid); 
+    background: var(--bg); 
     color: var(--ink); 
     font-size: 14px; 
-    font-family: var(--font-main);
-    outline: none;
-  }
-  .config-box input:focus, .config-box select:focus, .config-box textarea:focus {
-    border-color: var(--accent);
-    background: var(--paper-solid);
-    box-shadow: none;
+    font-family: inherit;
   }
 
   .config-box button { 
-    padding: 12px 24px; 
-    border-radius: var(--radius-sm); 
+    padding: 10px 16px; 
+    border-radius: 8px; 
     border: none; 
     background: var(--accent); 
     color: white; 
-    font-weight: 700; 
-    font-family: var(--font-main);
+    font-weight: bold; 
     cursor: pointer; 
     white-space: nowrap; 
-    box-shadow: none;
-  }
-  .config-box button:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: none;
-  }
-  .config-box button:active {
-    transform: translateY(0.5px);
   }
 
   .admin-list-container {
-    margin-top: 16px;
+    margin-top: 10px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
   }
 
   .admin-list-item {
-    background: var(--paper-solid);
-    padding: 14px 18px;
-    border-radius: var(--radius-sm);
+    background: var(--bg);
+    padding: 8px 12px;
+    border-radius: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 14px;
-    border: 1px solid var(--line);
+    font-size: 13px;
+    border-left: 3px solid var(--line);
   }
 
-  .admin-list-item.red { 
-    border-color: var(--red); 
-    background: linear-gradient(90deg, rgba(244, 63, 94, 0.06), transparent); 
-  }
-  .admin-list-item.yellow { 
-    border-color: var(--yellow); 
-    background: linear-gradient(90deg, rgba(245, 158, 11, 0.06), transparent); 
-  }
-  .admin-list-item.green { 
-    border-color: var(--green); 
-    background: linear-gradient(90deg, rgba(16, 185, 129, 0.06), transparent); 
-  }
+  .admin-list-item.red { border-left-color: #C0392B; }
+  .admin-list-item.yellow { border-left-color: #D48806; }
+  .admin-list-item.green { border-left-color: var(--green); }
+  .admin-list-item.homework { border-left-color: #C0392B; background: rgba(192,57,43,0.1); }
 
   .btn-del {
-    background: rgba(244, 63, 94, 0.1);
-    color: var(--red-text);
-    border: 1px solid rgba(244, 63, 94, 0.2);
+    background: transparent;
+    color: var(--red);
+    border: none;
     cursor: pointer;
-    font-weight: 700;
+    font-weight: bold;
     font-size: 12px;
-    padding: 6px 12px;
-    border-radius: 8px;
-  }
-  .btn-del:hover {
-    background: var(--red);
-    color: white;
-    border-color: transparent;
-    transform: translateY(-1.5px);
-  }
-  .btn-del:active {
-    transform: translateY(0.5px);
   }
 
   .schedule-grid {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 8px;
   }
 
   .schedule-row {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    background: var(--paper-solid);
-    padding: 16px;
-    border-radius: var(--radius-sm);
+    gap: 4px;
+    background: var(--bg);
+    padding: 10px;
+    border-radius: 8px;
     border: 1px solid var(--line);
   }
 
   .schedule-row label {
-    font-weight: 700;
-    font-size: 14px;
+    font-weight: bold;
+    font-size: 13px;
     color: var(--accent);
   }
 
   .schedule-row textarea {
     min-height: 80px;
     resize: vertical;
-    padding: 12px;
-    background: var(--paper-solid);
   }
 
   .action-row { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 14px; 
-    margin-bottom: 40px; 
-    margin-top: 40px;
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 8px; 
+    margin-bottom: 22px; 
+    margin-top: 24px;
   }
 
   .btn-secondary { 
-    background: var(--paper);
+    flex: 1; 
+    background: var(--paper); 
     color: var(--ink); 
-    border: 1px solid var(--line); 
-    padding: 16px 14px; 
-    border-radius: var(--radius-sm); 
-    font-size: 14px; 
+    border: 1.5px solid var(--line); 
+    padding: 11px 10px; 
+    border-radius: 10px; 
+    font-size: 13px; 
     font-weight: 700; 
-    font-family: var(--font-main);
     cursor: pointer; 
     white-space: nowrap; 
-    box-shadow: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
   }
 
   .btn-secondary:hover { 
     border-color: var(--accent); 
-    background: var(--paper-solid);
-    transform: translateY(-2.5px);
-    box-shadow: none;
-  }
-  .btn-secondary:active {
-    transform: translateY(0.5px);
   }
 
   .field-label { 
     display: block; 
     text-align: left; 
-    font-size: 13px; 
+    font-size: 12.5px; 
     color: var(--muted); 
-    font-weight: 700; 
-    margin-bottom: 8px; 
-    margin-top: 20px; 
+    font-weight: 600; 
+    margin-bottom: 6px; 
+    margin-top: 12px; 
   }
 
   .field-label:first-of-type { 
@@ -431,274 +295,194 @@
 
   .modal-box textarea, .modal-box input[type="file"] { 
     width: 100%; 
-    padding: 14px 16px; 
-    border-radius: var(--radius-sm); 
-    border: 1px solid var(--line); 
-    background: var(--paper-solid); 
+    padding: 12px 14px; 
+    border-radius: 10px; 
+    border: 1.5px solid var(--line); 
+    background: var(--bg); 
     color: var(--ink); 
     font-size: 14px; 
-    font-family: var(--font-main); 
-    margin-bottom: 12px; 
-    outline: none;
-  }
-  .modal-box textarea:focus {
-    border-color: var(--accent);
-    box-shadow: none;
-    background: var(--paper-solid);
+    font-family: inherit; 
+    margin-bottom: 4px; 
   }
 
   .modal-box textarea { 
     resize: vertical; 
-    min-height: 100px; 
+    min-height: 70px; 
   }
 
   .section-label { 
     font-size: 13px; 
-    font-weight: 800; 
+    font-weight: 700; 
     color: var(--muted); 
     text-transform: uppercase; 
-    letter-spacing: 1.5px; 
-    margin: 48px 0 16px 4px; 
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    letter-spacing: 0.5px; 
+    margin: 28px 0 10px 2px; 
   }
 
   /* ---- order cards ---- */
+  @keyframes rushBlink {
+    0% { border-color: #E8836A; box-shadow: 0 0 0px #E8836A; }
+    50% { border-color: #C0392B; box-shadow: 0 0 10px rgba(192,57,43,0.3); }
+    100% { border-color: #E8836A; box-shadow: 0 0 0px #E8836A; }
+  }
 
   .order-card { 
     background: var(--paper); 
-    border-radius: var(--radius-md); 
-    padding: 22px; 
-    margin-bottom: 14px; 
-    box-shadow: none; 
-    border: 1px solid var(--line);
-  }
-  .order-card:hover {
-    transform: translateY(-2.5px);
-    box-shadow: none;
-    border-color: rgba(255, 255, 255, 0.15);
+    border-radius: 14px; 
+    padding: 16px; 
+    margin-bottom: 10px; 
+    box-shadow: var(--shadow); 
+    border-left: 3px solid var(--line); 
   }
 
-  .order-card.pending { border-color: var(--accent); }
-  .order-card.done { border-color: var(--green); }
-  .order-card.checking { border-color: var(--yellow); }
-  .order-card.rush { border-color: var(--red); }
+  .order-card.pending { border-left-color: var(--accent); }
+  .order-card.done { border-left-color: var(--green); }
+  .order-card.checking { border-left-color: var(--yellow); }
+  .order-card.rush { border-left-width: 4px; animation: rushBlink 1.5s infinite; }
 
   .order-top { 
     display: flex; 
     justify-content: space-between; 
     align-items: flex-start; 
-    gap: 16px; 
+    gap: 10px; 
   }
 
   .order-title { 
-    font-size: 17px; 
+    font-size: 15px; 
     font-weight: 700; 
-    margin: 0 0 8px; 
-    line-height: 1.35;
-    color: var(--ink);
+    margin: 0 0 4px; 
   }
 
   .order-who { 
-    font-size: 14px; 
+    font-size: 13px; 
     color: var(--muted); 
-    font-weight: 500;
   }
 
   .order-time { 
-    font-size: 12px; 
+    font-size: 11.5px; 
     color: var(--muted); 
     white-space: nowrap; 
-    background: var(--paper-solid);
-    padding: 5px 10px;
-    border-radius: 8px;
-    font-weight: 600;
-    border: 1px solid var(--line);
   }
 
   .tag { 
     display: inline-block; 
-    font-size: 12px; 
+    font-size: 11.5px; 
     font-weight: 700; 
-    padding: 5px 14px; 
+    padding: 3px 9px; 
     border-radius: 100px; 
-    margin-top: 16px; 
-    letter-spacing: 0.2px;
+    margin-top: 8px; 
   }
 
-  .tag.pending { background: var(--accent-soft); color: var(--accent-text); border: 1px solid rgba(99, 102, 241, 0.2); }
-  .tag.done { background: var(--green-soft); color: var(--green-text); border: 1px solid rgba(16, 185, 129, 0.2); }
-  .tag.checking { background: var(--yellow-soft); color: var(--yellow-text); border: 1px solid rgba(245, 158, 11, 0.2); }
-  .tag.rush { background: rgba(244, 63, 94, 0.15); color: var(--red-text); border: 1px solid rgba(244, 63, 94, 0.25); }
+  .tag.pending { background: var(--accent-soft); color: var(--accent); }
+  .tag.done { background: var(--green-soft); color: var(--green); }
+  .tag.checking { background: var(--yellow-soft); color: var(--yellow); }
+  .tag.rush { background: #C0392B; color: white; }
 
   .vip-badge { 
-    color: #fbbf24; 
-    background: rgba(245, 158, 11, 0.1); 
-    border: 1px solid rgba(245, 158, 11, 0.2);
-    padding: 3px 8px; 
-    border-radius: 6px; 
+    color: #D48806; 
+    background: #FFF4E5; 
+    padding: 2px 6px; 
+    border-radius: 4px; 
     font-size: 11px; 
-    font-weight: 800; 
-    margin-left: 8px; 
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: inline-block;
-    vertical-align: middle;
+    font-weight: bold; 
+    margin-left: 4px; 
   }
 
   .order-actions { 
-    margin-top: 20px; 
+    margin-top: 12px; 
     display: flex; 
-    gap: 12px; 
+    gap: 8px; 
   }
 
   .btn { 
-    padding: 12px 18px; 
-    border-radius: var(--radius-sm); 
+    padding: 9px 14px; 
+    border-radius: 8px; 
     border: none; 
-    font-size: 14px; 
+    font-size: 13px; 
     font-weight: 700; 
-    font-family: var(--font-main);
     cursor: pointer; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
   }
 
-  .btn-mark-done { 
-    background: var(--green-soft); 
-    color: #6ee7b7; 
-    border: 1px solid rgba(16, 185, 129, 0.2); 
-  }
-  .btn-mark-done:hover { 
-    background: rgba(16, 185, 129, 0.2); 
-    border-color: var(--green); 
-    transform: translateY(-2px);
-    box-shadow: none;
-  }
-  .btn-mark-done:active {
-    transform: translateY(0.5px);
-  }
-
-  .btn-pay { 
-    background: var(--accent); 
-    color: white; 
-    box-shadow: none;
-  }
-  .btn-pay:hover { 
-    background: var(--accent-hover); 
-    box-shadow: none; 
-    transform: translateY(-2px); 
-  }
-  .btn-pay:active {
-    transform: translateY(0.5px);
-  }
-
-  .btn-verify { 
-    background: var(--paper-solid); 
-    color: white; 
-    border: 1px solid var(--line); 
-  }
-  .btn-verify:hover { 
-    background: var(--paper-solid); 
-    border-color: rgba(255, 255, 255, 0.25); 
-    transform: translateY(-2px);
-  }
-  .btn-verify:active {
-    transform: translateY(0.5px);
-  }
+  .btn-mark-done { background: var(--green-soft); color: var(--green); }
+  .btn-mark-done:hover { background: #28402f; }
+  .btn-pay { background: var(--accent); color: white; }
+  .btn-pay:hover { background: #b8521f; }
+  .btn-verify { background: #003D6B; color: white; }
+  .btn-verify:hover { background: #002B4D; }
 
   .empty-state { 
     text-align: center; 
-    padding: 48px 24px; 
+    padding: 30px; 
     color: var(--muted); 
-    font-size: 15px; 
-    background: var(--paper-solid);
-    border-radius: var(--radius-md);
-    border: 1.5px dashed var(--line);
+    font-size: 14px; 
   }
 
   /* ---- history & summary ---- */
   .history-card { 
     background: var(--paper); 
-    border-radius: var(--radius-md); 
-    padding: 18px 22px; 
-    margin-bottom: 12px; 
-    box-shadow: none; 
-    border: 1px solid var(--line);
+    border-radius: 14px; 
+    padding: 14px 16px; 
+    margin-bottom: 8px; 
+    box-shadow: var(--shadow); 
+    border-left: 3px solid var(--green); 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    gap: 20px; 
-  }
-  .history-card:hover {
-    transform: translateX(4px);
-    border-color: rgba(255, 255, 255, 0.12);
+    gap: 12px; 
   }
 
-  .history-left .order-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-  .history-left .order-who { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .history-left .order-title { font-size: 14px; }
+  .history-left .order-who { font-size: 12.5px; margin-top: 2px;}
   .history-right { text-align: right; white-space: nowrap; }
-  .history-amount { font-size: 18px; font-weight: 800; color: var(--green-text); letter-spacing: -0.2px; }
-  .history-time { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 500; }
+  .history-amount { font-size: 15px; font-weight: 800; color: var(--green); }
+  .history-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
   
   .btn-view-slip { 
-    margin-top: 12px; 
+    margin-top: 8px; 
     background: transparent; 
     border: 1px solid var(--accent); 
-    color: var(--accent-text); 
-    padding: 6px 14px; 
-    border-radius: var(--radius-sm); 
-    font-size: 12px; 
-    font-weight: 700; 
+    color: var(--accent); 
+    padding: 4px 10px; 
+    border-radius: 6px; 
+    font-size: 11px; 
+    font-weight: bold; 
     cursor: pointer; 
     display: inline-block; 
   }
 
   .btn-view-slip:hover { 
     background: var(--accent-soft); 
-    color: white;
-    transform: translateY(-1.5px);
-  }
-  .btn-view-slip:active {
-    transform: translateY(0.5px);
   }
 
   .history-hidden { display: none !important; }
   .btn-toggle-history { 
     width: 100%; 
-    background: var(--paper-solid); 
-    color: var(--ink); 
+    background: transparent; 
+    color: var(--muted); 
     border: 1.5px dashed var(--line); 
-    padding: 16px; 
-    border-radius: var(--radius-sm); 
-    font-size: 14px; 
+    padding: 12px; 
+    border-radius: 10px; 
+    font-size: 13.5px; 
     font-weight: 700; 
-    font-family: var(--font-main);
     cursor: pointer; 
-    margin-top: 14px; 
+    margin-top: 8px; 
+    transition: 0.2s; 
   }
+
   .btn-toggle-history:hover { 
-    border-color: var(--accent); 
-    background: var(--paper-solid);
-    transform: translateY(-2px);
-  }
-  .btn-toggle-history:active {
-    transform: translateY(0.5px);
+    border-color: var(--muted); 
+    color: var(--ink); 
   }
 
   /* ---- modals ---- */
   .modal-backdrop { 
     position: fixed; 
     inset: 0; 
-    background: var(--paper-solid); 
+    background: rgba(0,0,0,0.6); 
     display: none; 
     align-items: center; 
     justify-content: center; 
-    z-index: 100; 
-    padding: 20px;
+    z-index: 50; 
   }
 
   .modal-backdrop.show { 
@@ -706,128 +490,79 @@
   }
 
   .modal-box { 
-    background: var(--paper-solid); 
-    border-radius: var(--radius-lg); 
-    padding: 36px; 
-    width: 100%; 
-    max-width: 440px; 
-    box-shadow: none; 
-    border: 1px solid var(--line);
-    transform: scale(0.96);
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .modal-backdrop.show .modal-box {
-    transform: scale(1);
+    background: var(--paper); 
+    border-radius: 16px; 
+    padding: 24px; 
+    width: 90%; 
+    max-width: 380px; 
+    box-shadow: var(--shadow); 
   }
 
-  .modal-box h3 { margin: 0 0 10px; font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.5px; }
-  .modal-box p { margin: 0 0 24px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+  .modal-box h3 { margin: 0 0 4px; font-size: 17px; }
+  .modal-box p { margin: 0 0 16px; color: var(--muted); font-size: 13px; }
   
   .modal-box input[type="number"], 
   .modal-box input[type="text"] { 
     width: 100%; 
-    padding: 14px 18px; 
-    border-radius: var(--radius-sm); 
-    border: 1px solid var(--line); 
-    background: var(--paper-solid); 
+    padding: 13px 14px; 
+    border-radius: 10px; 
+    border: 1.5px solid var(--line); 
+    background: var(--bg); 
     color: var(--ink); 
-    font-size: 16px; 
-    font-family: var(--font-main);
-    font-weight: 600; 
-    margin-bottom: 20px; 
-    outline: none;
-  }
-  .modal-box input[type="number"]:focus, 
-  .modal-box input[type="text"]:focus {
-    border-color: var(--accent);
-    box-shadow: none;
+    font-size: 18px; 
+    font-weight: 700; 
+    margin-bottom: 14px; 
   }
 
   .modal-box .row { 
     display: flex; 
-    gap: 12px; 
-    margin-top: 12px;
+    gap: 8px; 
   }
 
   .modal-box .row .btn { 
     flex: 1; 
-    padding: 15px; 
+    padding: 12px; 
   }
 
   .btn-cancel2 { 
-    background: var(--paper-solid); 
-    color: var(--ink); 
+    background: transparent; 
+    color: var(--muted); 
     border: 1px solid var(--line); 
-  }
-  .btn-cancel2:hover {
-    background: var(--paper-solid);
-    transform: translateY(-2px);
-  }
-  .btn-cancel2:active {
-    transform: translateY(0.5px);
   }
 
   .btn-confirm { 
     background: var(--accent); 
     color: white; 
   }
-  .btn-confirm:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: none;
-  }
-  .btn-confirm:active {
-    transform: translateY(0.5px);
-  }
 
   .btn-confirm:disabled { 
-    background: var(--paper-solid); 
+    background: var(--line); 
     color: var(--muted); 
     cursor: not-allowed; 
-    border: 1px solid var(--line);
-    transform: none;
-    box-shadow: none;
   }
 
   .hidden { display: none !important; }
   
   .toast { 
     position: fixed; 
-    bottom: 36px; 
+    bottom: 24px; 
     left: 50%; 
-    transform: translateX(-50%) translateY(24px); 
-    background: var(--ink); 
-    color: var(--bg); 
-    padding: 16px 28px; 
+    transform: translateX(-50%) translateY(20px); 
+    background: #E5E0D6; 
+    color: #1E1B16; 
+    padding: 12px 20px; 
     border-radius: 100px; 
     font-size: 14px; 
-    font-weight: 700; 
-    box-shadow: none;
+    font-weight: 600; 
     opacity: 0; 
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    transition: 0.25s; 
     pointer-events: none; 
-    z-index: 150; 
+    z-index: 100; 
   }
 
   .toast.show { 
     opacity: 1; 
     transform: translateX(-50%) translateY(0); 
-  }
-
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 10px;
-  }
-  ::-webkit-scrollbar-track {
-    background: var(--bg);
-  }
-  ::-webkit-scrollbar-thumb {
-    background: var(--line-focus);
-    border-radius: 6px;
-    border: 2px solid var(--bg);
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--muted);
   }
 </style>
 </head>
@@ -836,34 +571,26 @@
 <div id="gateScreen">
   <div class="gate-card">
     <h1>🔒 หน้า Admin</h1>
-    <input type="password" id="adminPw" aria-label="รหัสแอดมิน" placeholder="รหัสแอดมิน">
+    <input type="password" id="adminPw" placeholder="รหัสแอดมิน">
     <button onclick="checkAdminPw()">เข้าสู่ระบบ</button>
     <div class="gate-err" id="gateErr">รหัสไม่ถูกต้อง</div>
   </div>
 </div>
 
-<main class="wrap hidden" id="adminScreen">
-  <header class="topbar">
+<div class="wrap hidden" id="adminScreen">
+  <div class="topbar">
     <div class="brand">
       Admin · ฝาก<span>งาน</span>
       <span class="brand-sub" id="currentMonthLabel">ยอดของเดือนนี้</span>
     </div>
-    <div class="header-actions">
-      <div class="stat-pill">ได้แล้ว <span id="totalEarn">0</span> / 5,000</div>
-      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" aria-label="สลับธีมสี">🌙</button>
-    </div>
-  </header>
-
-  <div class="notice-box">
-    <strong>📢 หมายเหตุความโปร่งใส</strong>
-    ข้อมูลประวัติและยอดเงินทั้งหมดที่เกิดขึ้น <b>ก่อนวันที่ 30 มิถุนายน</b> เป็นเพียงการ "ทดสอบระบบ" เท่านั้น
+    <div class="stat-pill">ได้แล้ว <span id="totalEarn">0</span> / 5,000</div>
   </div>
 
   <!-- โซนที่ 1: กระดานข่าว -->
   <div class="config-box">
     <div class="config-box-title">📢 กระดานข่าวห้อง (ตัววิ่ง)</div>
     <div class="config-row">
-      <input type="text" id="adminAnnouncement" aria-label="กระดานข่าวห้อง" placeholder="พิมพ์แจ้งเตือนเพื่อนๆ ที่นี่...">
+      <input type="text" id="adminAnnouncement" placeholder="พิมพ์แจ้งเตือนเพื่อนๆ ที่นี่...">
       <button onclick="saveAnnouncement()">อัปเดต</button>
     </div>
   </div>
@@ -872,71 +599,81 @@
   <div class="config-box">
     <div class="config-box-title">🔥 ตั้งค่าคิวงานไทม์</div>
     <div class="config-row">
-      <input type="number" id="qCurrent" aria-label="คิวปัจจุบัน" placeholder="คิวปัจจุบัน" title="คิวปัจจุบัน" style="flex:0.5;">
+      <input type="number" id="qCurrent" placeholder="คิวปัจจุบัน" title="คิวปัจจุบัน" style="flex:0.5;">
       <span style="font-weight:bold;">/</span>
-      <input type="number" id="qMax" aria-label="รับได้สูงสุด" placeholder="รับได้สูงสุด" title="รับได้สูงสุด" style="flex:0.5;">
+      <input type="number" id="qMax" placeholder="รับได้สูงสุด" title="รับได้สูงสุด" style="flex:0.5;">
     </div>
     <div class="config-row">
-      <input type="text" id="qEta" aria-label="เวลาเสร็จประมาณ" placeholder="เช่น เสร็จประมาณตี 2 (ปล่อยว่างได้)">
+      <input type="text" id="qEta" placeholder="เช่น เสร็จประมาณตี 2 (ปล่อยว่างได้)">
       <button onclick="saveQueue()">อัปเดตคิว</button>
     </div>
   </div>
 
   <!-- โซนที่ 3: ศูนย์บัญชาการเอาตัวรอด (แจ้งเตือนส่งงาน/สอบ) -->
   <div class="config-box">
-    <div class="config-box-title">🛡️ ศูนย์บัญชาการ (แจ้งเตือนสอบ/ส่งงาน)</div>
+    <div class="config-box-title">🛡️ ศูนย์บัญชาการ (แจ้งเตือนทั่วไป)</div>
     <div class="config-row">
-      <input type="text" id="svText" aria-label="ข้อความแจ้งเตือน" placeholder="เช่น พรุ่งนี้: สอบคณิตศาสตร์" style="flex:2;">
-      <select id="svType" aria-label="ระดับความสำคัญ" style="flex:1;">
+      <input type="text" id="svText" placeholder="เช่น พรุ่งนี้: สอบคณิตศาสตร์" style="flex:2;">
+      <select id="svType" style="flex:1;">
         <option value="red">🔴 ด่วน/สำคัญ</option>
         <option value="yellow">🟡 ปานกลาง</option>
         <option value="green">🟢 ทั่วไป</option>
       </select>
       <button onclick="addSurvivalItem()">เพิ่ม</button>
     </div>
+    
+    <!-- ฟีเจอร์ใหม่: แจ้งงานผูกตารางสอน -->
+    <div class="config-row" style="margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 12px;">
+      <span style="font-size:13px; font-weight:bold; color:var(--red);">📌 แจ้งงาน/การบ้าน (ผูกตารางสอนอัตโนมัติ)</span>
+    </div>
+    <div class="config-row">
+      <input type="text" id="hwClass" placeholder="ชื่อวิชา (เช่น คณิต, อังกฤษ)" style="flex:1;">
+      <input type="text" id="hwDetail" placeholder="รายละเอียด (เช่น หน้า 10)" style="flex:2;">
+      <button style="background:var(--red);" onclick="addHomeworkItem()">แจ้งงาน</button>
+    </div>
+
     <div class="admin-list-container" id="adminSurvivalList"></div>
   </div>
 
-  <!-- โซนที่ 4: คลังชีทสรุป (ใช้ลิงก์ Google Drive) -->
+  <!-- โซนที่ 4: คลังชีทสรุป -->
   <div class="config-box">
     <div class="config-box-title">📚 จัดการคลังชีทสรุป (อัปลิงก์)</div>
     <div class="config-row">
-      <input type="text" id="vaultTitle" aria-label="ชื่อชีท" placeholder="ชื่อชีท (เช่น สรุปวิทย์)">
-      <input type="text" id="vaultDesc" aria-label="คำอธิบาย" placeholder="คำอธิบาย (อ่าน 10 นาทีรอด)">
+      <input type="text" id="vaultTitle" placeholder="ชื่อชีท (เช่น สรุปวิทย์)">
+      <input type="text" id="vaultDesc" placeholder="คำอธิบาย (อ่าน 10 นาทีรอด)">
     </div>
     <div class="config-row">
-      <input type="url" id="vaultLink" aria-label="ลิงก์ไฟล์" placeholder="ลิงก์ไฟล์ (เช่น ลิงก์ Google Drive)">
+      <input type="url" id="vaultLink" placeholder="ลิงก์ไฟล์ (เช่น ลิงก์ Google Drive)">
       <button onclick="addVaultItem()">เพิ่มชีท</button>
     </div>
     <div class="admin-list-container" id="adminVaultList"></div>
   </div>
 
-  <!-- โซนที่ 5: ตารางสอนเดินเรียน (พิมพ์ข้อความตามรูปแบบ) -->
+  <!-- โซนที่ 5: ตารางสอนเดินเรียน -->
   <div class="config-box">
     <div class="config-box-title">📅 ตารางสอนเดินเรียน (อัปเดตรายสัปดาห์)</div>
     <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">
       พิมพ์รูปแบบ: <b>HH:MM - HH:MM | ชื่อวิชา (ห้อง) ครู</b><br>
-      (ระบบเรียลไทม์หน้าแรก จะอ่านเวลาจากรูปแบบนี้เพื่อบอกว่าตอนนี้เรียนวิชาอะไร)
     </div>
     <div class="schedule-grid">
       <div class="schedule-row">
-        <label for="sch_mon">วันจันทร์</label>
+        <label>วันจันทร์</label>
         <textarea id="sch_mon" placeholder="07:30 - 09:30 | 🎨 กราฟิกศิลป์ (ห้อง 421) ครูชาริกา"></textarea>
       </div>
       <div class="schedule-row">
-        <label for="sch_tue">วันอังคาร</label>
+        <label>วันอังคาร</label>
         <textarea id="sch_tue" placeholder="07:30 - 09:30 | 🇨🇳 จีน (ห้อง 235) ครูธัญชนก"></textarea>
       </div>
       <div class="schedule-row">
-        <label for="sch_wed">วันพุธ</label>
+        <label>วันพุธ</label>
         <textarea id="sch_wed" placeholder="09:30 - 11:30 | 🖥️ ระบบคอมฯ (ห้อง 444) ครูภุชงค์"></textarea>
       </div>
       <div class="schedule-row">
-        <label for="sch_thu">วันพฤหัสบดี</label>
+        <label>วันพฤหัสบดี</label>
         <textarea id="sch_thu" placeholder="08:30 - 10:30 | 📱 ดิจิทัลอาชีพ (ห้อง 444) ครูฐิติกัลยาพัชร"></textarea>
       </div>
       <div class="schedule-row">
-        <label for="sch_fri">วันศุกร์</label>
+        <label>วันศุกร์</label>
         <textarea id="sch_fri" placeholder="09:30 - 11:30 | 🔬 วิทย์อาชีพ (ห้อง 221) ครูสุภาวดี"></textarea>
       </div>
     </div>
@@ -964,16 +701,16 @@
   <div id="historyList"></div>
   <button id="toggleHistoryBtn" class="btn-toggle-history hidden" onclick="toggleHistory()">ดูประวัติทั้งหมด</button>
   <div class="empty-state hidden" id="historyEmpty">ยังไม่มีประวัติการรับเงิน</div>
-</main>
+</div>
 
 <!-- ============ MODALS ============ -->
 <div class="modal-backdrop" id="addTaskModal">
   <div class="modal-box">
     <h3>เพิ่มงานเอง</h3>
     <p>สำหรับงานที่ไม่ได้มาจาก Google Classroom</p>
-    <label class="field-label" for="newTaskTitle">ชื่องาน</label>
+    <label class="field-label">ชื่องาน</label>
     <input type="text" id="newTaskTitle" placeholder="เช่น ช่วยพิมพ์รายงานวิชา...">
-    <label class="field-label" for="newTaskDesc">รายละเอียด (ใส่หรือไม่ใส่ก็ได้)</label>
+    <label class="field-label">รายละเอียด (ใส่หรือไม่ใส่ก็ได้)</label>
     <textarea id="newTaskDesc" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
     <div class="row">
       <button class="btn btn-cancel2" onclick="closeAddTaskModal()">ยกเลิก</button>
@@ -986,11 +723,11 @@
   <div class="modal-box">
     <h3>ได้รับเพิ่มเติม</h3>
     <p>สำหรับเงินที่ได้นอกเหนือจากงานในระบบ</p>
-    <label class="field-label" for="extraFrom">ได้จากใคร</label>
+    <label class="field-label">ได้จากใคร</label>
     <input type="text" id="extraFrom" placeholder="เช่น เลขที่ 5 หรือ ชื่อเพื่อน">
-    <label class="field-label" for="extraReason">ได้เพราะอะไร</label>
+    <label class="field-label">ได้เพราะอะไร</label>
     <input type="text" id="extraReason" placeholder="เช่น ช่วยทำสไลด์, ค่าปริ้นงาน">
-    <label class="field-label" for="extraAmount">จำนวนเงิน (บาท)</label>
+    <label class="field-label">จำนวนเงิน (บาท)</label>
     <input type="number" id="extraAmount" placeholder="0" inputmode="numeric">
     <div class="row">
       <button class="btn btn-cancel2" onclick="closeExtraIncomeModal()">ยกเลิก</button>
@@ -1003,9 +740,9 @@
   <div class="modal-box">
     <h3>บันทึกยอดเงิน (จ่ายสด)</h3>
     <p id="payContext"></p>
-    <input type="number" id="payAmount" aria-label="จำนวนเงิน" placeholder="จำนวนเงิน (บาท)" inputmode="numeric">
+    <input type="number" id="payAmount" placeholder="จำนวนเงิน (บาท)" inputmode="numeric">
     
-    <label class="field-label" style="margin-top: 10px;" for="cashImageInput">📷 ถ่ายรูปเงินเป็นหลักฐาน (เปิดกล้องได้)</label>
+    <label class="field-label" style="margin-top: 10px;">📷 ถ่ายรูปเงินเป็นหลักฐาน (เปิดกล้องได้)</label>
     <input type="file" id="cashImageInput" accept="image/*" capture="environment" style="margin-bottom: 16px;">
 
     <div class="row">
@@ -1019,8 +756,8 @@
   <div class="modal-box">
     <h3>ตรวจสอบสลิปการโอนเงิน</h3>
     <p id="verifyContext"></p>
-    <img id="slipImagePreview" src="" loading="lazy" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-bottom: 12px; border: 1.5px solid var(--line);">
-    <input type="number" id="verifyAmount" aria-label="ยอดเงินตามสลิป" placeholder="ยอดเงินตามสลิป (บาท)" inputmode="numeric">
+    <img id="slipImagePreview" src="" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-bottom: 12px; border: 1.5px solid var(--line);">
+    <input type="number" id="verifyAmount" placeholder="ยอดเงินตามสลิป (บาท)" inputmode="numeric">
     <div class="row">
       <button class="btn btn-cancel2" onclick="closeVerifyModal()">ปิด</button>
       <button class="btn btn-confirm" onclick="confirmVerifyPayment()">ยืนยันยอดนี้</button>
@@ -1062,30 +799,11 @@
   let activeOrderId = null; 
   let isHistoryExpanded = false;
   
-  // ตัวแปรเก็บข้อมูลศูนย์บัญชาการและคลังชีท
+  // ตัวแปรเก็บข้อมูล
   let currentSurvivalItems = [];
   let currentVaultItems = [];
 
   const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-
-  if (localStorage.getItem('theme') === 'dark') {
-    document.body.setAttribute('data-theme', 'dark');
-    const tb = document.getElementById('themeBtn');
-    if (tb) tb.textContent = '☀️';
-  }
-
-  function toggleTheme() {
-    const tb = document.getElementById('themeBtn');
-    if (document.body.getAttribute('data-theme') === 'dark') {
-      document.body.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'light');
-      if (tb) tb.textContent = '🌙';
-    } else {
-      document.body.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-      if (tb) tb.textContent = '☀️';
-    }
-  }
 
   function checkAdminPw() {
     const val = document.getElementById('adminPw').value;
@@ -1123,29 +841,23 @@
     listenToIncomeLogs();
   }
 
-  // ดึงการตั้งค่าระบบทั้งหมด
   function listenToSettings() {
     db.collection('system_settings').doc('main').onSnapshot(snap => {
       if(snap.exists && snap.data()) {
         const d = snap.data();
         
-        // 1. กระดานข่าว
         document.getElementById('adminAnnouncement').value = d.announcement || '';
         
-        // 2. คิวงาน
         document.getElementById('qCurrent').value = d.queue_current !== undefined ? d.queue_current : 0;
         document.getElementById('qMax').value = d.queue_max !== undefined ? d.queue_max : 5;
         document.getElementById('qEta').value = d.queue_eta || '';
         
-        // 3. ศูนย์บัญชาการ
         currentSurvivalItems = d.survival_items || [];
         renderAdminSurvivalList();
 
-        // 4. คลังชีท
         currentVaultItems = d.vault_items || [];
         renderAdminVaultList();
 
-        // 5. ตารางสอน
         const sch = d.schedule || {};
         document.getElementById('sch_mon').value = sch.mon || '';
         document.getElementById('sch_tue').value = sch.tue || '';
@@ -1176,7 +888,7 @@
     } catch (e) { showToast('อัปเดตคิวไม่สำเร็จ'); }
   }
 
-  // --- จัดการศูนย์บัญชาการ ---
+  // --- จัดการศูนย์บัญชาการ (ทั่วไป) ---
   async function addSurvivalItem() {
     const txt = document.getElementById('svText').value.trim();
     const type = document.getElementById('svType').value;
@@ -1187,6 +899,32 @@
       document.getElementById('svText').value = '';
       showToast('เพิ่มรายการแจ้งเตือนแล้ว 🛡️');
     } catch (e) { showToast('เพิ่มไม่สำเร็จ'); }
+  }
+
+  // --- ฟีเจอร์ใหม่: แจ้งการบ้าน (ผูกตารางสอน) ---
+  async function addHomeworkItem() {
+    const cls = document.getElementById('hwClass').value.trim();
+    const det = document.getElementById('hwDetail').value.trim();
+    if(!cls || !det) { 
+      showToast('กรอกชื่อวิชาและรายละเอียดให้ครบครับ'); 
+      return; 
+    }
+    
+    currentSurvivalItems.push({ 
+      text: `งานวิชา ${cls} : ${det}`, 
+      type: 'homework', 
+      linkedClass: cls, 
+      rawDetail: det 
+    });
+    
+    try {
+      await db.collection('system_settings').doc('main').set({ survival_items: currentSurvivalItems }, { merge: true });
+      document.getElementById('hwClass').value = '';
+      document.getElementById('hwDetail').value = '';
+      showToast('เพิ่มการบ้านลงตารางแล้ว 📌');
+    } catch (e) { 
+      showToast('เพิ่มไม่สำเร็จ'); 
+    }
   }
 
   async function deleteSurvivalItem(index) {
@@ -1205,7 +943,10 @@
       return;
     }
     list.innerHTML = currentSurvivalItems.map((item, index) => {
-      let emoji = '🟢'; if(item.type === 'red') emoji = '🔴'; if(item.type === 'yellow') emoji = '🟡';
+      let emoji = '🟢'; 
+      if(item.type === 'red') emoji = '🔴'; 
+      if(item.type === 'yellow') emoji = '🟡';
+      if(item.type === 'homework') emoji = '📌';
       return `<div class="admin-list-item ${item.type}"><span>${emoji} ${escapeHtml(item.text)}</span><button class="btn-del" onclick="deleteSurvivalItem(${index})">ลบ</button></div>`;
     }).join('');
   }

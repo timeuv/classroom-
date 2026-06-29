@@ -409,7 +409,7 @@
     flex-shrink: 0;
   }
 
-  /* 🔥 ฟีเจอร์เสริม: ตารางสอนของวันนี้แบบยืดหดได้ */
+  /* 🔥 ฟีเจอร์เสริม: ตารางสอนของวันนี้แบบยืดหดได้ & ระบบเตือนการบ้าน */
   .today-schedule-list {
     display: flex;
     flex-direction: column;
@@ -417,7 +417,7 @@
   }
   .today-class-item {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     font-size: 13px;
     padding: 8px 10px;
     background: var(--bg);
@@ -433,6 +433,20 @@
   .today-class-item.past {
     opacity: 0.4;
   }
+  .today-class-item.homework-alert {
+    border: 1.5px solid var(--alert-text);
+    background: var(--alert-bg);
+    opacity: 1 !important; /* เอาชนะคลาส .past ได้ ไม่ยอมจางลง */
+  }
+  .hw-note {
+    font-size: 12px;
+    color: var(--alert-text);
+    margin-top: 6px;
+    font-weight: 700;
+    border-top: 1px dashed rgba(139, 38, 53, 0.3);
+    padding-top: 6px;
+  }
+
   .btn-expand {
     background: var(--bg);
     border: 1px dashed var(--line);
@@ -1064,7 +1078,7 @@
     <div id="loginSurvivalContainer" class="survival-hub hidden">
       <h3 class="survival-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</h3>
       <div id="loginSurvivalList"></div>
-      <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน (ทุกวัน)</button>
+      <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน</button>
     </div>
 
     <!-- 📚 คลังสรุปสอบ (โชว์คนนอก โหลดฟรีไม่ต้องล็อกอิน) -->
@@ -1119,7 +1133,7 @@
       <div id="survivalContainer" class="survival-hub hidden">
         <h3 class="survival-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</h3>
         <div id="survivalList"></div>
-        <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน (ทุกวัน)</button>
+        <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน</button>
       </div>
 
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
@@ -1322,8 +1336,9 @@
   let activeTaskId = null;
   let isVip = false;
   
-  // ตัวแปรเก็บตารางสอน
+  // ตัวแปรเก็บตารางสอนและการแจ้งเตือน
   let currentScheduleData = {};
+  window.currentSurvivalItems = [];
 
   if (localStorage.getItem('theme') === 'dark') {
     document.body.setAttribute('data-theme', 'dark');
@@ -1388,7 +1403,6 @@
     document.getElementById('pwInput').focus();
   }
 
-  // ลบข้อความแจ้งเตือนทันทีที่เริ่มพิมพ์
   document.getElementById('pwInput').addEventListener('input', () => {
     document.getElementById('loginError').classList.remove('show');
   });
@@ -1454,10 +1468,9 @@
     listenToChats();
     listenToParties();
     listenToMusic();
-    updateLiveClassIndicator(); // โชว์ระบบ Live ทันทีที่เข้าหน้าจอหลัก
+    updateLiveClassIndicator();
   }
 
-  // โหลด Settings ให้โชว์หน้าแรกทันที (ไม่ต้องล็อกอินก็เห็นคิวงาน ตารางสอน และคลังชีท)
   listenToSettings();
 
   (function restoreSession() {
@@ -1468,7 +1481,6 @@
     }
   })();
 
-  // --- ดึงข้อมูลจาก Firebase (กระดานข่าว, คิว, แจ้งเตือน, คลังชีท, ตารางสอน) ---
   function listenToSettings() {
     db.collection('system_settings').doc('main').onSnapshot(snap => {
       if (snap.exists && snap.data()) {
@@ -1510,7 +1522,6 @@
           `;
           if (qEta) html += `<div class="cap-text">⏳ คาดว่าจะเสร็จ: ${escapeHtml(qEta)}</div>`;
           
-          // โชว์ทั้งหน้าล็อกอินและหน้าแอป
           ['loginCapacityContainer', 'capacityContainer'].forEach(id => {
             const el = document.getElementById(id);
             if(el) { el.className = capClass; el.innerHTML = html; el.classList.remove('hidden'); }
@@ -1520,13 +1531,16 @@
           if(document.getElementById('capacityContainer')) document.getElementById('capacityContainer').classList.add('hidden');
         }
 
-        // 3. ศูนย์บัญชาการเอาตัวรอด
-        const sItems = d.survival_items || [];
+        // 3. ศูนย์บัญชาการเอาตัวรอด (ดึงข้อมูลแจ้งเตือนและการบ้าน)
+        window.currentSurvivalItems = d.survival_items || [];
+        const sItems = window.currentSurvivalItems;
+        
         if (sItems.length > 0) {
           let sHtml = sItems.map(item => {
             let cls = 'survival-item'; let emoji = '🟢';
             if (item.type === 'red') { cls += ' alert'; emoji = '🔴'; }
             if (item.type === 'yellow') { cls += ' warn'; emoji = '🟡'; }
+            if (item.type === 'homework') { cls += ' alert'; emoji = '📌'; }
             return `<div class="${cls}">${emoji} ${escapeHtml(item.text)}</div>`;
           }).join('');
           
@@ -1564,7 +1578,7 @@
           document.getElementById('loginVaultContainer').classList.add('hidden');
         }
 
-        // 5. ตารางสอน (โหลดเก็บไว้และแสดงระบบ Live ทันที)
+        // 5. ตารางสอน
         currentScheduleData = d.schedule || {};
         updateLiveClassIndicator();
       }
@@ -1572,7 +1586,7 @@
   }
 
   // ==========================================
-  // 📍 ระบบเช็กคาบเรียนแบบ Real-time และกดขยายดูตารางวันนี้ได้
+  // 📍 ระบบเช็กคาบเรียน & ตรวจจับการบ้าน (Real-time)
   // ==========================================
   function updateLiveClassIndicator() {
     const loginCard = document.getElementById('loginLiveClassCard');
@@ -1612,7 +1626,6 @@
       textColor = "var(--green)";
       pulseColor = "var(--green)";
       
-      // วันหยุดไม่มีตารางให้ขยาย ปิดปุ่มทิ้ง
       if(loginBtn) loginBtn.classList.add('hidden');
       if(appBtn) appBtn.classList.add('hidden');
       if(loginScheduleContainer) loginScheduleContainer.classList.add('hidden');
@@ -1681,34 +1694,51 @@
           }
         }
 
-        // จัดเตรียมข้อมูล HTML สำหรับปุ่มกดขยายตารางวันนี้
+        // จัดเตรียมข้อมูล HTML สำหรับตารางวันนี้ พร้อมระบบเช็กการบ้าน
         let todayClassesHtml = `<div class="today-schedule-list">`;
         for (let c of parsedClasses) {
           let itemClass = "today-class-item";
           let statusIndicator = "";
+          let hwHtml = "";
           
+          // ค้นหาว่าวิชานี้มีการบ้านที่ผูกไว้ไหม
+          const linkedHws = (window.currentSurvivalItems || []).filter(i => i.type === 'homework' && c.className.includes(i.linkedClass));
+          const hasHomework = linkedHws.length > 0;
+
           if (currentMins >= c.startMin && currentMins < c.endMin) {
             itemClass += " active";
             statusIndicator = " <span style='font-size:10px; color:var(--accent);'>(กำลังเรียน)</span>";
-          } else if (currentMins >= c.endMin) {
+          } else if (currentMins >= c.endMin && !hasHomework) {
+            // ถ้าเวลาผ่านไปแล้วและไม่มีงาน ให้สีจางลง
             itemClass += " past";
           }
+
+          // ถ้ามีการบ้าน ให้ใส่กรอบสีแดงและห้ามจาง
+          if (hasHomework) {
+            itemClass += " homework-alert";
+            hwHtml = linkedHws.map(hw => `<div class="hw-note">📌 ลืมเปล่า! มีงาน: ${escapeHtml(hw.rawDetail)}</div>`).join('');
+          }
           
-          todayClassesHtml += `<div class="${itemClass}"><div>${escapeHtml(c.className)}${statusIndicator}</div><div>${c.timeStr}</div></div>`;
+          todayClassesHtml += `
+            <div class="${itemClass}">
+              <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <div>${escapeHtml(c.className)}${statusIndicator}</div>
+                <div style="white-space:nowrap; margin-left:8px;">${c.timeStr}</div>
+              </div>
+              ${hwHtml}
+            </div>
+          `;
         }
         todayClassesHtml += `</div>`;
 
-        // นำข้อมูลไปใส่ในคอนเทนเนอร์
         document.getElementById('loginTodayScheduleContent').innerHTML = todayClassesHtml;
         document.getElementById('appTodayScheduleContent').innerHTML = todayClassesHtml;
 
-        // แสดงปุ่มกดขยาย
         if(loginBtn && parsedClasses.length > 0) loginBtn.classList.remove('hidden');
         if(appBtn && parsedClasses.length > 0) appBtn.classList.remove('hidden');
       }
     }
 
-    // อัปเดต UI หน้าล็อกอิน
     if(loginCard && loginText && loginPulse) {
       loginCard.classList.remove('hidden');
       loginText.textContent = statusText;
@@ -1721,7 +1751,6 @@
       }
     }
 
-    // อัปเดต UI หน้าหลัก
     if(appCard && appText && appPulse) {
       appCard.classList.remove('hidden');
       appText.textContent = statusText;
@@ -1735,7 +1764,6 @@
     }
   }
 
-  // ฟังก์ชันสลับเปิด/ปิดตารางคาบเรียนของวันนี้
   window.toggleTodaySchedule = function(prefix) {
     const el = document.getElementById(prefix + 'TodaySchedule');
     const btn = document.getElementById(prefix + 'BtnExpand');
@@ -1748,7 +1776,6 @@
     }
   }
 
-  // สั่งให้ระบบเช็กเวลาใหม่ทุกๆ 1 นาที
   setInterval(updateLiveClassIndicator, 60000);
 
   // --- Modal ตารางเดินเรียน (แบบดูเต็มๆ ทั้งสัปดาห์) ---

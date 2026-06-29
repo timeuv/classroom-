@@ -53,7 +53,9 @@
     --paper-solid: #2e2e2e;
     --line: rgba(255, 255, 255, 0.15);
     --line-focus: rgba(255, 255, 255, 0.3);
-  }  * { 
+  }  
+  
+  * { 
     box-sizing: border-box; 
     transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
@@ -346,7 +348,6 @@
     padding: 12px 14px; 
     margin-bottom: 16px; 
     box-shadow: none; 
-     
   }
 
   .capacity-box.full {
@@ -386,7 +387,7 @@
     font-weight: bold; 
   }
 
-  /* 📍 ฟีเจอร์ใหม่: Live Class Card (เรียนวิชาอะไรอยู่) */
+  /* 📍 ฟีเจอร์: Live Class Card (เรียนวิชาอะไรอยู่) */
   .live-class-card {
     background: var(--paper);
     border: 1px solid var(--line);
@@ -395,8 +396,8 @@
     padding: 12px 14px;
     margin-bottom: 16px;
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
     box-shadow: none;
   }
 
@@ -406,6 +407,48 @@
     border-radius: 50%;
     box-shadow: none;
     flex-shrink: 0;
+  }
+
+  /* 🔥 ฟีเจอร์เสริม: ตารางสอนของวันนี้แบบยืดหดได้ */
+  .today-schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .today-class-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 8px 10px;
+    background: var(--bg);
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+  .today-class-item.active {
+    border-left: 4px solid var(--accent);
+    font-weight: bold;
+    background: var(--accent-soft);
+    border-color: transparent;
+  }
+  .today-class-item.past {
+    opacity: 0.4;
+  }
+  .btn-expand {
+    background: var(--bg);
+    border: 1px dashed var(--line);
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--muted);
+    cursor: pointer;
+    margin-top: 8px;
+    transition: 0.2s;
+  }
+  .btn-expand:hover { 
+    background: var(--line); 
+    color: var(--ink);
   }
 
   /* 🛡️ ศูนย์บัญชาการเอาตัวรอด */
@@ -616,7 +659,6 @@
 
   .gif-picker.show { 
     display: flex; 
-     
   }
 
   .gif-picker-header { 
@@ -870,9 +912,7 @@
     max-width: 480px; 
     border-radius: 20px 20px 0 0; 
     padding: 24px 20px 28px; 
-     
-  }
-
+    
   }
 
   .modal-title { 
@@ -1004,10 +1044,16 @@
     
     <!-- 📍 ป้าย Live Class (หน้าล็อกอิน) -->
     <div id="loginLiveClassCard" class="live-class-card hidden">
-      <div class="live-pulse" id="loginLivePulse"></div>
-      <div>
-        <div style="font-size:14px; color:var(--muted); font-weight:bold; margin-bottom:2px;">📍 ตอนนี้กำลังเรียน...</div>
-        <div id="loginLiveClassText" style="font-size:18px; font-weight:800; color:var(--accent);">กำลังโหลด...</div>
+      <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+        <div class="live-pulse" id="loginLivePulse"></div>
+        <div style="flex: 1;">
+          <div style="font-size:14px; color:var(--muted); font-weight:bold; margin-bottom:2px;">📍 ตอนนี้กำลังเรียน...</div>
+          <div id="loginLiveClassText" style="font-size:18px; font-weight:800; color:var(--accent);">กำลังโหลด...</div>
+        </div>
+      </div>
+      <button id="loginBtnExpand" class="btn-expand hidden" onclick="toggleTodaySchedule('login')">🔽 ดูคาบเรียนทั้งหมดของวันนี้</button>
+      <div id="loginTodaySchedule" class="hidden" style="margin-top: 8px; border-top: 1px dashed var(--line); padding-top: 8px;">
+        <div id="loginTodayScheduleContent"></div>
       </div>
     </div>
 
@@ -1018,7 +1064,7 @@
     <div id="loginSurvivalContainer" class="survival-hub hidden">
       <h3 class="survival-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</h3>
       <div id="loginSurvivalList"></div>
-      <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน</button>
+      <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน (ทุกวัน)</button>
     </div>
 
     <!-- 📚 คลังสรุปสอบ (โชว์คนนอก โหลดฟรีไม่ต้องล็อกอิน) -->
@@ -1053,10 +1099,16 @@
       
       <!-- 📍 ป้าย Live Class (หน้าแอปหลัก) -->
       <div id="appLiveClassCard" class="live-class-card hidden">
-        <div class="live-pulse" id="appLivePulse"></div>
-        <div>
-          <div style="font-size:14px; color:var(--muted); font-weight:bold; margin-bottom:2px;">📍 ตอนนี้กำลังเรียน...</div>
-          <div id="appLiveClassText" style="font-size:18px; font-weight:800; color:var(--accent);">กำลังโหลด...</div>
+        <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+          <div class="live-pulse" id="appLivePulse"></div>
+          <div style="flex: 1;">
+            <div style="font-size:14px; color:var(--muted); font-weight:bold; margin-bottom:2px;">📍 ตอนนี้กำลังเรียน...</div>
+            <div id="appLiveClassText" style="font-size:18px; font-weight:800; color:var(--accent);">กำลังโหลด...</div>
+          </div>
+        </div>
+        <button id="appBtnExpand" class="btn-expand hidden" onclick="toggleTodaySchedule('app')">🔽 ดูคาบเรียนทั้งหมดของวันนี้</button>
+        <div id="appTodaySchedule" class="hidden" style="margin-top: 8px; border-top: 1px dashed var(--line); padding-top: 8px;">
+          <div id="appTodayScheduleContent"></div>
         </div>
       </div>
 
@@ -1067,7 +1119,7 @@
       <div id="survivalContainer" class="survival-hub hidden">
         <h3 class="survival-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</h3>
         <div id="survivalList"></div>
-        <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน</button>
+        <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน (ทุกวัน)</button>
       </div>
 
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
@@ -1520,17 +1572,20 @@
   }
 
   // ==========================================
-  // 📍 ระบบเช็กคาบเรียนแบบ Real-time
+  // 📍 ระบบเช็กคาบเรียนแบบ Real-time และกดขยายดูตารางวันนี้ได้
   // ==========================================
   function updateLiveClassIndicator() {
-    // อัปเดตทั้งการ์ดหน้าล็อกอิน และหน้าหลัก
     const loginCard = document.getElementById('loginLiveClassCard');
     const loginText = document.getElementById('loginLiveClassText');
     const loginPulse = document.getElementById('loginLivePulse');
+    const loginBtn = document.getElementById('loginBtnExpand');
+    const loginScheduleContainer = document.getElementById('loginTodaySchedule');
 
     const appCard = document.getElementById('appLiveClassCard');
     const appText = document.getElementById('appLiveClassText');
     const appPulse = document.getElementById('appLivePulse');
+    const appBtn = document.getElementById('appBtnExpand');
+    const appScheduleContainer = document.getElementById('appTodaySchedule');
 
     if (!currentScheduleData || Object.keys(currentScheduleData).length === 0) {
       if(loginCard) loginCard.classList.add('hidden');
@@ -1539,7 +1594,7 @@
     }
 
     const now = new Date();
-    const day = now.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+    const day = now.getDay(); 
     const hour = now.getHours();
     const min = now.getMinutes();
     const currentMins = hour * 60 + min;
@@ -1550,17 +1605,31 @@
     let statusText = "กำลังโหลด...";
     let pulseColor = "var(--accent)";
     let textColor = "var(--accent)";
+    let parsedClasses = [];
 
     if (!todayKey) {
       statusText = "🥳 วันหยุด! พักผ่อนให้เต็มที่";
       textColor = "var(--green)";
       pulseColor = "var(--green)";
+      
+      // วันหยุดไม่มีตารางให้ขยาย ปิดปุ่มทิ้ง
+      if(loginBtn) loginBtn.classList.add('hidden');
+      if(appBtn) appBtn.classList.add('hidden');
+      if(loginScheduleContainer) loginScheduleContainer.classList.add('hidden');
+      if(appScheduleContainer) appScheduleContainer.classList.add('hidden');
+
     } else {
       const scheduleText = currentScheduleData[todayKey];
       if (!scheduleText) {
         statusText = "😅 ยังไม่มีข้อมูลตารางเรียนวันนี้";
         textColor = "var(--muted)";
         pulseColor = "var(--muted)";
+
+        if(loginBtn) loginBtn.classList.add('hidden');
+        if(appBtn) appBtn.classList.add('hidden');
+        if(loginScheduleContainer) loginScheduleContainer.classList.add('hidden');
+        if(appScheduleContainer) appScheduleContainer.classList.add('hidden');
+
       } else {
         const lines = scheduleText.split('\n');
         let activeClass = null;
@@ -1568,23 +1637,25 @@
         let lastClassEnd = 0;
 
         for (let line of lines) {
-          // ดักจับรูปแบบ: 07:30 - 09:30 | 🎨 กราฟิกศิลป์
           const match = line.match(/(\d{2})\s*:\s*(\d{2})\s*-\s*(\d{2})\s*:\s*(\d{2})\s*\|\s*(.+)/);
           if (match) {
             const startMin = parseInt(match[1]) * 60 + parseInt(match[2]);
             const endMin = parseInt(match[3]) * 60 + parseInt(match[4]);
+            const timeStr = `${match[1]}:${match[2]} - ${match[3]}:${match[4]}`;
+            const className = match[5].trim();
             
+            parsedClasses.push({ startMin, endMin, timeStr, className });
+
             if (startMin < firstClassStart) firstClassStart = startMin;
             if (endMin > lastClassEnd) lastClassEnd = endMin;
 
             if (currentMins >= startMin && currentMins < endMin) {
-               activeClass = match[5].trim();
-               // ตรวจจับคำว่า พัก หรือ คาบว่าง ในวิชา
+               activeClass = className;
                if(activeClass.includes('พัก') || activeClass.includes('ว่าง') || activeClass.includes('💤') || activeClass.includes('⏸️')) {
                  statusText = activeClass;
                  textColor = "#D48806";
                  pulseColor = "#D48806";
-                 activeClass = "BREAK"; // dummy value to bypass below if
+                 activeClass = "BREAK"; 
                }
             }
           }
@@ -1609,6 +1680,31 @@
             pulseColor = "#D48806";
           }
         }
+
+        // จัดเตรียมข้อมูล HTML สำหรับปุ่มกดขยายตารางวันนี้
+        let todayClassesHtml = `<div class="today-schedule-list">`;
+        for (let c of parsedClasses) {
+          let itemClass = "today-class-item";
+          let statusIndicator = "";
+          
+          if (currentMins >= c.startMin && currentMins < c.endMin) {
+            itemClass += " active";
+            statusIndicator = " <span style='font-size:10px; color:var(--accent);'>(กำลังเรียน)</span>";
+          } else if (currentMins >= c.endMin) {
+            itemClass += " past";
+          }
+          
+          todayClassesHtml += `<div class="${itemClass}"><div>${escapeHtml(c.className)}${statusIndicator}</div><div>${c.timeStr}</div></div>`;
+        }
+        todayClassesHtml += `</div>`;
+
+        // นำข้อมูลไปใส่ในคอนเทนเนอร์
+        document.getElementById('loginTodayScheduleContent').innerHTML = todayClassesHtml;
+        document.getElementById('appTodayScheduleContent').innerHTML = todayClassesHtml;
+
+        // แสดงปุ่มกดขยาย
+        if(loginBtn && parsedClasses.length > 0) loginBtn.classList.remove('hidden');
+        if(appBtn && parsedClasses.length > 0) appBtn.classList.remove('hidden');
       }
     }
 
@@ -1639,10 +1735,23 @@
     }
   }
 
+  // ฟังก์ชันสลับเปิด/ปิดตารางคาบเรียนของวันนี้
+  window.toggleTodaySchedule = function(prefix) {
+    const el = document.getElementById(prefix + 'TodaySchedule');
+    const btn = document.getElementById(prefix + 'BtnExpand');
+    if(el.classList.contains('hidden')) {
+      el.classList.remove('hidden');
+      btn.innerHTML = '🔼 ซ่อนคาบเรียน';
+    } else {
+      el.classList.add('hidden');
+      btn.innerHTML = '🔽 ดูคาบเรียนทั้งหมดของวันนี้';
+    }
+  }
+
   // สั่งให้ระบบเช็กเวลาใหม่ทุกๆ 1 นาที
   setInterval(updateLiveClassIndicator, 60000);
 
-  // --- Modal ตารางเดินเรียน (แบบดูเต็มๆ) ---
+  // --- Modal ตารางเดินเรียน (แบบดูเต็มๆ ทั้งสัปดาห์) ---
   function openScheduleModal() {
     document.getElementById('scheduleModal').classList.add('show');
     let day = new Date().getDay();

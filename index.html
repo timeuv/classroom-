@@ -436,7 +436,7 @@
   .today-class-item.homework-alert {
     border: 1.5px solid var(--alert-text);
     background: var(--alert-bg);
-    opacity: 1 !important; /* เอาชนะคลาส .past ได้ ไม่ยอมจางลง */
+    opacity: 1 !important; 
   }
   .hw-note {
     font-size: 12px;
@@ -1133,7 +1133,7 @@
       <div id="survivalContainer" class="survival-hub hidden">
         <h3 class="survival-title">🛡️ ศูนย์บัญชาการเอาตัวรอด</h3>
         <div id="survivalList"></div>
-        <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน</button>
+        <button class="btn-self" style="width:100%; margin-top:8px; font-size:13px; padding:8px;" onclick="openScheduleModal()">📅 ดูตารางสอน/เดินเรียน (ทุกวัน)</button>
       </div>
 
       <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
@@ -1257,7 +1257,7 @@
       <button class="day-tab" id="tab_thu" onclick="showSchedule('thu')">พฤหัส</button>
       <button class="day-tab" id="tab_fri" onclick="showSchedule('fri')">ศุกร์</button>
     </div>
-    <div id="scheduleContent" style="white-space: pre-wrap; font-size:14px; background:var(--bg); padding:14px; border-radius:10px; min-height:120px; border:1px solid var(--line);">
+    <div id="scheduleContent" style="white-space: pre-wrap; font-size:14px; background:var(--bg); padding:14px; border-radius:10px; min-height:120px; border:1px solid var(--line); line-height: 1.6;">
       ไม่มีข้อมูลตารางเรียน
     </div>
     <button class="btn btn-self" onclick="closeScheduleModal()" style="margin-top:16px;">ปิดหน้าต่าง</button>
@@ -1336,9 +1336,10 @@
   let activeTaskId = null;
   let isVip = false;
   
-  // ตัวแปรเก็บตารางสอนและการแจ้งเตือน
+  // ตัวแปรเก็บข้อมูล
   let currentScheduleData = {};
   window.currentSurvivalItems = [];
+  window.currentRoomOverrides = [];
 
   if (localStorage.getItem('theme') === 'dark') {
     document.body.setAttribute('data-theme', 'dark');
@@ -1403,6 +1404,7 @@
     document.getElementById('pwInput').focus();
   }
 
+  // ลบข้อความแจ้งเตือนทันทีที่เริ่มพิมพ์
   document.getElementById('pwInput').addEventListener('input', () => {
     document.getElementById('loginError').classList.remove('show');
   });
@@ -1468,9 +1470,10 @@
     listenToChats();
     listenToParties();
     listenToMusic();
-    updateLiveClassIndicator();
+    updateLiveClassIndicator(); 
   }
 
+  // โหลด Settings ให้โชว์หน้าแรกทันที
   listenToSettings();
 
   (function restoreSession() {
@@ -1481,6 +1484,7 @@
     }
   })();
 
+  // --- ดึงข้อมูลจาก Firebase (กระดานข่าว, คิว, แจ้งเตือน, คลังชีท, ตารางสอน, ย้ายห้อง) ---
   function listenToSettings() {
     db.collection('system_settings').doc('main').onSnapshot(snap => {
       if (snap.exists && snap.data()) {
@@ -1578,15 +1582,17 @@
           document.getElementById('loginVaultContainer').classList.add('hidden');
         }
 
-        // 5. ตารางสอน
+        // 5. โหลดตารางสอน และ ระบบย้ายห้องเรียน (Room Overrides)
         currentScheduleData = d.schedule || {};
+        window.currentRoomOverrides = d.room_overrides || [];
+        
         updateLiveClassIndicator();
       }
     });
   }
 
   // ==========================================
-  // 📍 ระบบเช็กคาบเรียน & ตรวจจับการบ้าน (Real-time)
+  // 📍 ระบบเช็กคาบเรียน & ตรวจจับย้ายห้อง/การบ้าน (Real-time)
   // ==========================================
   function updateLiveClassIndicator() {
     const loginCard = document.getElementById('loginLiveClassCard');
@@ -1612,9 +1618,13 @@
     const hour = now.getHours();
     const min = now.getMinutes();
     const currentMins = hour * 60 + min;
+    const todayStr = now.toDateString(); // ไว้เช็กว่าการย้ายห้องนี้ของวันนี้ไหม
 
     const dayMap = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
     const todayKey = dayMap[day];
+
+    // กรองเอาเฉพาะรายการย้ายห้องที่เป็นของ "วันนี้" เท่านั้น
+    const activeOverrides = (window.currentRoomOverrides || []).filter(o => o.date === todayStr);
 
     let statusText = "กำลังโหลด...";
     let pulseColor = "var(--accent)";
@@ -1655,9 +1665,19 @@
             const startMin = parseInt(match[1]) * 60 + parseInt(match[2]);
             const endMin = parseInt(match[3]) * 60 + parseInt(match[4]);
             const timeStr = `${match[1]}:${match[2]} - ${match[3]}:${match[4]}`;
-            const className = match[5].trim();
             
-            parsedClasses.push({ startMin, endMin, timeStr, className });
+            // แทนที่จะใส่ดิบๆ เราหนีอักขระพิเศษ (Escape) ก่อน แล้วค่อยทำตัวขีดฆ่าห้องใหม่
+            let className = escapeHtml(match[5].trim());
+
+            // 🔄 ระบบย้ายห้องเรียน (ขีดฆ่าห้องเดิม ใส่ห้องใหม่)
+            activeOverrides.forEach(override => {
+              if (className.includes(escapeHtml(override.subject))) {
+                // ค้นหาข้อความรูปแบบ (ห้อง ...) แล้วแทนที่ด้วยตัวขีดฆ่า
+                className = className.replace(/\((ห้อง[^)]+)\)/, '(<s>$1</s> <b style="color:var(--accent);">' + escapeHtml(override.room) + '</b>)');
+              }
+            });
+            
+            parsedClasses.push({ startMin, endMin, timeStr, className, rawClass: match[5].trim() });
 
             if (startMin < firstClassStart) firstClassStart = startMin;
             if (endMin > lastClassEnd) lastClassEnd = endMin;
@@ -1702,7 +1722,7 @@
           let hwHtml = "";
           
           // ค้นหาว่าวิชานี้มีการบ้านที่ผูกไว้ไหม
-          const linkedHws = (window.currentSurvivalItems || []).filter(i => i.type === 'homework' && c.className.includes(i.linkedClass));
+          const linkedHws = (window.currentSurvivalItems || []).filter(i => i.type === 'homework' && c.rawClass.includes(i.linkedClass));
           const hasHomework = linkedHws.length > 0;
 
           if (currentMins >= c.startMin && currentMins < c.endMin) {
@@ -1719,10 +1739,11 @@
             hwHtml = linkedHws.map(hw => `<div class="hw-note">📌 ลืมเปล่า! มีงาน: ${escapeHtml(hw.rawDetail)}</div>`).join('');
           }
           
+          // ข้อควรระวัง: c.className ถูก Escape และใส่ HTML Tag มาแล้วเรียบร้อย ห้าม Escape ซ้ำ!
           todayClassesHtml += `
             <div class="${itemClass}">
               <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                <div>${escapeHtml(c.className)}${statusIndicator}</div>
+                <div>${c.className}${statusIndicator}</div>
                 <div style="white-space:nowrap; margin-left:8px;">${c.timeStr}</div>
               </div>
               ${hwHtml}
@@ -1741,7 +1762,7 @@
 
     if(loginCard && loginText && loginPulse) {
       loginCard.classList.remove('hidden');
-      loginText.textContent = statusText;
+      loginText.innerHTML = statusText; // ใช้ innerHTML เพื่อให้ Tag <s> แสดงผลได้
       loginText.style.color = textColor;
       loginPulse.style.background = pulseColor;
       if(pulseColor === "var(--accent)") {
@@ -1753,7 +1774,7 @@
 
     if(appCard && appText && appPulse) {
       appCard.classList.remove('hidden');
-      appText.textContent = statusText;
+      appText.innerHTML = statusText; // ใช้ innerHTML เพื่อให้ Tag <s> แสดงผลได้
       appText.style.color = textColor;
       appPulse.style.background = pulseColor;
       if(pulseColor === "var(--accent)") {
@@ -1778,7 +1799,7 @@
 
   setInterval(updateLiveClassIndicator, 60000);
 
-  // --- Modal ตารางเดินเรียน (แบบดูเต็มๆ ทั้งสัปดาห์) ---
+  // --- Modal ตารางเดินเรียน (แบบดูเต็มๆ ทั้งสัปดาห์ พร้อมระบบย้ายห้อง) ---
   function openScheduleModal() {
     document.getElementById('scheduleModal').classList.add('show');
     let day = new Date().getDay();
@@ -1796,7 +1817,31 @@
     document.getElementById('tab_' + dayKey).classList.add('active');
     
     let rawText = currentScheduleData[dayKey] || '';
-    let displayHtml = rawText ? escapeHtml(rawText) : '<div style="color:var(--muted); text-align:center; padding-top:20px;">ยังไม่ได้ลงตารางของวันนี้</div>';
+    let displayHtml = '<div style="color:var(--muted); text-align:center; padding-top:20px;">ยังไม่ได้ลงตารางของวันนี้</div>';
+    
+    if (rawText) {
+      const todayStr = new Date().toDateString();
+      const activeOverrides = (window.currentRoomOverrides || []).filter(o => o.date === todayStr);
+      
+      let day = new Date().getDay();
+      let dayMap = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
+      let isTodayTab = (dayMap[day] === dayKey);
+
+      let lines = rawText.split('\n');
+      let processedLines = lines.map(line => {
+        let escapedLine = escapeHtml(line);
+        // ทำการขีดฆ่าห้อง เฉพาะในแท็บของ "วันนี้" เท่านั้น
+        if (isTodayTab) {
+          activeOverrides.forEach(o => {
+            if (escapedLine.includes(escapeHtml(o.subject))) {
+              escapedLine = escapedLine.replace(/\((ห้อง[^)]+)\)/, '(<s>$1</s> <b style="color:#D4622A;">' + escapeHtml(o.room) + '</b>)');
+            }
+          });
+        }
+        return escapedLine;
+      });
+      displayHtml = processedLines.join('\n');
+    }
     
     document.getElementById('scheduleContent').innerHTML = displayHtml;
   }

@@ -586,6 +586,11 @@
     <div class="stat-pill">ได้แล้ว <span id="totalEarn">0</span> / 5,000</div>
   </div>
 
+  <div class="notice-box">
+    <strong>📢 หมายเหตุความโปร่งใส</strong>
+    ข้อมูลประวัติและยอดเงินทั้งหมดที่เกิดขึ้น <b>ก่อนวันที่ 30 มิถุนายน</b> เป็นเพียงการ "ทดสอบระบบ" เท่านั้น
+  </div>
+
   <!-- โซนที่ 1: กระดานข่าว -->
   <div class="config-box">
     <div class="config-box-title">📢 กระดานข่าวห้อง (ตัววิ่ง)</div>
@@ -622,7 +627,6 @@
       <button onclick="addSurvivalItem()">เพิ่ม</button>
     </div>
     
-    <!-- ฟีเจอร์ใหม่: แจ้งงานผูกตารางสอน -->
     <div class="config-row" style="margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 12px;">
       <span style="font-size:13px; font-weight:bold; color:var(--red);">📌 แจ้งงาน/การบ้าน (ผูกตารางสอนอัตโนมัติ)</span>
     </div>
@@ -633,6 +637,20 @@
     </div>
 
     <div class="admin-list-container" id="adminSurvivalList"></div>
+  </div>
+
+  <!-- โซนใหม่: ย้ายห้องเรียนชั่วคราว -->
+  <div class="config-box">
+    <div class="config-box-title">🔄 แจ้งย้ายห้องเรียน (มีผลแค่วันนี้)</div>
+    <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">
+      วิชาที่ตรงกับชื่อที่พิมพ์ จะถูกขีดฆ่าห้องเดิมแล้วใส่ห้องใหม่แทนที่ และจะกลับเป็นปกติในวันพรุ่งนี้อัตโนมัติ
+    </div>
+    <div class="config-row">
+      <input type="text" id="orSubject" placeholder="ชื่อวิชา (เช่น คณิต)" style="flex:1;">
+      <input type="text" id="orRoom" placeholder="ห้องใหม่ (เช่น 501)" style="flex:1;">
+      <button style="background:var(--yellow); color:var(--bg);" onclick="addRoomOverride()">แจ้งย้าย</button>
+    </div>
+    <div class="admin-list-container" id="adminOverrideList"></div>
   </div>
 
   <!-- โซนที่ 4: คลังชีทสรุป -->
@@ -802,6 +820,7 @@
   // ตัวแปรเก็บข้อมูล
   let currentSurvivalItems = [];
   let currentVaultItems = [];
+  let currentRoomOverrides = [];
 
   const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
@@ -858,6 +877,9 @@
         currentVaultItems = d.vault_items || [];
         renderAdminVaultList();
 
+        currentRoomOverrides = d.room_overrides || [];
+        renderAdminRoomOverrides();
+
         const sch = d.schedule || {};
         document.getElementById('sch_mon').value = sch.mon || '';
         document.getElementById('sch_tue').value = sch.tue || '';
@@ -888,6 +910,51 @@
     } catch (e) { showToast('อัปเดตคิวไม่สำเร็จ'); }
   }
 
+  // --- จัดการย้ายห้องเรียน (รายวัน) ---
+  async function addRoomOverride() {
+    const sub = document.getElementById('orSubject').value.trim();
+    const rm = document.getElementById('orRoom').value.trim();
+    if(!sub || !rm) {
+      showToast('กรอกข้อมูลวิชาและห้องใหม่ให้ครบครับ');
+      return;
+    }
+    const todayStr = new Date().toDateString();
+    currentRoomOverrides.push({ subject: sub, room: rm, date: todayStr });
+    try {
+      await db.collection('system_settings').doc('main').set({ room_overrides: currentRoomOverrides }, { merge: true });
+      document.getElementById('orSubject').value = '';
+      document.getElementById('orRoom').value = '';
+      showToast('แจ้งย้ายห้องแล้ว! (มีผลแค่วันนี้) 🔄');
+    } catch(e) { showToast('ไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+  }
+
+  async function deleteRoomOverride(index) {
+    if(!confirm('ลบการแจ้งย้ายห้องนี้ใช่ไหม?')) return;
+    currentRoomOverrides.splice(index, 1);
+    try {
+      await db.collection('system_settings').doc('main').set({ room_overrides: currentRoomOverrides }, { merge: true });
+      showToast('ลบรายการย้ายห้องแล้ว');
+    } catch (e) { showToast('ลบไม่สำเร็จ'); }
+  }
+
+  function renderAdminRoomOverrides() {
+    const list = document.getElementById('adminOverrideList');
+    const todayStr = new Date().toDateString();
+    let html = '';
+    currentRoomOverrides.forEach((item, index) => {
+      const isToday = item.date === todayStr;
+      const status = isToday ? '<span style="color:var(--green);font-size:10px;">(มีผลวันนี้)</span>' : '<span style="color:var(--muted);font-size:10px;">(หมดอายุแล้ว)</span>';
+      html += `
+        <div class="admin-list-item yellow">
+          <div>🔄 ย้ายวิชา <b>${escapeHtml(item.subject)}</b> ไป <b>${escapeHtml(item.room)}</b> ${status}</div>
+          <button class="btn-del" onclick="deleteRoomOverride(${index})">ลบ</button>
+        </div>
+      `;
+    });
+    if(!html) html = '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">ไม่มีการแจ้งย้ายห้อง</div>';
+    list.innerHTML = html;
+  }
+
   // --- จัดการศูนย์บัญชาการ (ทั่วไป) ---
   async function addSurvivalItem() {
     const txt = document.getElementById('svText').value.trim();
@@ -901,7 +968,6 @@
     } catch (e) { showToast('เพิ่มไม่สำเร็จ'); }
   }
 
-  // --- ฟีเจอร์ใหม่: แจ้งการบ้าน (ผูกตารางสอน) ---
   async function addHomeworkItem() {
     const cls = document.getElementById('hwClass').value.trim();
     const det = document.getElementById('hwDetail').value.trim();
